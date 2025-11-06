@@ -36,6 +36,7 @@ const DemoSubmitPage = () => {
     )
     // eslint-disable-next-line react-hooks/immutability
     window.location.href = `mailto:rixlyleads@gmail.com?subject=${subject}&body=${body}`;
+    
   };
 
 
