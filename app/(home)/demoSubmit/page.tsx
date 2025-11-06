@@ -28,16 +28,17 @@ const DemoSubmitPage = () => {
   } = useForm<DemoFormValues>({
     resolver: zodResolver(demoSchema),
   });
-
-  const onSubmit = (data) => {
+  
+  const onSubmit = (data : DemoFormValues) => {
     const subject = encodeURIComponent("New Demo Request from RIXLY");
     const body = encodeURIComponent(
       `Full Name: ${data.fullName}\nEmail: ${data.email}\nPhone: ${data.phone}\nIndustry: ${data.industry || "N/A"}\nAdditional Insights: ${data.insights || "N/A"}`
-    );
-
-    // Opens Gmail compose (or default mail client)
+    )
+    // eslint-disable-next-line react-hooks/immutability
     window.location.href = `mailto:rixlyleads@gmail.com?subject=${subject}&body=${body}`;
   };
+
+
   return (
     <div className="min-h-screen flex items-center justify-center px-4">
       <motion.div
