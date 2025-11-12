@@ -85,3 +85,20 @@ export async function signin(data: SigninRequest): Promise<SigninResponse> {
 
   return responseData;
 }
+
+export function logout(): void {
+  // Clear authentication data from localStorage
+  localStorage.removeItem("accessToken");
+  localStorage.removeItem("user");
+}
+
+export function getCurrentUser(): User | null {
+  try {
+    const userStr = localStorage.getItem("user");
+    if (!userStr) return null;
+    return JSON.parse(userStr) as User;
+  } catch (error) {
+    console.error("Failed to parse user data:", error);
+    return null;
+  }
+}
