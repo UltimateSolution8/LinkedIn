@@ -16,6 +16,8 @@ interface SemanticQueriesStepProps {
   onBack: () => void;
   queries: SemanticQuery[];
   onQueriesChange: (queries: SemanticQuery[]) => void;
+  isSubmitting?: boolean;
+  error?: string | null;
 }
 
 export default function SemanticQueriesStep({
@@ -23,6 +25,8 @@ export default function SemanticQueriesStep({
   onBack,
   queries,
   onQueriesChange,
+  isSubmitting = false,
+  error = null,
 }: SemanticQueriesStepProps) {
   const [queryInput, setQueryInput] = useState("");
 
@@ -134,22 +138,31 @@ export default function SemanticQueriesStep({
         </div>
       </div>
 
+      {/* Error Message */}
+      {error && (
+        <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 text-red-600 dark:text-red-400 px-4 py-3 rounded-md text-sm">
+          {error}
+        </div>
+      )}
+
       {/* Navigation Buttons */}
       <div className="flex flex-col-reverse sm:flex-row sm:justify-between items-center gap-4 pt-4">
         <Button
           type="button"
           variant="ghost"
           onClick={onBack}
-          className="w-full sm:w-auto min-w-[84px] hover:bg-neutral-100 dark:hover:bg-neutral-800 transition-colors"
+          disabled={isSubmitting}
+          className="w-full sm:w-auto min-w-[84px] hover:bg-neutral-100 dark:hover:bg-neutral-800 transition-colors disabled:opacity-50"
         >
           Back
         </Button>
         <Button
           type="button"
           onClick={onNext}
-          className="w-full sm:w-auto min-w-[84px] bg-purple-600 hover:bg-purple-700 text-white shadow-lg shadow-purple-600/20 transition-colors"
+          disabled={isSubmitting}
+          className="w-full sm:w-auto min-w-[84px] bg-purple-600 hover:bg-purple-700 text-white shadow-lg shadow-purple-600/20 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
         >
-          Complete Setup
+          {isSubmitting ? "Creating Project..." : "Complete Setup"}
         </Button>
       </div>
     </div>

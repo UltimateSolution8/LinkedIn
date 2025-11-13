@@ -9,6 +9,7 @@ import KeywordSetupStep, { Keyword } from "@/components/create-project/KeywordSe
 import SemanticQueriesStep, {
   SemanticQuery,
 } from "@/components/create-project/SemanticQueriesStep";
+import { createProject } from "@/lib/api/projects";
 
 export default function CreateProjectPage() {
   const router = useRouter();
@@ -20,6 +21,8 @@ export default function CreateProjectPage() {
     { id: "3", text: "Webflow vs Framer", isAIGenerated: false },
   ]);
   const [semanticQueries, setSemanticQueries] = useState<SemanticQuery[]>([]);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   const totalSteps = 3; // Changed from 4 to 3
   const progressPercentage = (currentStep / totalSteps) * 100;
@@ -38,14 +41,39 @@ export default function CreateProjectPage() {
     setCurrentStep(1);
   };
 
-  const handleStep3Next = () => {
-    // Complete setup - save all data and navigate to dashboard
-    console.log("Project completed:", {
-      projectInfo,
-      keywords,
-      semanticQueries,
-    });
-    router.push("/dashboard");
+  const handleStep3Next = async () => {
+    // Validate required data
+    if (!projectInfo) {
+      setError("Project information is missing. Please go back and complete all steps.");
+      return;
+    }
+
+    setIsSubmitting(true);
+    setError(null);
+
+    try {
+      // Transform data to match API contract
+      const projectData = {
+        projectName: projectInfo.projectName,
+        websiteUrl: projectInfo.companyWebsite,
+        description: projectInfo.projectDescription,
+        keywords: keywords.map((k) => k.text),
+        semanticQueries: semanticQueries.map((q) => q.text),
+      };
+
+      // Call the API
+      const response = await createProject(projectData);
+
+      console.log("Project created successfully:", response);
+
+      // Navigate to dashboard on success
+      router.push("/dashboard");
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Failed to create project");
+      console.error("Error creating project:", err);
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const handleStep3Back = () => {
@@ -152,6 +180,8 @@ export default function CreateProjectPage() {
             onBack={handleStep3Back}
             queries={semanticQueries}
             onQueriesChange={setSemanticQueries}
+            isSubmitting={isSubmitting}
+            error={error}
           />
         )}
       </div>
