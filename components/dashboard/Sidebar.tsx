@@ -1,21 +1,42 @@
 "use client";
 
-import { CheckCircle2, PauseCircle, Plus } from "lucide-react";
+import { useEffect, useState } from "react";
+import { Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { useRouter } from "next/navigation";
-
-const projects = [
-  { name: "SaaS Marketing Leads", status: "active", icon: CheckCircle2 },
-  { name: "Web Design Clients", status: "inactive", icon: CheckCircle2 },
-  { name: "Mobile App Dev", status: "paused", icon: PauseCircle },
-  { name: "Early Adopters", status: "inactive", icon: CheckCircle2 },
-];
+import { getProjects, type Project } from "@/lib/api/projects";
 
 export default function Sidebar() {
   const router = useRouter();
+  const [projects, setProjects] = useState<Project[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [selectedProjectIndex, setSelectedProjectIndex] = useState(0);
+
+  useEffect(() => {
+    const fetchProjects = async () => {
+      try {
+        setIsLoading(true);
+        const data = await getProjects();
+        setProjects(data);
+      } catch (err) {
+        setError(err instanceof Error ? err.message : "Failed to fetch projects");
+        console.error("Error fetching projects:", err);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchProjects();
+  }, []);
 
   const handleCreateProject = () => {
     router.push("/create-project");
+  };
+
+  const getProjectInitial = (projectName: string) => {
+    return projectName.charAt(0).toUpperCase();
   };
 
   return (
@@ -44,38 +65,58 @@ export default function Sidebar() {
 
           {/* Projects List */}
           <div className="flex flex-col gap-2 mt-4">
-            {projects.map((project, index) => {
-              const Icon = project.icon;
-              const isActive = index === 0;
+            {isLoading ? (
+              <div className="flex items-center justify-center py-8">
+                <p className="text-sm text-neutral-500 dark:text-neutral-400">Loading projects...</p>
+              </div>
+            ) : error ? (
+              <div className="flex flex-col items-center justify-center py-8 px-2">
+                <p className="text-sm text-red-600 dark:text-red-400 text-center">{error}</p>
+              </div>
+            ) : projects.length === 0 ? (
+              <div className="flex flex-col items-center justify-center py-8 px-2">
+                <p className="text-sm text-neutral-500 dark:text-neutral-400 text-center">
+                  No projects yet. Create your first project!
+                </p>
+              </div>
+            ) : (
+              projects.map((project, index) => {
+                const isActive = index === selectedProjectIndex;
 
-              return (
-                <div
-                  key={project.name}
-                  className={`flex items-center gap-3 px-3 py-2 rounded-lg cursor-pointer transition-colors ${
-                    isActive
-                      ? "bg-purple-600/10 dark:bg-purple-600/20"
-                      : "hover:bg-purple-600/10 dark:hover:bg-purple-600/20"
-                  }`}
-                >
-                  <Icon
-                    className={`w-5 h-5 ${
+                return (
+                  <div
+                    key={`${project.projectName}-${index}`}
+                    onClick={() => setSelectedProjectIndex(index)}
+                    className={`flex items-center gap-3 px-3 py-2 rounded-lg cursor-pointer transition-colors ${
                       isActive
-                        ? "text-purple-600 dark:text-purple-400"
-                        : "text-neutral-500 dark:text-neutral-400"
-                    }`}
-                  />
-                  <p
-                    className={`text-sm font-medium leading-normal ${
-                      isActive
-                        ? "text-neutral-950 dark:text-white"
-                        : "text-neutral-950 dark:text-neutral-300"
+                        ? "bg-purple-600/10 dark:bg-purple-600/20"
+                        : "hover:bg-purple-600/10 dark:hover:bg-purple-600/20"
                     }`}
                   >
-                    {project.name}
-                  </p>
-                </div>
-              );
-            })}
+                    <Avatar className="h-8 w-8">
+                      <AvatarFallback
+                        className={`text-xs font-semibold ${
+                          isActive
+                            ? "bg-purple-600 text-white"
+                            : "bg-neutral-200 dark:bg-neutral-800 text-neutral-700 dark:text-neutral-300"
+                        }`}
+                      >
+                        {getProjectInitial(project.projectName)}
+                      </AvatarFallback>
+                    </Avatar>
+                    <p
+                      className={`text-sm font-medium leading-normal truncate ${
+                        isActive
+                          ? "text-neutral-950 dark:text-white"
+                          : "text-neutral-950 dark:text-neutral-300"
+                      }`}
+                    >
+                      {project.projectName}
+                    </p>
+                  </div>
+                );
+              })
+            )}
           </div>
         </div>
 
