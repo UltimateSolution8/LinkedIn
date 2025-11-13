@@ -1,48 +1,122 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import PostCard from "./PostCard";
+import Pagination from "@/components/ui/pagination";
+import { getPosts, type Post } from "@/lib/api/posts";
 
-const postsData = [
-  {
-    title: "Looking for a project management tool for a small remote team. Any recommendations?",
-    excerpt: "We're a team of 8 developers and designers working remotely. We've tried Trello and Asana, but they feel a bit too complex for our needs. Looking for something simple with task tracking, deadlines, and basic collaboration features...",
-    timeAgo: "5m ago",
-    username: "u/SaaSWizard",
-    subreddit: "r/SaaS",
-    rating: 10,
-  },
-  {
-    title: "What's the best CRM for a startup that's easy to set up and not too expensive?",
-    excerpt: "Just closed our seed round and need to get a proper CRM in place. We have about 500 contacts right now but expect that to grow quickly. Main priorities are ease of use for the sales team and good integration options with other tools...",
-    timeAgo: "2h ago",
-    username: "u/FounderLife",
-    subreddit: "r/startups",
-    rating: 8,
-  },
-  {
-    title: "Help! Our marketing team is drowning in spreadsheets. Need a good automation tool.",
-    excerpt: "We're managing campaigns, content calendars, and lead tracking all in Google Sheets and it's becoming a nightmare. What are some good, all-in-one marketing automation platforms you'd recommend? Budget is flexible for the right solution.",
-    timeAgo: "1d ago",
-    username: "u/MarketingMaven",
-    subreddit: "r/marketing",
-    rating: 8,
-  },
-  {
-    title: "Which email marketing platform has the best deliverability for B2B SaaS?",
-    excerpt: "Currently using Mailchimp but our open rates have been dropping. We send a mix of newsletters and product updates to our user base. Who has the best reputation for getting into B2B inboxes these days? Considering ConvertKit or ActiveCampaign.",
-    timeAgo: "3d ago",
-    username: "u/EmailGeek",
-    subreddit: "r/saas",
-    rating: 6,
-  },
-];
+interface FindPostsTabProps {
+  projectId: string;
+}
 
-export default function FindPostsTab() {
+export default function FindPostsTab({ projectId }: FindPostsTabProps) {
+  const [posts, setPosts] = useState<Post[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [pagination, setPagination] = useState({
+    totalPages: 1,
+    totalPosts: 0,
+    hasNextPage: false,
+    hasPrevPage: false,
+    pageSize: 10,
+  });
+
+  useEffect(() => {
+    const fetchPosts = async () => {
+      try {
+        setIsLoading(true);
+        setError(null);
+        const response = await getPosts(projectId, currentPage, 10);
+        setPosts(response.data);
+        setPagination({
+          totalPages: response.pagination.totalPages,
+          totalPosts: response.pagination.totalPosts,
+          hasNextPage: response.pagination.hasNextPage,
+          hasPrevPage: response.pagination.hasPrevPage,
+          pageSize: response.pagination.pageSize,
+        });
+      } catch (err) {
+        setError(err instanceof Error ? err.message : "Failed to fetch posts");
+        console.error("Error fetching posts:", err);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    if (projectId) {
+      fetchPosts();
+    }
+  }, [projectId, currentPage]);
+
+  const handlePageChange = (page: number) => {
+    setCurrentPage(page);
+  };
+
+  const formatTimeAgo = (timestamp: string) => {
+    const now = new Date();
+    const created = new Date(timestamp);
+    const diffInSeconds = Math.floor((now.getTime() - created.getTime()) / 1000);
+
+    if (diffInSeconds < 60) return `${diffInSeconds}s ago`;
+    if (diffInSeconds < 3600) return `${Math.floor(diffInSeconds / 60)}m ago`;
+    if (diffInSeconds < 86400) return `${Math.floor(diffInSeconds / 3600)}h ago`;
+    return `${Math.floor(diffInSeconds / 86400)}d ago`;
+  };
+
+  if (isLoading) {
+    return (
+      <div className="flex flex-col items-center justify-center pt-20">
+        <p className="text-neutral-500 dark:text-neutral-400 text-lg">Loading posts...</p>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="flex flex-col items-center justify-center pt-20">
+        <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 text-red-600 dark:text-red-400 px-6 py-4 rounded-md text-sm max-w-md text-center">
+          {error}
+        </div>
+      </div>
+    );
+  }
+
+  if (posts.length === 0) {
+    return (
+      <div className="flex flex-col items-center justify-center pt-20">
+        <p className="text-neutral-500 dark:text-neutral-400 text-lg">
+          No posts found. Check back later for new opportunities!
+        </p>
+      </div>
+    );
+  }
+
   return (
-    <div className="flex flex-col gap-4 pt-6">
-      {postsData.map((post, index) => (
-        <PostCard key={index} {...post} />
-      ))}
+    <div className="flex flex-col pt-6">
+      <div className="flex flex-col gap-4 mb-6">
+        {posts.map((post, index) => (
+          <PostCard
+            key={index}
+            title={post.title}
+            excerpt={post.description}
+            timeAgo={formatTimeAgo(post.timeCreated)}
+            username={`u/${post.originalPosterId}`}
+            subreddit={`r/${post.subreddit}`}
+            rating={post.rixlyRating}
+          />
+        ))}
+      </div>
+
+      {pagination.totalPages > 1 && (
+        <Pagination
+          currentPage={currentPage}
+          totalPages={pagination.totalPages}
+          hasNextPage={pagination.hasNextPage}
+          hasPrevPage={pagination.hasPrevPage}
+          onPageChange={handlePageChange}
+        />
+      )}
     </div>
   );
 }

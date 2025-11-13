@@ -6,13 +6,14 @@ import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { useRouter } from "next/navigation";
 import { getProjects, type Project } from "@/lib/api/projects";
+import { useProject } from "@/contexts/ProjectContext";
 
 export default function Sidebar() {
   const router = useRouter();
+  const { selectedProjectId, setSelectedProjectId } = useProject();
   const [projects, setProjects] = useState<Project[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [selectedProjectIndex, setSelectedProjectIndex] = useState(0);
 
   useEffect(() => {
     const fetchProjects = async () => {
@@ -20,6 +21,10 @@ export default function Sidebar() {
         setIsLoading(true);
         const data = await getProjects();
         setProjects(data);
+        // Set the first project as selected by default if none is selected
+        if (data.length > 0 && !selectedProjectId) {
+          setSelectedProjectId(data[0]._id);
+        }
       } catch (err) {
         setError(err instanceof Error ? err.message : "Failed to fetch projects");
         console.error("Error fetching projects:", err);
@@ -80,13 +85,13 @@ export default function Sidebar() {
                 </p>
               </div>
             ) : (
-              projects.map((project, index) => {
-                const isActive = index === selectedProjectIndex;
+              projects.map((project) => {
+                const isActive = project._id === selectedProjectId;
 
                 return (
                   <div
-                    key={`${project.projectName}-${index}`}
-                    onClick={() => setSelectedProjectIndex(index)}
+                    key={project._id}
+                    onClick={() => setSelectedProjectId(project._id)}
                     className={`flex items-center gap-3 px-3 py-2 rounded-lg cursor-pointer transition-colors ${
                       isActive
                         ? "bg-purple-600/10 dark:bg-purple-600/20"

@@ -1,6 +1,7 @@
 const RIXLY_API_BASE_URL = process.env.NEXT_PUBLIC_RIXLY_API_BASE_URL;
 
 export interface Project {
+  _id: string;
   projectName: string;
   websiteUrl: string;
   description: string;

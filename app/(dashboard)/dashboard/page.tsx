@@ -5,9 +5,12 @@ import { Badge } from "@/components/ui/badge";
 import MetricsPanel from "@/components/dashboard/MetricsPanel";
 import FindPostsTab from "@/components/dashboard/FindPostsTab";
 import FindLeadsTab from "@/components/dashboard/FindLeadsTab";
+import { useProject } from "@/contexts/ProjectContext";
 
 export default function DashboardPage() {
   const [activeTab, setActiveTab] = useState<"posts" | "leads" | "logs">("posts");
+  const { selectedProjectId } = useProject();
+
   return (
     <div className="flex flex-1 overflow-y-auto">
       <div className="flex-1 p-8">
@@ -58,8 +61,8 @@ export default function DashboardPage() {
         </div>
 
         {/* Tab Content */}
-        {activeTab === "posts" && <FindPostsTab />}
-        {activeTab === "leads" && <FindLeadsTab />}
+        {activeTab === "posts" && selectedProjectId && <FindPostsTab projectId={selectedProjectId} />}
+        {activeTab === "leads" && selectedProjectId && <FindLeadsTab projectId={selectedProjectId} />}
         {activeTab === "logs" && (
           <div className="flex flex-col items-center justify-center pt-20">
             <p className="text-neutral-500 dark:text-neutral-400 text-lg">
