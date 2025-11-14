@@ -7,6 +7,7 @@ import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { useRouter } from "next/navigation";
 import { getProjects, type Project } from "@/lib/api/projects";
 import { useProject } from "@/contexts/ProjectContext";
+import Logo from "@/components/common/Logo";
 
 export default function Sidebar() {
   const router = useRouter();
@@ -49,24 +50,7 @@ export default function Sidebar() {
       <div className="flex h-full flex-col justify-between p-4">
         <div className="flex flex-col gap-4">
           {/* Logo Section */}
-          <div className="flex items-center gap-3 px-2">
-            <div
-              className="bg-center bg-no-repeat aspect-square bg-cover rounded-full size-10"
-              style={{
-                backgroundImage: `url("https://lh3.googleusercontent.com/aida-public/AB6AXuAjNUw5OL83OLGuRJ5NTl43lODzRR6uarTz0MXwCsuH-0cKVPFtEz4_o7oc6gnfHEWK84sS4xKeQnYq364x3hzif_uc4h6LbunOLd6mdyE_lnvFKw_ZVO1JEoPIy_KCY-97sQeAxLWWe9MtBCEACixqZKCyqtQKlpt9SNCE7npCqcQbpNthu3o1KxVd1K1KtyJvEHlU2OsKs9hLBPoC-mNeWtOsFrH3wr8x4QeI-uR5cOyR1_VOjM_rn0WMC6iNbX6-z2mx_kK1NP2N")`
-              }}
-              role="img"
-              aria-label="Rixly company logo"
-            />
-            <div className="flex flex-col">
-              <h1 className="text-neutral-950 dark:text-white text-base font-bold leading-normal">
-                Rixly
-              </h1>
-              <p className="text-neutral-500 dark:text-neutral-400 text-sm font-normal leading-normal">
-                AI Lead Discovery
-              </p>
-            </div>
-          </div>
+          <Logo />
 
           {/* Projects List */}
           <div className="flex flex-col gap-2 mt-4">
