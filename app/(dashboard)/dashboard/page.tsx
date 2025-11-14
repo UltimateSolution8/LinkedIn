@@ -10,6 +10,8 @@ import { useProject } from "@/contexts/ProjectContext";
 export default function DashboardPage() {
   const [activeTab, setActiveTab] = useState<"posts" | "leads" | "logs">("posts");
   const { selectedProjectId } = useProject();
+  const [postsCount, setPostsCount] = useState(0);
+  const [leadsCount, setLeadsCount] = useState(0);
 
   return (
     <div className="flex flex-1 overflow-y-auto">
@@ -26,9 +28,9 @@ export default function DashboardPage() {
               }`}
             >
               <p className="text-sm font-bold leading-normal tracking-[0.015em]">Find Posts</p>
-              {activeTab === "posts" && (
+              {activeTab === "posts" && postsCount > 0 && (
                 <Badge className="bg-purple-600/10 dark:bg-purple-600/20 text-purple-600 dark:text-purple-400 hover:bg-purple-600/10">
-                  124
+                  {postsCount}
                 </Badge>
               )}
             </button>
@@ -41,9 +43,9 @@ export default function DashboardPage() {
               }`}
             >
               <p className="text-sm font-bold leading-normal tracking-[0.015em]">Find Leads</p>
-              {activeTab === "leads" && (
+              {activeTab === "leads" && leadsCount > 0 && (
                 <Badge className="bg-purple-600/10 dark:bg-purple-600/20 text-purple-600 dark:text-purple-400 hover:bg-purple-600/10">
-                  42
+                  {leadsCount}
                 </Badge>
               )}
             </button>
@@ -61,8 +63,12 @@ export default function DashboardPage() {
         </div>
 
         {/* Tab Content */}
-        {activeTab === "posts" && selectedProjectId && <FindPostsTab projectId={selectedProjectId} />}
-        {activeTab === "leads" && selectedProjectId && <FindLeadsTab projectId={selectedProjectId} />}
+        {activeTab === "posts" && selectedProjectId && (
+          <FindPostsTab projectId={selectedProjectId} onCountChange={setPostsCount} />
+        )}
+        {activeTab === "leads" && selectedProjectId && (
+          <FindLeadsTab projectId={selectedProjectId} onCountChange={setLeadsCount} />
+        )}
         {activeTab === "logs" && (
           <div className="flex flex-col items-center justify-center pt-20">
             <p className="text-neutral-500 dark:text-neutral-400 text-lg">

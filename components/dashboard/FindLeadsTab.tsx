@@ -7,9 +7,10 @@ import { getLeads, type Lead } from "@/lib/api/leads";
 
 interface FindLeadsTabProps {
   projectId: string;
+  onCountChange?: (count: number) => void;
 }
 
-export default function FindLeadsTab({ projectId }: FindLeadsTabProps) {
+export default function FindLeadsTab({ projectId, onCountChange }: FindLeadsTabProps) {
   const [leads, setLeads] = useState<Lead[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -36,9 +37,18 @@ export default function FindLeadsTab({ projectId }: FindLeadsTabProps) {
           hasPrevPage: response.pagination.hasPrevPage,
           pageSize: response.pagination.pageSize,
         });
+
+        // Notify parent of total count
+        if (onCountChange) {
+          onCountChange(response.pagination.totalLeads);
+        }
       } catch (err) {
         setError(err instanceof Error ? err.message : "Failed to fetch leads");
         console.error("Error fetching leads:", err);
+        // Reset count on error
+        if (onCountChange) {
+          onCountChange(0);
+        }
       } finally {
         setIsLoading(false);
       }
@@ -47,7 +57,7 @@ export default function FindLeadsTab({ projectId }: FindLeadsTabProps) {
     if (projectId) {
       fetchLeads();
     }
-  }, [projectId, currentPage]);
+  }, [projectId, currentPage, onCountChange]);
 
   const handlePageChange = (page: number) => {
     setCurrentPage(page);

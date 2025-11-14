@@ -7,9 +7,10 @@ import { getPosts, type Post } from "@/lib/api/posts";
 
 interface FindPostsTabProps {
   projectId: string;
+  onCountChange?: (count: number) => void;
 }
 
-export default function FindPostsTab({ projectId }: FindPostsTabProps) {
+export default function FindPostsTab({ projectId, onCountChange }: FindPostsTabProps) {
   const [posts, setPosts] = useState<Post[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -36,9 +37,18 @@ export default function FindPostsTab({ projectId }: FindPostsTabProps) {
           hasPrevPage: response.pagination.hasPrevPage,
           pageSize: response.pagination.pageSize,
         });
+
+        // Notify parent of total count
+        if (onCountChange) {
+          onCountChange(response.pagination.totalPosts);
+        }
       } catch (err) {
         setError(err instanceof Error ? err.message : "Failed to fetch posts");
         console.error("Error fetching posts:", err);
+        // Reset count on error
+        if (onCountChange) {
+          onCountChange(0);
+        }
       } finally {
         setIsLoading(false);
       }
@@ -47,7 +57,7 @@ export default function FindPostsTab({ projectId }: FindPostsTabProps) {
     if (projectId) {
       fetchPosts();
     }
-  }, [projectId, currentPage]);
+  }, [projectId, currentPage, onCountChange]);
 
   const handlePageChange = (page: number) => {
     setCurrentPage(page);
