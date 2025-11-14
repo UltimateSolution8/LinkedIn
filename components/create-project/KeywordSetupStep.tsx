@@ -152,7 +152,7 @@ export default function KeywordSetupStep({
           onClick={onNext}
           className="min-w-[84px] bg-purple-600 hover:bg-purple-700 text-white gap-2"
         >
-          <span>Next: Configure Sources</span>
+          <span>Next</span>
           <ArrowRight className="w-5 h-5" />
         </Button>
       </div>
