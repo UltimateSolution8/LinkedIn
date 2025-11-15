@@ -5,17 +5,28 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { motion } from "framer-motion";
+import { isValidPhoneNumber } from "libphonenumber-js";
 
 const demoSchema = z.object({
   fullName: z.string().min(2, "Full name is required"),
   email: z.string().email("Enter a valid email address"),
+  countryCode: z.string().min(1, "Country code is required"),
   phone: z
     .string()
-    .min(10, "Phone number must be at least 10 digits")
-    .max(15, "Phone number too long"),
+    .min(1, "Phone number is required"),
   industry: z.string().optional(),
   insights: z.string().optional(),
-});
+}).refine(
+  (data) => {
+    // Combine country code and phone number for validation
+    const fullPhoneNumber = `${data.countryCode}${data.phone}`;
+    return isValidPhoneNumber(fullPhoneNumber);
+  },
+  {
+    message: "Invalid phone number for the selected country",
+    path: ["phone"], // This will show the error on the phone field
+  }
+);
 
 type DemoFormValues = z.infer<typeof demoSchema>;
 
@@ -32,11 +43,11 @@ const DemoSubmitPage = () => {
   const onSubmit = (data : DemoFormValues) => {
     const subject = encodeURIComponent("New Demo Request from RIXLY");
     const body = encodeURIComponent(
-      `Full Name: ${data.fullName}\nEmail: ${data.email}\nPhone: ${data.phone}\nIndustry: ${data.industry || "N/A"}\nAdditional Insights: ${data.insights || "N/A"}`
+      `Full Name: ${data.fullName}\nEmail: ${data.email}\nPhone: ${data.countryCode} ${data.phone}\nIndustry: ${data.industry || "N/A"}\nAdditional Insights: ${data.insights || "N/A"}`
     )
     // eslint-disable-next-line react-hooks/immutability
     window.location.href = `mailto:rixlyleads@gmail.com?subject=${subject}&body=${body}`;
-    
+
   };
 
 
@@ -97,12 +108,42 @@ const DemoSubmitPage = () => {
             <label className="block text-sm font-medium text-gray-700 mb-1">
               Phone Number
             </label>
-            <input
-              type="tel"
-              {...register("phone")}
-              placeholder="Enter your phone number"
-              className="w-full border rounded-lg px-3 py-2 text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500"
-            />
+            <div className="flex gap-2">
+              <select
+                {...register("countryCode")}
+                className="w-32 border rounded-lg px-3 py-2 text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              >
+                <option value="">Code</option>
+                <option value="+1">+1 (US/CA)</option>
+                <option value="+44">+44 (UK)</option>
+                <option value="+91">+91 (IN)</option>
+                <option value="+61">+61 (AU)</option>
+                <option value="+81">+81 (JP)</option>
+                <option value="+86">+86 (CN)</option>
+                <option value="+49">+49 (DE)</option>
+                <option value="+33">+33 (FR)</option>
+                <option value="+39">+39 (IT)</option>
+                <option value="+34">+34 (ES)</option>
+                <option value="+7">+7 (RU)</option>
+                <option value="+55">+55 (BR)</option>
+                <option value="+27">+27 (ZA)</option>
+                <option value="+52">+52 (MX)</option>
+                <option value="+82">+82 (KR)</option>
+                <option value="+65">+65 (SG)</option>
+                <option value="+971">+971 (AE)</option>
+              </select>
+              <input
+                type="tel"
+                {...register("phone")}
+                placeholder="Enter your phone number"
+                className="flex-1 border rounded-lg px-3 py-2 text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+            </div>
+            {errors.countryCode && (
+              <p className="text-sm text-red-500 mt-1">
+                {errors.countryCode.message}
+              </p>
+            )}
             {errors.phone && (
               <p className="text-sm text-red-500 mt-1">
                 {errors.phone.message}
