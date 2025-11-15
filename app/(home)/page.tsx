@@ -1,9 +1,84 @@
 import Link from 'next/link';
-import { ArrowRight, MessageSquare, Search, BarChart3, Sparkles, TrendingUp, Filter, Eye } from 'lucide-react';
+import { ArrowRight, MessageSquare, Search, BarChart3, Sparkles, TrendingUp, Filter, Eye, Quote } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  CarouselNext,
+  CarouselPrevious,
+} from "@/components/ui/carousel";
 import Navbar from '@/components/Navbar';
+
+interface Review {
+  title: string;
+  description: string;
+  authors: {
+    name: string;
+    company: string;
+  };
+}
+
+const reviews: Review[] = [
+  {
+    title: "Finally a lead tool that actually works",
+    description: "I started using Rixly about 3 weeks ago for my SaaS business. It found leads in subreddits we hadn’t even considered targeting. We got three good discovery calls within the first week. What I like most: we didn’t have to manually trawl through Reddit posts. Rixly did the heavy-lifting. Minor gripe: setting up keywords required some experimentation, but once it was tuned, it ran smoothly.",
+    authors: {
+      name: "Ankit Mehra",
+      company: "TechNova SaaS Solutions, Bengaluru"
+    }
+  },
+  {
+    title: "Saves me hours every day",
+    description: "Before Rixly, I was spending at least 2-3 hours daily scanning Reddit and DMs. With Rixly’s alerts and reply suggestions, I cut that down to ~30 minutes. More importantly, the leads are more qualified — people already discussing pain points. I’m seeing a better quality pipeline.",
+    authors: {
+      name: "Priya Shah",
+      company: "DigitalOrbit Media, Mumbai"
+    }
+  },
+  {
+    title: "Good ROI, but moderation needed",
+    description: "After half a month we got five new leads from Reddit via Rixly, and two converted into clients. A small trade-off for the time saved.",
+    authors: {
+      name: "Rohit Sinha",
+      company: "Adzoid Marketing, Delhi NCR"
+    }
+  },
+  {
+    title: "Not magic, but a smart assistant",
+    description: "It is a smart assistant: finds relevant conversations, suggests replies, alerts you. If you use it properly, it really moves the needle.",
+    authors: {
+      name: "Sneha Verma",
+      company: "GrowthAura Consulting, Pune"
+    }
+  },
+  {
+    title: "Great for niche markets",
+    description: "We sell consulting services in a very specific niche (marketing for nonprofits). Most traditional lead-gen tools struggle. Rixly helped us find Reddit threads where people in nonprofits were discussing “help me with digital strategy” and similar. That led to a conversation which turned into engagements. That kind of relevance is gold.",
+    authors: {
+      name: "Rajiv Menon",
+      company: "CauseCatalyst Agency, Chennai"
+    }
+  },
+  {
+    title: "Room for improvement",
+    description: "Overall, I’m pleased. But I wish Rixly had a bit more flexibility in filtering by subreddit-language or region (we target Asia APAC). Also, my Reddit account got flagged once for comment volume — the tool gave suggestions, but I think I posted too many too fast. So: use judiciously, follow Reddit rules. But excellent value otherwise.",
+    authors: {
+      name: "Aditi Chatterjee",
+      company: "BrandNectar Studio, Kolkata"
+    }
+  },
+  {
+    title: "Unexpected but real results",
+    description: "We picked Rixly as an experiment (we weren’t sure Reddit would be worthwhile). To our surprise, we got a lead this week directly via a Reddit conversation it flagged. That lead turned into a paying client within days. Honestly didn’t expect it, but I’m now steadily building Reddit into our acquisition strategy. Rixly made it feasible.",
+    authors: {
+      name: "Vikram Bansal",
+      company: "TechSpire Innovations, Hyderabad"
+    }
+  }
+];
 
 export default function LandingPage() {
   return (
@@ -324,6 +399,71 @@ export default function LandingPage() {
               </CardContent>
             </Card>
           </div>
+        </div>
+      </section>
+
+      {/* Testimonials Section */}
+      <section className="py-24 px-4 sm:px-6 lg:px-8 bg-gradient-to-br from-purple-50 via-white to-purple-50">
+        <div className="max-w-7xl mx-auto">
+          <div className="text-center mb-16">
+            <div className="inline-flex items-center space-x-2 bg-purple-100 text-purple-700 px-4 py-2 rounded-full text-sm font-medium mb-6">
+              <Sparkles className="w-4 h-4" />
+              <span>Customer Success Stories</span>
+            </div>
+            <h2 className="text-4xl sm:text-5xl font-bold text-gray-900 mb-4">
+              Loved by marketing teams worldwide
+            </h2>
+            <p className="text-xl text-gray-600 max-w-2xl mx-auto">
+              See how companies are using Rixly to discover leads and grow their business on Reddit
+            </p>
+          </div>
+
+          <Carousel
+            opts={{
+              align: "start",
+              loop: true,
+            }}
+            className="w-full max-w-6xl mx-auto"
+          >
+            <CarouselContent>
+              {reviews.map((review, index) => {
+                const initials = review.authors.name
+                  .split(' ')
+                  .map(n => n[0])
+                  .join('')
+                  .toUpperCase();
+
+                return (
+                  <CarouselItem key={index} className="md:basis-1/2 lg:basis-1/3">
+                    <Card className="bg-white border-purple-100 shadow-lg hover:shadow-xl transition-shadow h-full">
+                      <CardContent className="p-8 flex flex-col h-full">
+                        <Quote className="w-10 h-10 text-purple-600 mb-4" />
+                        <h3 className="text-lg font-semibold text-gray-900 mb-3">
+                          {review.title}
+                        </h3>
+                        <p className="text-gray-700 mb-6 flex-grow leading-relaxed">
+                          "{review.description}"
+                        </p>
+                        <div className="flex items-center gap-3">
+                          <div className="w-12 h-12 bg-gradient-to-br from-purple-600 to-purple-700 rounded-full flex items-center justify-center text-white font-semibold text-sm">
+                            {initials}
+                          </div>
+                          <div>
+                            <p className="font-semibold text-gray-900">{review.authors.name}</p>
+                            <p className="text-sm text-gray-500">
+                              {review.authors.company}
+                            </p>
+                          </div>
+                        </div>
+                      </CardContent>
+                    </Card>
+                  </CarouselItem>
+                );
+              })}
+            </CarouselContent>
+            <CarouselPrevious className="hidden md:flex" />
+            <CarouselNext className="hidden md:flex" />
+          </Carousel>
         </div>
       </section>
 
