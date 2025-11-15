@@ -37,7 +37,7 @@ export default function LeadCard({
               >
                 {username}
               </Link>
-              <ExternalLink className="w-4 h-4 text-neutral-500 dark:text-neutral-400 -rotate-45" />
+              <ExternalLink className="w-4 h-4 text-neutral-500 dark:text-neutral-400 " />
             </div>
           </div>
           <div className="flex items-center gap-2">

@@ -49,16 +49,6 @@ export default function DashboardPage() {
                 </Badge>
               )}
             </button>
-            <button
-              onClick={() => setActiveTab("logs")}
-              className={`flex items-center gap-2 border-b-[3px] pb-[13px] pt-4 transition-colors ${
-                activeTab === "logs"
-                  ? "border-b-purple-600 text-purple-600 dark:text-purple-400"
-                  : "border-b-transparent text-neutral-500 dark:text-neutral-400 hover:text-neutral-950 dark:hover:text-white"
-              }`}
-            >
-              <p className="text-sm font-bold leading-normal tracking-[0.015em]">Logs</p>
-            </button>
           </div>
         </div>
 
@@ -68,13 +58,6 @@ export default function DashboardPage() {
         )}
         {activeTab === "leads" && selectedProjectId && (
           <FindLeadsTab projectId={selectedProjectId} onCountChange={setLeadsCount} />
-        )}
-        {activeTab === "logs" && (
-          <div className="flex flex-col items-center justify-center pt-20">
-            <p className="text-neutral-500 dark:text-neutral-400 text-lg">
-              Logs tab coming soon...
-            </p>
-          </div>
         )}
       </div>
 
