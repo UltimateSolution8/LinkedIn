@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { X } from "lucide-react";
+import { X, Sparkles, Loader2 } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
@@ -29,6 +29,8 @@ export default function SemanticQueriesStep({
   error = null,
 }: SemanticQueriesStepProps) {
   const [queryInput, setQueryInput] = useState("");
+  const [isGenerating, setIsGenerating] = useState(false);
+  const [generationError, setGenerationError] = useState<string | null>(null);
 
   const handleAddQuery = () => {
     if (queryInput.trim()) {
@@ -77,24 +79,33 @@ export default function SemanticQueriesStep({
       </div>
 
       {/* Input Section */}
-      <div className="flex flex-col gap-4 sm:flex-row sm:items-end">
-        {/* Text Field */}
-        <div className="flex flex-col flex-1">
+      <div className="flex flex-col gap-4">
+        {/* Text Field + Add Button */}
+        <div className="flex flex-col gap-2">
           <Label
             htmlFor="semantic-query"
-            className="text-sm font-medium leading-normal pb-2 text-neutral-950 dark:text-white"
+            className="text-sm font-medium leading-normal text-neutral-950 dark:text-white"
           >
             Add a semantic query
           </Label>
-          <Input
-            id="semantic-query"
-            type="text"
-            placeholder="e.g., How can I automate social media posting?"
-            value={queryInput}
-            onChange={(e) => setQueryInput(e.target.value)}
-            onKeyPress={handleKeyPress}
-            className="border-neutral-300 dark:border-neutral-700 bg-neutral-100 dark:bg-neutral-900 focus-visible:ring-purple-600/50"
-          />
+          <div className="flex items-center gap-2">
+            <Input
+              id="semantic-query"
+              type="text"
+              placeholder="e.g., How can I automate social media posting?"
+              value={queryInput}
+              onChange={(e) => setQueryInput(e.target.value)}
+              onKeyPress={handleKeyPress}
+              className="border-neutral-300 dark:border-neutral-700 bg-neutral-100 dark:bg-neutral-900 focus-visible:ring-purple-600/50"
+            />
+            <Button
+              type="button"
+              onClick={handleAddQuery}
+              className="flex-shrink-0 bg-purple-600 hover:bg-purple-700 text-white px-6"
+            >
+              Add
+            </Button>
+          </div>
         </div>
 
         {/* Generate AI Button */}
@@ -102,40 +113,49 @@ export default function SemanticQueriesStep({
           type="button"
           variant="outline"
           onClick={handleAIGenerate}
-          className="h-12 px-5 border-neutral-300 dark:border-neutral-700 hover:bg-neutral-200 dark:hover:bg-neutral-800 transition-colors"
+          disabled={isGenerating}
+          className="w-full border-neutral-300 dark:border-neutral-700 hover:bg-neutral-100 dark:hover:bg-neutral-800 gap-2"
         >
-          Generate with AI
+          {isGenerating ? (
+            <>
+              <Loader2 className="w-5 h-5 text-purple-600 animate-spin" />
+              <span>Generating Queries...</span>
+            </>
+          ) : (
+            <>
+              <Sparkles className="w-5 h-5 text-purple-600" />
+              <span>Generate with AI</span>
+            </>
+          )}
         </Button>
+        {generationError && (
+          <p className="text-sm text-red-500">{generationError}</p>
+        )}
       </div>
 
-      {/* Query Chips Container */}
-      <div className="flex flex-col gap-4">
-        <div className="w-full border-t border-neutral-200 dark:border-neutral-800"></div>
-
-        {/* Chips */}
-        <div className="flex gap-3 flex-wrap">
-          {queries.length === 0 ? (
-            <p className="text-neutral-500 dark:text-neutral-400 text-sm text-center w-full py-4">
-              No queries added yet. Add queries manually or use AI generation.
-            </p>
-          ) : (
-            queries.map((query) => (
-              <div
-                key={query.id}
-                className="flex h-9 shrink-0 items-center justify-center gap-x-2 rounded-full bg-purple-600/10 dark:bg-purple-600/20 pl-4 pr-2.5 text-purple-700 dark:text-purple-300"
+      {/* Query Display Container */}
+      <div className="flex flex-col gap-3 rounded-lg bg-neutral-100 dark:bg-neutral-900/50 p-4 min-h-[12rem]">
+        {queries.length === 0 ? (
+          <p className="text-neutral-500 dark:text-neutral-400 text-sm">
+            No queries added yet. Add queries manually or use AI generation.
+          </p>
+        ) : (
+          queries.map((query) => (
+            <div
+              key={query.id}
+              className="flex items-center justify-between gap-3 rounded-lg bg-purple-600/10 dark:bg-purple-600/20 border border-purple-600/20 dark:border-purple-600/30 px-4 py-3 text-purple-700 dark:text-purple-300"
+            >
+              <p className="text-sm font-medium leading-normal flex-1">{query.text}</p>
+              <button
+                type="button"
+                onClick={() => handleRemoveQuery(query.id)}
+                className="flex items-center justify-center w-6 h-6 rounded-full hover:bg-purple-600/20 dark:hover:bg-purple-600/40 transition-colors flex-shrink-0"
               >
-                <p className="text-sm font-medium leading-normal">{query.text}</p>
-                <button
-                  type="button"
-                  onClick={() => handleRemoveQuery(query.id)}
-                  className="flex items-center justify-center w-5 h-5 rounded-full hover:bg-purple-600/20 dark:hover:bg-purple-600/40 transition-colors"
-                >
-                  <X className="w-4 h-4" />
-                </button>
-              </div>
-            ))
-          )}
-        </div>
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+          ))
+        )}
       </div>
 
       {/* Error Message */}
