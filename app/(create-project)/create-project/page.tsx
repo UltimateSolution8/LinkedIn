@@ -2,6 +2,8 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { X } from "lucide-react";
+import { Button } from "@/components/ui/button";
 import ProjectInfoStep, {
   ProjectInfoData,
 } from "@/components/create-project/ProjectInfoStep";
@@ -118,7 +120,17 @@ export default function CreateProjectPage() {
   };
 
   return (
-    <main className="flex flex-1 justify-center py-8 sm:py-12 md:py-16 px-4">
+    <main className="flex flex-1 justify-center py-8 sm:py-12 md:py-16 px-4 relative">
+      {/* Close Button - Fixed Position */}
+      <Button
+        variant="ghost"
+        size="icon"
+        onClick={() => router.push("/dashboard")}
+        className="absolute top-4 right-4 sm:top-8 sm:right-8 bg-neutral-100 dark:bg-neutral-900 hover:bg-neutral-200 dark:hover:bg-neutral-800 z-10"
+      >
+        <X className="w-5 h-5" />
+      </Button>
+
       <div className="flex flex-col w-full max-w-2xl gap-6">
         {/* Progress Indicator */}
         <div className="flex flex-col gap-3">
