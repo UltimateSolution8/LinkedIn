@@ -11,6 +11,7 @@ import KeywordSetupStep, { Keyword } from "@/components/create-project/KeywordSe
 import SemanticQueriesStep, {
   SemanticQuery,
 } from "@/components/create-project/SemanticQueriesStep";
+import PreviewProjectStep from "@/components/create-project/PreviewProjectStep";
 import { createProject } from "@/lib/api/projects";
 
 export default function CreateProjectPage() {
@@ -22,7 +23,7 @@ export default function CreateProjectPage() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const totalSteps = 3; // Changed from 4 to 3
+  const totalSteps = 4;
   const progressPercentage = (currentStep / totalSteps) * 100;
 
   const handleStep1Next = (data: ProjectInfoData) => {
@@ -39,7 +40,16 @@ export default function CreateProjectPage() {
     setCurrentStep(1);
   };
 
-  const handleStep3Next = async () => {
+  const handleStep3Next = () => {
+    console.log("Semantic Queries:", semanticQueries);
+    setCurrentStep(4);
+  };
+
+  const handleStep3Back = () => {
+    setCurrentStep(2);
+  };
+
+  const handleStep4Next = async () => {
     // Validate required data
     if (!projectInfo) {
       setError("Project information is missing. Please go back and complete all steps.");
@@ -74,8 +84,8 @@ export default function CreateProjectPage() {
     }
   };
 
-  const handleStep3Back = () => {
-    setCurrentStep(2);
+  const handleStep4Back = () => {
+    setCurrentStep(3);
   };
 
   const handleCancel = () => {
@@ -90,6 +100,8 @@ export default function CreateProjectPage() {
         return "Set Up Your Keywords";
       case 3:
         return ""; // No title for step 3, it has its own heading
+      case 4:
+        return ""; // No title for step 4, it has its own heading
       default:
         return "Create a New Project";
     }
@@ -103,6 +115,8 @@ export default function CreateProjectPage() {
         return "Enter keywords or phrases Rixly should monitor on Reddit. Use our AI to discover related terms.";
       case 3:
         return ""; // No description for step 3
+      case 4:
+        return ""; // No description for step 4
       default:
         return "";
     }
@@ -114,6 +128,8 @@ export default function CreateProjectPage() {
         return "Keyword Setup";
       case 3:
         return "Semantic Queries";
+      case 4:
+        return "Preview";
       default:
         return "";
     }
@@ -153,7 +169,7 @@ export default function CreateProjectPage() {
         </div>
 
         {/* Header - Only show for steps 1 and 2 */}
-        {currentStep !== 3 && (
+        {currentStep !== 3 && currentStep !== 4 && (
           <div className="flex flex-col gap-2 px-4">
             <p className="text-neutral-900 dark:text-white text-4xl font-bold tracking-tighter">
               {getStepTitle()}
@@ -189,9 +205,23 @@ export default function CreateProjectPage() {
             onBack={handleStep3Back}
             queries={semanticQueries}
             onQueriesChange={setSemanticQueries}
+            productDescription={projectInfo?.projectDescription || ""}
+          />
+        )}
+
+        {currentStep === 4 && projectInfo && (
+          <PreviewProjectStep
+            onNext={handleStep4Next}
+            onBack={handleStep4Back}
+            projectData={{
+              projectName: projectInfo.projectName,
+              companyWebsite: projectInfo.companyWebsite,
+              projectDescription: projectInfo.projectDescription,
+              keywords: keywords.map((k) => k.text),
+              semanticQueries: semanticQueries.map((q) => q.text),
+            }}
             isSubmitting={isSubmitting}
             error={error}
-            productDescription={projectInfo?.projectDescription || ""}
           />
         )}
       </div>
