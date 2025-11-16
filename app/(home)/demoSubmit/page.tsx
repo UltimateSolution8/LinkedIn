@@ -1,11 +1,19 @@
 "use client";
 
-import React from "react";
+import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { motion } from "framer-motion";
 import { isValidPhoneNumber } from "libphonenumber-js";
+import { getCountriesWithDialCodes, type CountryOption } from "@/lib/countries";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 const demoSchema = z.object({
   fullName: z.string().min(2, "Full name is required"),
@@ -31,10 +39,14 @@ const demoSchema = z.object({
 type DemoFormValues = z.infer<typeof demoSchema>;
 
 const DemoSubmitPage = () => {
+  const [countries] = useState<CountryOption[]>(() => getCountriesWithDialCodes());
+  const [selectedCountryCode, setSelectedCountryCode] = useState<string>("");
+
   const {
     register,
     handleSubmit,
     reset,
+    setValue,
     formState: { errors, isSubmitting },
   } = useForm<DemoFormValues>({
     resolver: zodResolver(demoSchema),
@@ -109,29 +121,32 @@ const DemoSubmitPage = () => {
               Phone Number
             </label>
             <div className="flex gap-2">
-              <select
-                {...register("countryCode")}
-                className="w-32 border rounded-lg px-3 py-2 text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              <Select
+                name="countryCode"
+                value={selectedCountryCode}
+                onValueChange={(value) => {
+                  const dialCode = value.split('_')[0];
+                  setSelectedCountryCode(value);
+                  setValue("countryCode", dialCode, { shouldValidate: true });
+                }}
               >
-                <option value="">Code</option>
-                <option value="+1">+1 (US/CA)</option>
-                <option value="+44">+44 (UK)</option>
-                <option value="+91">+91 (IN)</option>
-                <option value="+61">+61 (AU)</option>
-                <option value="+81">+81 (JP)</option>
-                <option value="+86">+86 (CN)</option>
-                <option value="+49">+49 (DE)</option>
-                <option value="+33">+33 (FR)</option>
-                <option value="+39">+39 (IT)</option>
-                <option value="+34">+34 (ES)</option>
-                <option value="+7">+7 (RU)</option>
-                <option value="+55">+55 (BR)</option>
-                <option value="+27">+27 (ZA)</option>
-                <option value="+52">+52 (MX)</option>
-                <option value="+82">+82 (KR)</option>
-                <option value="+65">+65 (SG)</option>
-                <option value="+971">+971 (AE)</option>
-              </select>
+                <SelectTrigger className="w-[180px]">
+                  <SelectValue placeholder="Country code">
+                    {selectedCountryCode && (
+                      <div className="flex items-center gap-2">
+                        <span>{selectedCountryCode.split('_')[0]}</span>
+                      </div>
+                    )}
+                  </SelectValue>
+                </SelectTrigger>
+                <SelectContent className="max-h-[300px]">
+                  {countries.map((country) => (
+                    <SelectItem key={country.id} value={`${country.dialCode}_${country.alpha2}`}>
+                      {country.dialCode} - {country.name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
               <input
                 type="tel"
                 {...register("phone")}
