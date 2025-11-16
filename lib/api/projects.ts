@@ -60,6 +60,19 @@ export interface GenerateKeywordsResponse {
   data: GenerateKeywordsResponseData;
 }
 
+export interface GenerateSemanticQueriesRequest {
+  productDescription: string;
+}
+
+export interface GenerateSemanticQueriesResponseData {
+  queries: string[];
+  count: number;
+}
+
+export interface GenerateSemanticQueriesResponse {
+  data: GenerateSemanticQueriesResponseData;
+}
+
 export async function getProjects(): Promise<Project[]> {
   const accessToken = localStorage.getItem("accessToken");
 
@@ -154,6 +167,31 @@ export async function generateKeywords(data: GenerateKeywordsRequest): Promise<G
 
   if (!response.ok) {
     throw new Error(responseData.message || "Failed to generate keywords");
+  }
+
+  return responseData;
+}
+
+export async function generateSemanticQueries(data: GenerateSemanticQueriesRequest): Promise<GenerateSemanticQueriesResponse> {
+  const accessToken = localStorage.getItem("accessToken");
+
+  if (!accessToken) {
+    throw new Error("No access token found. Please login.");
+  }
+
+  const response = await fetch(`${RIXLY_API_BASE_URL}/api/ai/generate-semantic-queries`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${accessToken}`,
+    },
+    body: JSON.stringify(data),
+  });
+
+  const responseData = await response.json();
+
+  if (!response.ok) {
+    throw new Error(responseData.message || "Failed to generate semantic queries");
   }
 
   return responseData;

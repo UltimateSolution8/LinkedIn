@@ -5,6 +5,7 @@ import { X, Sparkles, Loader2 } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
+import { generateSemanticQueries } from "@/lib/api/projects";
 
 export interface SemanticQuery {
   id: string;
@@ -18,6 +19,7 @@ interface SemanticQueriesStepProps {
   onQueriesChange: (queries: SemanticQuery[]) => void;
   isSubmitting?: boolean;
   error?: string | null;
+  productDescription: string;
 }
 
 export default function SemanticQueriesStep({
@@ -27,6 +29,7 @@ export default function SemanticQueriesStep({
   onQueriesChange,
   isSubmitting = false,
   error = null,
+  productDescription,
 }: SemanticQueriesStepProps) {
   const [queryInput, setQueryInput] = useState("");
   const [isGenerating, setIsGenerating] = useState(false);
@@ -47,15 +50,34 @@ export default function SemanticQueriesStep({
     onQueriesChange(queries.filter((q) => q.id !== id));
   };
 
-  const handleAIGenerate = () => {
-    // TODO: Implement AI query generation
-    // For now, add some sample queries
-    const aiQueries: SemanticQuery[] = [
-      { id: Date.now().toString() + "-1", text: "What is the best tool for lead generation?" },
-      { id: Date.now().toString() + "-2", text: "How to find clients on Reddit?" },
-      { id: Date.now().toString() + "-3", text: "Alternative to manual social media monitoring" },
-    ];
-    onQueriesChange([...queries, ...aiQueries]);
+  const handleAIGenerate = async () => {
+    if (!productDescription) {
+      setGenerationError("Product description is required to generate queries");
+      return;
+    }
+
+    setIsGenerating(true);
+    setGenerationError(null);
+
+    try {
+      const response = await generateSemanticQueries({
+        productDescription: productDescription,
+      });
+
+      if (response.data.queries && response.data.queries.length > 0) {
+        const aiQueries: SemanticQuery[] = response.data.queries.map((query, index) => ({
+          id: Date.now().toString() + `-${index}`,
+          text: query,
+        }));
+        onQueriesChange([...queries, ...aiQueries]);
+      }
+    } catch (error) {
+      setGenerationError(
+        error instanceof Error ? error.message : "Failed to generate semantic queries"
+      );
+    } finally {
+      setIsGenerating(false);
+    }
   };
 
   const handleKeyPress = (e: React.KeyboardEvent) => {

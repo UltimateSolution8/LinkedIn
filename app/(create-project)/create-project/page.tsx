@@ -179,6 +179,7 @@ export default function CreateProjectPage() {
             onQueriesChange={setSemanticQueries}
             isSubmitting={isSubmitting}
             error={error}
+            productDescription={projectInfo?.projectDescription || ""}
           />
         )}
       </div>
