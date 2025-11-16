@@ -34,6 +34,32 @@ export interface CreateProjectResponse {
   project: Project;
 }
 
+export interface GenerateDescriptionRequest {
+  applicationUrl: string;
+}
+
+export interface GenerateDescriptionResponseData {
+  applicationUrl: string;
+  description: string;
+}
+
+export interface GenerateDescriptionResponse {
+  data: GenerateDescriptionResponseData;
+}
+
+export interface GenerateKeywordsRequest {
+  productDescription: string;
+}
+
+export interface GenerateKeywordsResponseData {
+  keywords: string[];
+  count: number;
+}
+
+export interface GenerateKeywordsResponse {
+  data: GenerateKeywordsResponseData;
+}
+
 export async function getProjects(): Promise<Project[]> {
   const accessToken = localStorage.getItem("accessToken");
 
@@ -78,6 +104,56 @@ export async function createProject(data: CreateProjectRequest): Promise<CreateP
 
   if (!response.ok) {
     throw new Error(responseData.message || "Failed to create project");
+  }
+
+  return responseData;
+}
+
+export async function generateDescription(data: GenerateDescriptionRequest): Promise<GenerateDescriptionResponse> {
+  const accessToken = localStorage.getItem("accessToken");
+
+  if (!accessToken) {
+    throw new Error("No access token found. Please login.");
+  }
+
+  const response = await fetch(`${RIXLY_API_BASE_URL}/api/ai/generate-description`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${accessToken}`,
+    },
+    body: JSON.stringify(data),
+  });
+
+  const responseData = await response.json();
+
+  if (!response.ok) {
+    throw new Error(responseData.message || "Failed to generate description");
+  }
+
+  return responseData;
+}
+
+export async function generateKeywords(data: GenerateKeywordsRequest): Promise<GenerateKeywordsResponse> {
+  const accessToken = localStorage.getItem("accessToken");
+
+  if (!accessToken) {
+    throw new Error("No access token found. Please login.");
+  }
+
+  const response = await fetch(`${RIXLY_API_BASE_URL}/api/ai/generate-keywords`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${accessToken}`,
+    },
+    body: JSON.stringify(data),
+  });
+
+  const responseData = await response.json();
+
+  if (!response.ok) {
+    throw new Error(responseData.message || "Failed to generate keywords");
   }
 
   return responseData;

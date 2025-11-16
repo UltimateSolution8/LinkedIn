@@ -15,11 +15,7 @@ export default function CreateProjectPage() {
   const router = useRouter();
   const [currentStep, setCurrentStep] = useState(1);
   const [projectInfo, setProjectInfo] = useState<ProjectInfoData | null>(null);
-  const [keywords, setKeywords] = useState<Keyword[]>([
-    { id: "1", text: '"UI design tools"', isAIGenerated: false },
-    { id: "2", text: "Figma", isAIGenerated: false },
-    { id: "3", text: "Webflow vs Framer", isAIGenerated: false },
-  ]);
+  const [keywords, setKeywords] = useState<Keyword[]>([  ]);
   const [semanticQueries, setSemanticQueries] = useState<SemanticQuery[]>([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -171,6 +167,7 @@ export default function CreateProjectPage() {
             onBack={handleStep2Back}
             keywords={keywords}
             onKeywordsChange={setKeywords}
+            productDescription={projectInfo?.projectDescription || ""}
           />
         )}
 

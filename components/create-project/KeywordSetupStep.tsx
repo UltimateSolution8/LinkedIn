@@ -1,9 +1,10 @@
 "use client";
 
 import { useState } from "react";
-import { Sparkles, X, ArrowRight } from "lucide-react";
+import { Sparkles, X, ArrowRight, Loader2 } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import { generateKeywords } from "@/lib/api/projects";
 
 export interface Keyword {
   id: string;
@@ -16,6 +17,7 @@ interface KeywordSetupStepProps {
   onBack: () => void;
   keywords: Keyword[];
   onKeywordsChange: (keywords: Keyword[]) => void;
+  productDescription: string;
 }
 
 export default function KeywordSetupStep({
@@ -23,8 +25,11 @@ export default function KeywordSetupStep({
   onBack,
   keywords,
   onKeywordsChange,
+  productDescription,
 }: KeywordSetupStepProps) {
   const [keywordInput, setKeywordInput] = useState("");
+  const [isGenerating, setIsGenerating] = useState(false);
+  const [generationError, setGenerationError] = useState<string | null>(null);
 
   const handleAddKeyword = () => {
     if (keywordInput.trim()) {
@@ -42,16 +47,35 @@ export default function KeywordSetupStep({
     onKeywordsChange(keywords.filter((k) => k.id !== id));
   };
 
-  const handleAIGenerate = () => {
-    // TODO: Implement AI keyword generation
-    // For now, add some sample AI-generated keywords
-    const aiKeywords: Keyword[] = [
-      { id: Date.now().toString() + "-1", text: "Adobe XD", isAIGenerated: true },
-      { id: Date.now().toString() + "-2", text: "Sketch App", isAIGenerated: true },
-      { id: Date.now().toString() + "-3", text: "UX design trends", isAIGenerated: true },
-      { id: Date.now().toString() + "-4", text: "Prototyping tools", isAIGenerated: true },
-    ];
-    onKeywordsChange([...keywords, ...aiKeywords]);
+  const handleAIGenerate = async () => {
+    if (!productDescription) {
+      setGenerationError("Product description is required to generate keywords");
+      return;
+    }
+
+    setIsGenerating(true);
+    setGenerationError(null);
+
+    try {
+      const response = await generateKeywords({
+        productDescription: productDescription,
+      });
+
+      if (response.data.keywords && response.data.keywords.length > 0) {
+        const aiKeywords: Keyword[] = response.data.keywords.map((keyword, index) => ({
+          id: Date.now().toString() + `-${index}`,
+          text: keyword,
+          isAIGenerated: true,
+        }));
+        onKeywordsChange([...keywords, ...aiKeywords]);
+      }
+    } catch (error) {
+      setGenerationError(
+        error instanceof Error ? error.message : "Failed to generate keywords"
+      );
+    } finally {
+      setIsGenerating(false);
+    }
   };
 
   const handleKeyPress = (e: React.KeyboardEvent) => {
@@ -94,11 +118,24 @@ export default function KeywordSetupStep({
             type="button"
             variant="outline"
             onClick={handleAIGenerate}
+            disabled={isGenerating || !productDescription}
             className="w-full border-neutral-300 dark:border-neutral-700 hover:bg-neutral-100 dark:hover:bg-neutral-800 gap-2"
           >
-            <Sparkles className="w-5 h-5 text-purple-600" />
-            <span>AI Keyword Generator</span>
+            {isGenerating ? (
+              <>
+                <Loader2 className="w-5 h-5 text-purple-600 animate-spin" />
+                <span>Generating Keywords...</span>
+              </>
+            ) : (
+              <>
+                <Sparkles className="w-5 h-5 text-purple-600" />
+                <span>AI Keyword Generator</span>
+              </>
+            )}
           </Button>
+          {generationError && (
+            <p className="text-sm text-red-500">{generationError}</p>
+          )}
         </div>
 
         {/* Keywords Display */}
