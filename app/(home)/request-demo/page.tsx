@@ -27,6 +27,7 @@ const demoSchema = z.object({
     .string()
     .min(1, "Phone number is required"),
   industry: z.string().optional(),
+  otherIndustry: z.string().optional(),
   insights: z.string().optional(),
 }).refine(
   (data) => {
@@ -45,6 +46,7 @@ type DemoFormValues = z.infer<typeof demoSchema>;
 const RequestDemoPage = () => {
   const [countries] = useState<CountryOption[]>(() => getCountriesWithDialCodes());
   const [selectedCountryCode, setSelectedCountryCode] = useState<string>("");
+  const [selectedIndustry, setSelectedIndustry] = useState<string>("");
   const [formspreeState, submitToFormspree] = useFormspree(FORM_ID);
 
   const {
@@ -58,12 +60,17 @@ const RequestDemoPage = () => {
   });
 
   const onSubmit = async (data: DemoFormValues) => {
+    // Determine the industry value - use otherIndustry if "other" was selected
+    const industryValue = data.industry === "other" && data.otherIndustry
+      ? data.otherIndustry
+      : data.industry || "N/A";
+
     // Submit to Formspree
     await submitToFormspree({
       fullName: data.fullName,
       email: data.email,
       phone: `${data.countryCode} ${data.phone}`,
-      industry: data.industry || "N/A",
+      industry: industryValue,
       insights: data.insights || "N/A",
     });
   };
@@ -71,6 +78,7 @@ const RequestDemoPage = () => {
   const handleNewRequest = () => {
     reset();
     setSelectedCountryCode("");
+    setSelectedIndustry("");
     // Reset Formspree state by reloading or using a key prop
     window.location.reload();
   };
@@ -224,16 +232,38 @@ const RequestDemoPage = () => {
             </label>
             <select
               {...register("industry")}
+              onChange={(e) => setSelectedIndustry(e.target.value)}
               className="w-full border rounded-lg px-3 py-2 text-gray-900 focus:outline-none focus:ring-2 focus:ring-purple-500"
             >
               <option value="">Select your industry</option>
-              <option value="retail">Retail</option>
-              <option value="hospitality">Hospitality</option>
-              <option value="healthcare">Healthcare</option>
-              <option value="education">Education</option>
+              <option value="technology">Technology & Software</option>
+              <option value="retail">Retail & E-commerce</option>
+              <option value="hospitality">Hospitality & Tourism</option>
+              <option value="healthcare">Healthcare & Medical</option>
+              <option value="education">Education & Training</option>
+              <option value="finance">Finance & Banking</option>
+              <option value="manufacturing">Manufacturing</option>
+              <option value="real-estate">Real Estate</option>
+              <option value="marketing">Marketing & Advertising</option>
+              <option value="consulting">Consulting & Professional Services</option>
               <option value="other">Other</option>
             </select>
           </div>
+
+          {/* Other Industry - Conditional */}
+          {selectedIndustry === "other" && (
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Please specify your industry (Optional)
+              </label>
+              <input
+                type="text"
+                {...register("otherIndustry")}
+                placeholder="Enter your industry"
+                className="w-full border rounded-lg px-3 py-2 text-gray-900 focus:outline-none focus:ring-2 focus:ring-purple-500"
+              />
+            </div>
+          )}
 
           {/* Additional Insights */}
           <div>
