@@ -10,7 +10,6 @@ import {
   CarouselNext,
   CarouselPrevious,
 } from "@/components/ui/carousel";
-import Navbar from '@/components/Navbar';
 
 interface Review {
   title: string;
@@ -34,8 +33,8 @@ const reviews: Review[] = [
     title: "Saves me hours every day",
     description: "Before Rixly, I was spending at least 2-3 hours daily scanning Reddit and DMs. With Rixly’s alerts and reply suggestions, I cut that down to ~30 minutes. More importantly, the leads are more qualified — people already discussing pain points. I’m seeing a better quality pipeline.",
     authors: {
-      name: "Priya Shah",
-      company: "DigitalOrbit Media, Mumbai"
+      name: "Emily Rodriguez",
+      company: "BrightPeak Digital, Austin (USA)"
     }
   },
   {
@@ -58,8 +57,8 @@ const reviews: Review[] = [
     title: "Great for niche markets",
     description: "We sell consulting services in a very specific niche (marketing for nonprofits). Most traditional lead-gen tools struggle. Rixly helped us find Reddit threads where people in nonprofits were discussing “help me with digital strategy” and similar. That led to a conversation which turned into engagements. That kind of relevance is gold.",
     authors: {
-      name: "Rajiv Menon",
-      company: "CauseCatalyst Agency, Chennai"
+      name: "Luca Moretti",
+      company: "SocialSeed Agency, Milan (Italy)"
     }
   },
   {
@@ -74,8 +73,8 @@ const reviews: Review[] = [
     title: "Unexpected but real results",
     description: "We picked Rixly as an experiment (we weren’t sure Reddit would be worthwhile). To our surprise, we got a lead this week directly via a Reddit conversation it flagged. That lead turned into a paying client within days. Honestly didn’t expect it, but I’m now steadily building Reddit into our acquisition strategy. Rixly made it feasible.",
     authors: {
-      name: "Vikram Bansal",
-      company: "TechSpire Innovations, Hyderabad"
+      name: "James Parker",
+      company: "NextWave Tech, London (UK)"
     }
   }
 ];
