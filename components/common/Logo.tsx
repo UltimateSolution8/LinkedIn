@@ -17,14 +17,14 @@ export default function Logo() {
   };
 
   return (
-    <div className="flex items-center gap-3 text-neutral-900 dark:text-white">
-            <div
-              className="w-8 h-8 bg-gradient-to-br from-purple-600 to-purple-800 rounded-lg flex items-center justify-center cursor-pointer hover:opacity-90 transition-opacity"
-              onClick={() => router.push("/dashboard")}
-            >
-              <Sparkles className="w-5 h-5 text-white" />
-            </div>
-            <span className="text-xl font-bold text-gray-900">RIXLY</span>
-          </div>
+    <div
+      className="flex items-center space-x-2 cursor-pointer group"
+      onClick={handleClick}
+    >
+      <div className="w-8 h-8 bg-gradient-to-br from-purple-600 to-purple-800 rounded-lg flex items-center justify-center group-hover:opacity-90 transition-opacity">
+        <Sparkles className="w-5 h-5 text-white" />
+      </div>
+      <span className="text-xl font-bold text-gray-900 dark:text-white">RIXLY</span>
+    </div>
   );
 }
