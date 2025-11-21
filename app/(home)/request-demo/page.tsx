@@ -9,13 +9,7 @@ import { motion } from "framer-motion";
 import { isValidPhoneNumber } from "libphonenumber-js";
 import { getCountriesWithDialCodes, type CountryOption } from "@/lib/countries";
 import { CheckCircle } from "lucide-react";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+import { SearchableCountrySelect } from "@/components/ui/searchable-country-select";
 
 const FORM_ID = "myzoqkpa";
 
@@ -180,32 +174,16 @@ const RequestDemoPage = () => {
               Phone Number
             </label>
             <div className="flex gap-2">
-              <Select
-                name="countryCode"
+              <SearchableCountrySelect
+                countries={countries}
                 value={selectedCountryCode}
                 onValueChange={(value) => {
                   const dialCode = value.split('_')[0];
                   setSelectedCountryCode(value);
                   setValue("countryCode", dialCode, { shouldValidate: true });
                 }}
-              >
-                <SelectTrigger className="w-[180px]">
-                  <SelectValue placeholder="Country code">
-                    {selectedCountryCode && (
-                      <div className="flex items-center gap-2">
-                        <span>{selectedCountryCode.split('_')[0]}</span>
-                      </div>
-                    )}
-                  </SelectValue>
-                </SelectTrigger>
-                <SelectContent className="max-h-[300px]">
-                  {countries.map((country) => (
-                    <SelectItem key={country.id} value={`${country.dialCode}_${country.alpha2}`}>
-                      {country.dialCode} - {country.name}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+                placeholder="Country code"
+              />
               <input
                 type="tel"
                 {...register("phone")}
