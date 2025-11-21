@@ -5,10 +5,11 @@ import { Badge } from "@/components/ui/badge";
 import MetricsPanel from "@/components/dashboard/MetricsPanel";
 import FindPostsTab from "@/components/dashboard/FindPostsTab";
 import FindLeadsTab from "@/components/dashboard/FindLeadsTab";
+import SettingsTab from "@/components/dashboard/SettingsTab";
 import { useProject } from "@/contexts/ProjectContext";
 
 export default function DashboardPage() {
-  const [activeTab, setActiveTab] = useState<"posts" | "leads" | "logs">("posts");
+  const [activeTab, setActiveTab] = useState<"posts" | "leads" | "settings">("posts");
   const { selectedProjectId } = useProject();
   const [postsCount, setPostsCount] = useState(0);
   const [leadsCount, setLeadsCount] = useState(0);
@@ -49,6 +50,16 @@ export default function DashboardPage() {
                 </Badge>
               )}
             </button>
+            <button
+              onClick={() => setActiveTab("settings")}
+              className={`flex items-center gap-2 border-b-[3px] pb-[13px] pt-4 transition-colors ${
+                activeTab === "settings"
+                  ? "border-b-purple-600 text-purple-600 dark:text-purple-400"
+                  : "border-b-transparent text-neutral-500 dark:text-neutral-400 hover:text-neutral-950 dark:hover:text-white"
+              }`}
+            >
+              <p className="text-sm font-bold leading-normal tracking-[0.015em]">Settings</p>
+            </button>
           </div>
         </div>
 
@@ -58,6 +69,9 @@ export default function DashboardPage() {
         )}
         {activeTab === "leads" && selectedProjectId && (
           <FindLeadsTab projectId={selectedProjectId} onCountChange={setLeadsCount} />
+        )}
+        {activeTab === "settings" && selectedProjectId && (
+          <SettingsTab projectId={selectedProjectId} />
         )}
       </div>
 
