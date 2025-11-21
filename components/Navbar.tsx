@@ -11,11 +11,11 @@ const Navbar = () => {
           <div className="hidden md:flex items-center space-x-8">
             <a href="#features" className="text-gray-600 hover:text-gray-900 transition">Features</a>
             {/* <a href="#dashboard" className="text-gray-600 hover:text-gray-900 transition">Dashboard</a> */}
-            <Link href={`/demoSubmit`}>
+            <Link href={`/request-demo`}>
               <Button variant="outline" className="border-purple-600 text-purple-600 hover:bg-purple-50">
                 Request Demo
               </Button></Link>
-            <Link href={`/demoSubmit`}>
+            <Link href={`/request-demo`}>
               <Button className="bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 text-white">
                 Get Started
               </Button>
