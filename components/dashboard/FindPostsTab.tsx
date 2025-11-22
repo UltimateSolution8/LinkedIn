@@ -96,7 +96,7 @@ export default function FindPostsTab({ projectId, onCountChange }: FindPostsTabP
     return (
       <div className="flex flex-col items-center justify-center pt-20">
         <p className="text-neutral-500 dark:text-neutral-400 text-lg">
-          No posts found. Check back later for new opportunities!
+         We’re digging through Reddit to fetch the right posts. It’ll take a short while. we’ll let you know once the results are in
         </p>
       </div>
     );

@@ -85,7 +85,7 @@ export default function FindLeadsTab({ projectId, onCountChange }: FindLeadsTabP
     return (
       <div className="flex flex-col items-center justify-center pt-20">
         <p className="text-neutral-500 dark:text-neutral-400 text-lg">
-          No leads found yet. We will let you know once we found your potential customers!
+          Hang tight! We’re scanning Reddit to uncover potential leads. We’ll let you know as soon as the results are in.
         </p>
       </div>
     );
