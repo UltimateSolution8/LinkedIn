@@ -1,41 +1,15 @@
 "use client";
 
-import { useEffect, useState } from "react";
 import { Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { useRouter } from "next/navigation";
-import { getProjects, type Project } from "@/lib/api/projects";
 import { useProject } from "@/contexts/ProjectContext";
 import Logo from "@/components/common/Logo";
 
 export default function Sidebar() {
   const router = useRouter();
-  const { selectedProjectId, setSelectedProjectId } = useProject();
-  const [projects, setProjects] = useState<Project[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-
-  useEffect(() => {
-    const fetchProjects = async () => {
-      try {
-        setIsLoading(true);
-        const data = await getProjects();
-        setProjects(data);
-        // Set the first project as selected by default if none is selected
-        if (data.length > 0 && !selectedProjectId) {
-          setSelectedProjectId(data[0]._id);
-        }
-      } catch (err) {
-        setError(err instanceof Error ? err.message : "Failed to fetch projects");
-        console.error("Error fetching projects:", err);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    fetchProjects();
-  }, []);
+  const { selectedProjectId, setSelectedProjectId, projects, isLoading, error } = useProject();
 
   const handleCreateProject = () => {
     router.push("/create-project");
