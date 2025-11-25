@@ -94,7 +94,15 @@ export async function getProjects(): Promise<Project[]> {
     throw new Error(responseData.message || "Failed to fetch projects");
   }
 
-  return responseData.projects;
+  // Transform API response to match Project interface
+  return responseData.projects.map((project: any) => ({
+    _id: String(project.id),
+    projectName: project.projectName,
+    websiteUrl: project.projectUrl,
+    description: project.projectDescription,
+    keywords: project.keywords || [],
+    semanticQueries: project.semanticQueries || [],
+  }));
 }
 
 export async function createProject(data: CreateProjectRequest): Promise<CreateProjectResponse> {
