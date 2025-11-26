@@ -1,3 +1,5 @@
+"use client";
+
 import Link from 'next/link';
 import { ArrowRight, MessageSquare, Search, BarChart3, Sparkles, TrendingUp, Filter, Eye, Quote } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
