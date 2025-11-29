@@ -106,7 +106,7 @@ export default function LeadCard({
               className="flex items-center gap-1.5 text-purple-600 dark:text-teal-400 text-sm font-bold hover:underline"
             >
               <span>View Post</span>
-              <ArrowRight className="w-4 h-4" />
+               <ExternalLink className="w-4 h-4 text-neutral-500 dark:text-neutral-400 " />
             </Link>
           </div>
         </div>

@@ -97,12 +97,12 @@ export default function FindLeadsTab({ projectId, onCountChange }: FindLeadsTabP
         {leads.map((lead, index) => (
           <LeadCard
             key={index}
-            username={lead.redditId}
+            username={lead.originalPosterId}
             rating={lead.relevanceRating}
             sourcePost={lead.title}
             subreddit={lead.subreddit}
             reasonForMatch={lead.reason}
-            postUrl={`https://reddit.com/comments/${lead.postId}`}
+            postUrl={lead.postUrl}
           />
         ))}
       </div>

@@ -7,6 +7,7 @@ export interface Post {
   subreddit: string;
   originalPosterId: string;
   rixlyRating: number;
+  url: string;
 }
 
 export interface PaginationInfo {

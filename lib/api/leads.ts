@@ -1,6 +1,7 @@
 const RIXLY_API_BASE_URL = process.env.NEXT_PUBLIC_RIXLY_API_BASE_URL;
 
 export interface Lead {
+  originalPosterId: string;
   redditId: string;
   relevanceRating: number;
   reason: string;
@@ -9,6 +10,7 @@ export interface Lead {
   postId: string;
   subreddit: string;
   title: string;
+  postUrl: string;
 }
 
 export interface LeadsPaginationInfo {

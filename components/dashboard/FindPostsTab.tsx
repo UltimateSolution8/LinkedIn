@@ -114,6 +114,7 @@ export default function FindPostsTab({ projectId, onCountChange }: FindPostsTabP
             username={`u/${post.originalPosterId}`}
             subreddit={`r/${post.subreddit}`}
             rating={post.rixlyRating}
+            postUrl={post.url}
           />
         ))}
       </div>

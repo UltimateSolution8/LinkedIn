@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useRef, useEffect } from "react";
-import { Star } from "lucide-react";
+import { ExternalLink, Star } from "lucide-react";
 import {
   Dialog,
   DialogContent,
@@ -11,6 +11,7 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
+import Link from "next/link";
 
 interface PostCardProps {
   title: string;
@@ -19,6 +20,7 @@ interface PostCardProps {
   username: string;
   subreddit: string;
   rating: number;
+  postUrl?: string;
 }
 
 export default function PostCard({
@@ -28,6 +30,7 @@ export default function PostCard({
   username,
   subreddit,
   rating,
+  postUrl = "#",
 }: PostCardProps) {
   const [isTruncated, setIsTruncated] = useState(false);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
@@ -46,9 +49,18 @@ export default function PostCard({
 
   return (
     <div className="flex flex-col gap-4 bg-white dark:bg-neutral-950 rounded-lg p-6 border border-neutral-200 dark:border-neutral-800 shadow-sm hover:shadow-md transition-shadow">
-      <h3 className="text-neutral-950 dark:text-white text-lg font-semibold leading-normal">
-        {title}
-      </h3>
+      <div className="flex items-center gap-2">
+          <Link
+          href={postUrl}
+          target="_blank"
+          className="flex items-center gap-1.5 text-black-600 dark:text-teal-400 text-sm font-bold hover:underline"
+        >
+          <h3 className="text-neutral-950 dark:text-white text-lg font-semibold leading-normal">
+            {title}
+          </h3>
+        </Link>
+        <ExternalLink className="w-4 h-4 text-neutral-500 dark:text-neutral-400 " />
+      </div>
       <div>
         <p
           ref={excerptRef}
