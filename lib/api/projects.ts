@@ -204,3 +204,64 @@ export async function generateSemanticQueries(data: GenerateSemanticQueriesReque
 
   return responseData;
 }
+
+export async function getAdminProjects(): Promise<Project[]> {
+  const accessToken = localStorage.getItem("accessToken");
+
+  if (!accessToken) {
+    throw new Error("No access token found. Please login.");
+  }
+
+  const response = await fetch(`${RIXLY_API_BASE_URL}/api/admin/projects`, {
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${accessToken}`,
+    },
+  });
+
+  const responseData: GetProjectsResponse = await response.json();
+
+  if (!response.ok) {
+    throw new Error(responseData.message || "Failed to fetch admin projects");
+  }
+
+  // Transform API response to match Project interface
+  return responseData.projects.map((project: any) => ({
+    _id: String(project.id),
+    projectName: project.projectName,
+    websiteUrl: project.projectUrl,
+    description: project.projectDescription,
+    keywords: project.keywords || [],
+    semanticQueries: project.semanticQueries || [],
+  }));
+}
+
+export interface ScrapeRedditResponse {
+  message: string;
+  status?: string;
+}
+
+export async function scrapeReddit(projectId: string): Promise<ScrapeRedditResponse> {
+  const accessToken = localStorage.getItem("accessToken");
+
+  if (!accessToken) {
+    throw new Error("No access token found. Please login.");
+  }
+
+  const response = await fetch(`${RIXLY_API_BASE_URL}/api/projects/${projectId}/scrape-reddit`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${accessToken}`,
+    },
+  });
+
+  const responseData = await response.json();
+
+  if (!response.ok) {
+    throw new Error(responseData.message || "Failed to start Reddit scraping");
+  }
+
+  return responseData;
+}

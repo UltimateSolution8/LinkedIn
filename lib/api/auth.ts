@@ -16,6 +16,7 @@ export interface SignupResponse {
     lastName: string;
     isEmailVerified: boolean;
     authType: string;
+    role?: string;
     createdAt: string;
     updatedAt: string;
   };
@@ -40,6 +41,7 @@ export interface User {
   lastName: string;
   isEmailVerified: boolean;
   authType: string;
+  role?: string;
   createdAt: string;
   updatedAt: string;
 }
