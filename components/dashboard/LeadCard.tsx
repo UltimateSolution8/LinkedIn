@@ -22,6 +22,7 @@ interface LeadCardProps {
   subreddit: string;
   reasonForMatch: string;
   postUrl?: string;
+  postCreatedAt: string;
 }
 
 export default function LeadCard({
@@ -32,6 +33,7 @@ export default function LeadCard({
   subreddit,
   reasonForMatch,
   postUrl = "#",
+  postCreatedAt,
 }: LeadCardProps) {
   const [isSourceTruncated, setIsSourceTruncated] = useState(false);
   const [isReasonTruncated, setIsReasonTruncated] = useState(false);
@@ -41,6 +43,17 @@ export default function LeadCard({
   const reasonRef = useRef<HTMLParagraphElement>(null);
 
   const maxStars = 10;
+
+  const formatTimeAgo = (timestamp: string) => {
+    const now = new Date();
+    const created = new Date(timestamp);
+    const diffInSeconds = Math.floor((now.getTime() - created.getTime()) / 1000);
+
+    if (diffInSeconds < 60) return `${diffInSeconds}s ago`;
+    if (diffInSeconds < 3600) return `${Math.floor(diffInSeconds / 60)}m ago`;
+    if (diffInSeconds < 86400) return `${Math.floor(diffInSeconds / 3600)}h ago`;
+    return `${Math.floor(diffInSeconds / 86400)}d ago`;
+  };
 
   // Check if content is truncated
   useEffect(() => {
@@ -103,7 +116,11 @@ export default function LeadCard({
             {sourcePost}
           </p>
           <div className="flex justify-between items-center mt-2">
-            <span className="text-neutral-500 dark:text-neutral-400 text-sm">in {subreddit}</span>
+            <div className="flex items-center gap-2 text-neutral-500 dark:text-neutral-400 text-sm">
+              <span>{formatTimeAgo(postCreatedAt)}</span>
+              <span>•</span>
+              <span>in {subreddit}</span>
+            </div>
             <Link
               href={postUrl}
               target="_blank"
@@ -178,9 +195,11 @@ export default function LeadCard({
                     {sourcePost}
                   </p>
                   <div className="flex justify-between items-center mt-2">
-                    <span className="text-neutral-500 dark:text-neutral-400 text-sm">
-                      in {subreddit}
-                    </span>
+                    <div className="flex items-center gap-2 text-neutral-500 dark:text-neutral-400 text-sm">
+                      <span>{formatTimeAgo(postCreatedAt)}</span>
+                      <span>•</span>
+                      <span>in {subreddit}</span>
+                    </div>
                     <Link
                       href={postUrl}
                       target="_blank"

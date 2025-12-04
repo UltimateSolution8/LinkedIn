@@ -104,6 +104,7 @@ export default function FindLeadsTab({ projectId, onCountChange }: FindLeadsTabP
             subreddit={lead.subreddit}
             reasonForMatch={lead.reason}
             postUrl={lead.postUrl}
+            postCreatedAt={lead.postCreatedAt}
           />
         ))}
       </div>

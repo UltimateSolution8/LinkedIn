@@ -12,6 +12,7 @@ export interface Lead {
   title: string;
   postUrl: string;
   leadId: string;
+  postCreatedAt: string;
 }
 
 export interface LeadsPaginationInfo {
