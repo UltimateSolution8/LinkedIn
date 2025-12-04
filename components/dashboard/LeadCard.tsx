@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useRef, useEffect } from "react";
-import { ExternalLink, ThumbsUp, ThumbsDown, ArrowRight, Star } from "lucide-react";
+import { ExternalLink, ThumbsUp, ThumbsDown, ArrowRight, Star, Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -12,8 +12,10 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import Link from "next/link";
+import GenerateMessageDialog from "./GenerateMessageDialog";
 
 interface LeadCardProps {
+  leadId: string;
   username: string;
   rating: number;
   sourcePost: string;
@@ -23,6 +25,7 @@ interface LeadCardProps {
 }
 
 export default function LeadCard({
+  leadId,
   username,
   rating,
   sourcePost,
@@ -33,6 +36,7 @@ export default function LeadCard({
   const [isSourceTruncated, setIsSourceTruncated] = useState(false);
   const [isReasonTruncated, setIsReasonTruncated] = useState(false);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [isMessageDialogOpen, setIsMessageDialogOpen] = useState(false);
   const sourcePostRef = useRef<HTMLParagraphElement>(null);
   const reasonRef = useRef<HTMLParagraphElement>(null);
 
@@ -203,7 +207,16 @@ export default function LeadCard({
         )}
 
         {/* Feedback Buttons */}
-        <div className="border-t border-neutral-200 dark:border-neutral-800 mt-4 pt-4 flex justify-end">
+        <div className="border-t border-neutral-200 dark:border-neutral-800 mt-4 pt-4 flex justify-between items-center">
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => setIsMessageDialogOpen(true)}
+            className="text-purple-600 dark:text-purple-400 border-purple-600 dark:border-purple-400 hover:bg-purple-50 dark:hover:bg-purple-950"
+          >
+            <Sparkles className="w-4 h-4 mr-2" />
+            Generate Response
+          </Button>
           <div className="flex gap-2">
             <Button
               variant="ghost"
@@ -221,6 +234,14 @@ export default function LeadCard({
             </Button>
           </div>
         </div>
+
+        {/* Message Generation Dialog */}
+        <GenerateMessageDialog
+          isOpen={isMessageDialogOpen}
+          onOpenChange={setIsMessageDialogOpen}
+          leadId={leadId}
+          username={username}
+        />
       </div>
     </div>
   );

@@ -97,6 +97,7 @@ export default function FindLeadsTab({ projectId, onCountChange }: FindLeadsTabP
         {leads.map((lead, index) => (
           <LeadCard
             key={index}
+            leadId={lead.leadId}
             username={lead.originalPosterId}
             rating={lead.relevanceRating}
             sourcePost={lead.title}
