@@ -8,6 +8,7 @@ export interface Post {
   originalPosterId: string;
   rixlyRating: number;
   url: string;
+  leadType: "SALE" | "ENGAGEMENT";
 }
 
 export interface PaginationInfo {

@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useRef, useEffect } from "react";
-import { ExternalLink, Star } from "lucide-react";
+import { ExternalLink, Star, TrendingUp, DollarSign } from "lucide-react";
 import {
   Dialog,
   DialogContent,
@@ -21,6 +21,7 @@ interface PostCardProps {
   subreddit: string;
   rating: number;
   postUrl?: string;
+  leadType: "SALE" | "ENGAGEMENT";
 }
 
 export default function PostCard({
@@ -31,6 +32,7 @@ export default function PostCard({
   subreddit,
   rating,
   postUrl = "#",
+  leadType,
 }: PostCardProps) {
   const [isTruncated, setIsTruncated] = useState(false);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
@@ -38,6 +40,29 @@ export default function PostCard({
 
   const maxStars = 5;
   const filledStars = Math.round((rating / 10) * maxStars);
+
+  // Lead type configuration
+  const leadTypeConfig = {
+    SALES: {
+      label: "Sale Lead",
+      icon: DollarSign,
+      bgColor: "bg-green-50 dark:bg-green-950",
+      textColor: "text-green-700 dark:text-green-400",
+      borderColor: "border-green-200 dark:border-green-800",
+      iconColor: "text-green-600 dark:text-green-400",
+    },
+    ENGAGEMENT: {
+      label: "Engagement Lead",
+      icon: TrendingUp,
+      bgColor: "bg-blue-50 dark:bg-blue-950",
+      textColor: "text-blue-700 dark:text-blue-400",
+      borderColor: "border-blue-200 dark:border-blue-800",
+      iconColor: "text-blue-600 dark:text-blue-400",
+    },
+  };
+
+  const config = leadTypeConfig[leadType];
+  const LeadIcon = config.icon;
 
   // Check if content is truncated
   useEffect(() => {
@@ -49,6 +74,14 @@ export default function PostCard({
 
   return (
     <div className="flex flex-col gap-4 bg-white dark:bg-neutral-950 rounded-lg p-6 border border-neutral-200 dark:border-neutral-800 shadow-sm hover:shadow-md transition-shadow">
+      {/* Lead Type Badge */}
+      <div className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full border ${config.bgColor} ${config.borderColor} w-fit`}>
+        <LeadIcon className={`w-3.5 h-3.5 ${config.iconColor}`} />
+        <span className={`text-xs font-semibold ${config.textColor}`}>
+          {config.label}
+        </span>
+      </div>
+
       <div className="flex items-center gap-2">
           <Link
           href={postUrl}
@@ -80,6 +113,13 @@ export default function PostCard({
             </DialogTrigger>
             <DialogContent className="max-w-4xl max-h-[90vh]">
               <DialogHeader>
+                {/* Lead Type Badge in Dialog */}
+                <div className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full border ${config.bgColor} ${config.borderColor} w-fit mb-2`}>
+                  <LeadIcon className={`w-3.5 h-3.5 ${config.iconColor}`} />
+                  <span className={`text-xs font-semibold ${config.textColor}`}>
+                    {config.label}
+                  </span>
+                </div>
                 <DialogTitle className="text-xl font-semibold">
                   {title}
                 </DialogTitle>
