@@ -36,7 +36,7 @@ export interface ApiError {
 
 export interface PostComment {
   commentId: string;
-  inviteMessage: string;
+  message: string;
   tone: string;
   length: string;
   createdAt: string;

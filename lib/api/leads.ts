@@ -37,7 +37,7 @@ export interface ApiError {
 }
 
 export interface GenerateResponseData {
-  inviteMessage: string;
+  message: string;
 }
 
 export interface GenerateResponseResponse {
@@ -47,9 +47,9 @@ export interface GenerateResponseResponse {
 
 export interface InviteMessage {
   messageId: string;
-  inviteMessage: string;
+  message: string;
   tone: string;
-  createdAt: string;
+  createdAt: string;  
 }
 
 export interface InviteMessagesData {

@@ -64,7 +64,7 @@ export default function GenerateCommentDialog({
 
     try {
       const response = await getGeneratedComments(leadId);
-      const comments = response.data.messages.map((comment) => comment.inviteMessage);
+      const comments = response.data.messages.map((comment) => comment.message);
       setCachedComments(comments);
       setRemainingAttempts(response.data.remainingAttempts);
     } catch (error) {

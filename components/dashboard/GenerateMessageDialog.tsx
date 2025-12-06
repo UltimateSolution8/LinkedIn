@@ -66,7 +66,7 @@ export default function GenerateMessageDialog({
       const response = await getInviteMessages(leadId);
 
       // Extract invite messages from the response
-      const messages = response.data.messages.map((msg) => msg.inviteMessage);
+      const messages = response.data.messages.map((msg) => msg.message);
       setCachedMessages(messages);
 
       // Set current index to last message if there are any
@@ -95,7 +95,7 @@ export default function GenerateMessageDialog({
     setResponseError("");
     try {
       const response = await generateLeadResponse(leadId, tone, length);
-      const newMessage = response.data.inviteMessage;
+      const newMessage = response.data.message;
       
       const newMessages = [...cachedMessages, newMessage];
       // Add to cache
