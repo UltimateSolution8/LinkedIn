@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useRef, useEffect } from "react";
-import { ExternalLink, Star, TrendingUp, DollarSign } from "lucide-react";
+import { ExternalLink, Star, TrendingUp, DollarSign, Sparkles } from "lucide-react";
 import {
   Dialog,
   DialogContent,
@@ -12,8 +12,11 @@ import {
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
+import GenerateCommentDialog from "./GenerateCommentDialog";
 
 interface PostCardProps {
+  postId: string;
+  leadId: string;
   title: string;
   excerpt: string;
   timeAgo: string;
@@ -21,10 +24,12 @@ interface PostCardProps {
   subreddit: string;
   rating: number;
   postUrl?: string;
-  leadType: "SALE" | "ENGAGEMENT";
+  leadType: "SALES" | "ENGAGEMENT";
 }
 
 export default function PostCard({
+  postId,
+  leadId,
   title,
   excerpt,
   timeAgo,
@@ -36,6 +41,7 @@ export default function PostCard({
 }: PostCardProps) {
   const [isTruncated, setIsTruncated] = useState(false);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [isCommentDialogOpen, setIsCommentDialogOpen] = useState(false);
   const excerptRef = useRef<HTMLParagraphElement>(null);
 
   const maxStars = 5;
@@ -61,8 +67,8 @@ export default function PostCard({
     },
   };
 
-  const config = leadTypeConfig[leadType];
-  const LeadIcon = config.icon;
+  const config = leadTypeConfig[leadType] ?? leadTypeConfig.ENGAGEMENT;
+  const LeadIcon =  config.icon;
 
   // Check if content is truncated
   useEffect(() => {
@@ -189,6 +195,28 @@ export default function PostCard({
           </span>
         </div>
       </div>
+
+      {/* Generate Comment Button - Only for ENGAGEMENT leads */}
+      {leadType === "ENGAGEMENT" && (
+        <div className="flex items-center justify-end pt-2 border-t border-neutral-200 dark:border-neutral-800">
+          <Button
+            onClick={() => setIsCommentDialogOpen(true)}
+            variant="outline"
+            className="gap-2 text-purple-600 dark:text-purple-400 border-purple-600 dark:border-purple-400 hover:bg-purple-50 dark:hover:bg-purple-950"
+          >
+            <Sparkles className="w-4 h-4" />
+            <span className="text-sm">Generate Comment</span>
+          </Button>
+        </div>
+      )}
+
+      {/* Generate Comment Dialog */}
+      <GenerateCommentDialog
+        isOpen={isCommentDialogOpen}
+        onOpenChange={setIsCommentDialogOpen}
+        leadId={leadId}
+        postTitle={title}
+      />
     </div>
   );
 }
