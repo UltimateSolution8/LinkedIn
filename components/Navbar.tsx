@@ -15,7 +15,7 @@ const Navbar = () => {
               <Button variant="outline" className="border-purple-600 text-purple-600 hover:bg-purple-50">
                 Request Demo
               </Button></Link>
-            <Link href={`/request-demo`}>
+            <Link href={`/login`}>
               <Button className="bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 text-white">
                 Get Started
               </Button>
