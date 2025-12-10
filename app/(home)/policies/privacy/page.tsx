@@ -7,217 +7,113 @@ import Link from "next/link";
 
 export default function PrivacyPolicyPage() {
   return (
-    // <div className="min-h-screen bg-gradient-to-br from-purple-100 via-white to-purple-50">
-    //   {/* Navigation */}
-    //   <Navbar />
+    <div className="min-h-screen flex flex-col items-center px-4">
+      <Card className="max-w-4xl w-full shadow-lg border border-gray-200">
+        <CardContent className="p-6 md:p-10 space-y-10">
+          <header className="text-center space-y-2">
+            <h1 className="text-3xl font-bold text-gray-900">Privacy Policy</h1>
+            <p className="text-sm text-gray-500">Last updated: 10th December 2025</p>
+          </header>
 
-      <div className="min-h-screen  flex flex-col items-center px-4  ">
-        <Card className="max-w-4xl w-full shadow-lg border border-gray-200">
-          <CardContent className="p-6 md:p-10 space-y-10">
-            <header className="text-center space-y-2">
-              <h1 className="text-3xl font-bold text-gray-900">
-                Privacy Policy
-              </h1>
-              <p className="text-sm text-gray-500">
-                Last updated: 5th October 2025
-              </p>
-            </header>
+          <section className="space-y-4 text-gray-700">
+            <p>
+              This privacy policy sets out how <strong>BEYONDERS GENZ VENTURES PRIVATE LIMITED</strong> uses and protects any information that you give BEYONDERS GENZ VENTURES PRIVATE LIMITED when you visit their website and/or agree to purchase from them.
+            </p>
+            <p>
+              BEYONDERS GENZ VENTURES PRIVATE LIMITED is committed to ensuring that your privacy is protected. Should we ask you to provide certain information by which you can be identified when using this website, you can be assured that it will only be used in accordance with this privacy statement.
+            </p>
+            <p>
+              BEYONDERS GENZ VENTURES PRIVATE LIMITED may change this policy from time to time by updating this page. You should check this page periodically to ensure that you are aware of any changes.
+            </p>
+          </section>
 
-            <section className="space-y-4 text-gray-700">
-              <p>
-                Welcome to <strong>RIXLY.com</strong>, a service operated by{" "}
-                <strong>PayShri</strong> (“Company,” “we,” “our,” or “us”). We
-                value your privacy and are committed to protecting your personal
-                information. This Privacy Policy explains how we collect, use,
-                and safeguard your data when you use our website and queue
-                management services.
-              </p>
-            </section>
+          <Separator />
 
-            <Separator />
+          <section>
+            <h2 className="text-xl font-semibold mb-3">Information We May Collect</h2>
+            <ul className="list-disc pl-6 space-y-1 text-gray-700">
+              <li>Name</li>
+              <li>Contact information including email address</li>
+              <li>Demographic information such as postcode, preferences, and interests</li>
+              <li>Other information relevant to customer surveys and/or offers</li>
+            </ul>
+          </section>
 
-            {/* 1. Information We Collect */}
-            <section>
-              <h2 className="text-xl font-semibold mb-3">
-                1. Information We Collect
-              </h2>
-              <p className="mb-2">
-                When you use our Platform, we may collect certain information as
-                required to operate, maintain, and improve our services.
-              </p>
-              <ul className="list-disc pl-6 space-y-1 text-gray-700">
-                <li>
-                  Information you provide during registration or service usage.
-                </li>
-                <li>
-                  Information collected automatically when accessing or
-                  interacting with the Platform.
-                </li>
-                <li>
-                  Data shared or generated while using queue, appointment, or
-                  communication features.
-                </li>
-                <li>Information required for payments or legal compliance.</li>
-                <li>
-                  Other information necessary to enable the Platform’s features
-                  and services.
-                </li>
-              </ul>
-            </section>
+          <Separator />
 
-            <Separator />
+          <section>
+            <h2 className="text-xl font-semibold mb-3">What We Do With the Information We Gather</h2>
+            <ul className="list-disc pl-6 space-y-1 text-gray-700">
+              <li>Internal record keeping.</li>
+              <li>We may use the information to improve our products and services.</li>
+              <li>We may periodically send promotional emails about new products, special offers, or other information we think you may find interesting using the email address you have provided.</li>
+              <li>From time to time, we may also use your information to contact you for market research purposes via email, phone, fax, or mail.</li>
+              <li>We may use the information to customise the website according to your interests.</li>
+            </ul>
+            <p className="mt-2 text-gray-700">
+              We are committed to ensuring that your information is secure. In order to prevent unauthorised access or disclosure, we have implemented suitable measures.
+            </p>
+          </section>
 
-            {/* 2. How We Use Your Information */}
-            <section>
-              <h2 className="text-xl font-semibold mb-3">
-                2. How We Use Your Information
-              </h2>
-              <ol className="list-decimal pl-6 space-y-1 text-gray-700">
-                <li>Provide and operate queue and appointment services.</li>
-                <li>Manage business and customer accounts.</li>
-                <li>Send queue updates and notifications.</li>
-                <li>Process payments and issue invoices.</li>
-                <li>Improve platform performance and experience.</li>
-                <li>Prevent misuse or technical issues.</li>
-                <li>Comply with legal and regulatory requirements.</li>
-              </ol>
-            </section>
+          <Separator />
 
-            <Separator />
+          <section>
+            <h2 className="text-xl font-semibold mb-3">How We Use Cookies</h2>
+            <p className="mb-2 text-gray-700">
+              A cookie is a small file which asks permission to be placed on your computer's hard drive. Once you agree, the file is added and the cookie helps analyze web traffic or lets you know when you visit a particular site. Cookies allow web applications to respond to you as an individual. The web application can tailor its operations to your needs, likes and dislikes by gathering and remembering information about your preferences. 
+            </p>
+            <p className="mb-2 text-gray-700">
+             We use traffic log cookies to identify which pages are being used. This helps us analyze data about webpage traffic and improve our website in order to tailor it to customer needs. We only use this information for statistical analysis purposes and then the data is removed from the system.
+            </p>
+            <p className="mb-2 text-gray-700">
+              Overall, cookies help us provide you with a better website, by enabling us to 4 monitor which pages you find useful and which you do not. A cookie in no way gives us access to your computer or any information about you, other than the data you choose to share with us. 
+            </p>
+            <p className="mb-2 text-gray-700">
+              You can choose to accept or decline cookies. Most web browsers automatically accept cookies, but you can usually modify your browser setting to decline cookies if you prefer. This may prevent you from taking full advantage of the website. 
+            </p>
+          </section>
 
-            {/* 3. Data Sharing */}
-            <section>
-              <h2 className="text-xl font-semibold mb-3">3. Data Sharing</h2>
-              <p className="mb-2">
-                We do <strong>not sell or rent</strong> your data. We may share
-                information only with:
-              </p>
-              <ul className="list-disc pl-6 space-y-1 text-gray-700">
-                <li>
-                  <strong>Payment Partners</strong> – to process transactions.
-                </li>
-                <li>
-                  <strong>Communication Providers</strong> – to send
-                  notifications.
-                </li>
-                <li>
-                  <strong>Legal Authorities</strong> – when required by law.
-                </li>
-                <li>
-                  <strong>Service Providers</strong> – under confidentiality
-                  agreements.
-                </li>
-              </ul>
-            </section>
+          <Separator />
 
-            <Separator />
+          <section>
+            <h2 className="text-xl font-semibold mb-3">Controlling Your Personal Information</h2>
+            You may choose to restrict the collection or use of your personal information in the following ways: 
+            <ul className="list-disc pl-6 space-y-1 text-gray-700">
+              <li>
+                whenever you are asked to fill in a form on the website, look for the box that you can click to indicate that you do not want the information to be used by anybody for direct marketing purposes
+              </li>
+              <li>
+                if you have previously agreed to us using your personal information for direct marketing purposes, you may change your mind at any time by writing to or emailing us at <strong>admin@userixly.com</strong>.
+              </li>
+            </ul>
+            <p className="mt-2 text-gray-700">
+              We will not sell, distribute or lease your personal information to third parties unless we have your permission or are required by law to do so. We may use your personal information to send you promotional information about third parties which we think you may find interesting if you tell us that you wish this to happen. 
+            </p>
+          </section>
 
-            {/* 4. Data Retention */}
-            <section>
-              <h2 className="text-xl font-semibold mb-3">4. Data Retention</h2>
-              <ul className="list-disc pl-6 space-y-1 text-gray-700">
-                <li>
-                  Account data is retained while your account remains active.
-                </li>
-                <li>
-                  Appointment and queue data may be retained for analytics.
-                </li>
-                <li>You can request deletion by contacting us.</li>
-              </ul>
-            </section>
+          <Separator />
 
-            <Separator />
+          <section>
+            <h2 className="text-xl font-semibold mb-3">Correction of Incorrect Information</h2>
+            <p className="mt-2 text-gray-700">
+             If you believe that any information we are holding on you is incorrect or incomplete, please write to below address as soon as possible. We will promptly correct any information found to be incorrect.  
+            </p>
+            <p className="mt-2 text-gray-700 font-semibold">
+              Plot NO- 321/2487, BJB College Cooperative Society, Azad Nagar Khorda, ODISHA 751002
+            </p>
+            <p className="text-gray-700">
+              Phone: 8249467209<br />Email: <Link className="text-primary hover:underline" href="mailto:admin@userixly.com">admin@userixly.com</Link>
+            </p>
+            <p className="text-gray-700">We will promptly correct any information found to be incorrect.</p>
+          </section>
 
-            {/* 5. Cookies & Tracking */}
-            <section>
-              <h2 className="text-xl font-semibold mb-3">
-                5. Cookies & Tracking
-              </h2>
-              <ul className="list-disc pl-6 space-y-1 text-gray-700">
-                <li>Maintain your login session.</li>
-                <li>Analyze traffic and improve features.</li>
-                <li>Personalize your experience and store preferences.</li>
-              </ul>
-              <p className="mt-2 text-gray-600">
-                You can manage or disable cookies through your browser settings,
-                but some features may not function properly.
-              </p>
-            </section>
+          <Separator />
 
-            <Separator />
-
-            {/* 6. Data Security */}
-            <section>
-              <h2 className="text-xl font-semibold mb-3">6. Data Security</h2>
-              <p>
-                We use industry-standard encryption and secure access controls
-                to protect your data. However, no online system is completely
-                secure, and you share data at your own risk.
-              </p>
-            </section>
-
-            <Separator />
-
-            {/* 8. Children’s Privacy */}
-            <section>
-              <h2 className="text-xl font-semibold mb-3">
-                8. Children’s Privacy
-              </h2>
-              <p>
-                RIXLY is intended for users aged 18 and above. We do not
-                knowingly collect data from minors. If a minor’s data has been
-                provided, please contact us to remove it.
-              </p>
-            </section>
-
-            <Separator />
-
-            {/* 9. Changes to This Policy */}
-            <section>
-              <h2 className="text-xl font-semibold mb-3">
-                9. Changes to This Policy
-              </h2>
-              <p>
-                We may update this Privacy Policy periodically. Any updates will
-                appear on this page with a new “Last updated” date.
-              </p>
-            </section>
-
-            <Separator />
-
-            {/* 10. Contact Us */}
-            <section>
-              <h2 className="text-xl font-semibold mb-3">10. Contact Us</h2>
-              <p>
-                For privacy concerns or data-related requests, please contact us
-                at:
-              </p>
-              <Link
-                href="mailto:support@rixly.com"
-                className="text-primary hover:underline"
-              >
-                support@RIXLY.com
-              </Link>
-            </section>
-
-            <Separator />
-
-            <footer className="text-center text-sm text-gray-500">
-              By using RIXLY, you agree to the terms outlined in this Privacy
-              Policy.
-              <div className="mt-3">
-                <Link href="/terms" className="hover:underline">
-                  Terms
-                </Link>{" "}
-                ·{" "}
-                <Link href="/policy/privacy" className="hover:underline">
-                  Privacy Policy
-                </Link>
-              </div>
-              <p className="mt-2">&copy; 2025 RIXLY. All rights reserved.</p>
-            </footer>
-          </CardContent>
-        </Card>
-      </div>
+          <footer className="text-center text-sm text-gray-500">
+            <p>&copy; 2025 BEYONDERS GENZ VENTURES PRIVATE LIMITED. All rights reserved.</p>
+          </footer>
+        </CardContent>
+      </Card>
+    </div>
   );
 }

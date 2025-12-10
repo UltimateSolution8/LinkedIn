@@ -12,7 +12,13 @@ const Footer = () => {
             href="/policies/terms"
             className="text-sm text-gray-500 hover:text-gray-900 transition"
           >
-            Terms
+            Terms and Conditions
+          </a>
+           <a
+            href="/policies/cancelandrefund"
+            className="text-sm text-gray-500 hover:text-gray-900 transition"
+          >
+            Cancellation and Refund Policy
           </a>
           <a
             href="/policies/privacy"
