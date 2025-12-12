@@ -108,6 +108,8 @@ export default function FindPostsTab({ projectId, onCountChange }: FindPostsTabP
         {posts.map((post, index) => (
           <PostCard
             key={index}
+            postId={post.postId}
+            leadId={post.leadId}
             title={post.title}
             excerpt={post.description}
             timeAgo={formatTimeAgo(post.timeCreated)}
@@ -115,6 +117,7 @@ export default function FindPostsTab({ projectId, onCountChange }: FindPostsTabP
             subreddit={`r/${post.subreddit}`}
             rating={post.rixlyRating}
             postUrl={post.url}
+            leadType={post.leadType}
           />
         ))}
       </div>

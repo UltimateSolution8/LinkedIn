@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useRef, useEffect } from "react";
-import { ExternalLink, ThumbsUp, ThumbsDown, ArrowRight, Star } from "lucide-react";
+import { ExternalLink, ThumbsUp, ThumbsDown, ArrowRight, Star, Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -12,31 +12,48 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import Link from "next/link";
+import GenerateMessageDialog from "./GenerateMessageDialog";
 
 interface LeadCardProps {
+  leadId: string;
   username: string;
   rating: number;
   sourcePost: string;
   subreddit: string;
   reasonForMatch: string;
   postUrl?: string;
+  postCreatedAt: string;
 }
 
 export default function LeadCard({
+  leadId,
   username,
   rating,
   sourcePost,
   subreddit,
   reasonForMatch,
   postUrl = "#",
+  postCreatedAt,
 }: LeadCardProps) {
   const [isSourceTruncated, setIsSourceTruncated] = useState(false);
   const [isReasonTruncated, setIsReasonTruncated] = useState(false);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [isMessageDialogOpen, setIsMessageDialogOpen] = useState(false);
   const sourcePostRef = useRef<HTMLParagraphElement>(null);
   const reasonRef = useRef<HTMLParagraphElement>(null);
 
   const maxStars = 10;
+
+  const formatTimeAgo = (timestamp: string) => {
+    const now = new Date();
+    const created = new Date(timestamp);
+    const diffInSeconds = Math.floor((now.getTime() - created.getTime()) / 1000);
+
+    if (diffInSeconds < 60) return `${diffInSeconds}s ago`;
+    if (diffInSeconds < 3600) return `${Math.floor(diffInSeconds / 60)}m ago`;
+    if (diffInSeconds < 86400) return `${Math.floor(diffInSeconds / 3600)}h ago`;
+    return `${Math.floor(diffInSeconds / 86400)}d ago`;
+  };
 
   // Check if content is truncated
   useEffect(() => {
@@ -99,7 +116,11 @@ export default function LeadCard({
             {sourcePost}
           </p>
           <div className="flex justify-between items-center mt-2">
-            <span className="text-neutral-500 dark:text-neutral-400 text-sm">in {subreddit}</span>
+            <div className="flex items-center gap-2 text-neutral-500 dark:text-neutral-400 text-sm">
+              <span>{formatTimeAgo(postCreatedAt)}</span>
+              <span>•</span>
+              <span>in {subreddit}</span>
+            </div>
             <Link
               href={postUrl}
               target="_blank"
@@ -174,9 +195,11 @@ export default function LeadCard({
                     {sourcePost}
                   </p>
                   <div className="flex justify-between items-center mt-2">
-                    <span className="text-neutral-500 dark:text-neutral-400 text-sm">
-                      in {subreddit}
-                    </span>
+                    <div className="flex items-center gap-2 text-neutral-500 dark:text-neutral-400 text-sm">
+                      <span>{formatTimeAgo(postCreatedAt)}</span>
+                      <span>•</span>
+                      <span>in {subreddit}</span>
+                    </div>
                     <Link
                       href={postUrl}
                       target="_blank"
@@ -203,7 +226,16 @@ export default function LeadCard({
         )}
 
         {/* Feedback Buttons */}
-        <div className="border-t border-neutral-200 dark:border-neutral-800 mt-4 pt-4 flex justify-end">
+        <div className="border-t border-neutral-200 dark:border-neutral-800 mt-4 pt-4 flex justify-between items-center">
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => setIsMessageDialogOpen(true)}
+            className="text-purple-600 dark:text-purple-400 border-purple-600 dark:border-purple-400 hover:bg-purple-50 dark:hover:bg-purple-950"
+          >
+            <Sparkles className="w-4 h-4 mr-2" />
+            Generate Response
+          </Button>
           <div className="flex gap-2">
             <Button
               variant="ghost"
@@ -221,6 +253,14 @@ export default function LeadCard({
             </Button>
           </div>
         </div>
+
+        {/* Message Generation Dialog */}
+        <GenerateMessageDialog
+          isOpen={isMessageDialogOpen}
+          onOpenChange={setIsMessageDialogOpen}
+          leadId={leadId}
+          username={username}
+        />
       </div>
     </div>
   );
