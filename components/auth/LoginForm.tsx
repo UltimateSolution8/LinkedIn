@@ -11,6 +11,7 @@ import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import GoogleIcon from "@/components/auth/GoogleIcon";
 import { signin } from "@/lib/api/auth";
+import { getSubscriptionStatus } from "@/lib/api/subscription";
 
 const loginSchema = z.object({
   email: z.string().email("Please enter a valid email address"),
@@ -42,6 +43,9 @@ export default function LoginForm() {
         password: data.password,
       });
 
+      // IMPORTANT: Clear any cached data from previous session first
+      localStorage.clear();
+      
       // Store the access token and user data in localStorage
       if (response.accessToken) {
         localStorage.setItem("accessToken", response.accessToken);
@@ -50,8 +54,22 @@ export default function LoginForm() {
         localStorage.setItem("user", JSON.stringify(response.user));
       }
 
-      // Navigate to dashboard on successful signin
-      router.push("/dashboard");
+      // Check subscription status and redirect accordingly
+      // ALWAYS fetch fresh data after login
+      try {
+        const subscriptionStatus = await getSubscriptionStatus();
+        if (subscriptionStatus.hasAccess) {
+          // User has active subscription or can bypass - go to dashboard
+          router.push("/dashboard");
+        } else {
+          // User doesn't have active subscription - redirect to pricing
+          router.push("/pricing");
+        }
+      } catch (error) {
+        // If subscription check fails, redirect to pricing for safety
+        console.error("Error checking subscription status:", error);
+        router.push("/pricing");
+      }
     } catch (error) {
       setApiError(error instanceof Error ? error.message : "An error occurred during signin");
     } finally {
@@ -59,11 +77,21 @@ export default function LoginForm() {
     }
   };
 
-  const handleGoogleLogin = () => {
+  const handleGoogleLogin = async () => {
     console.log("Google login clicked");
     // TODO: Implement Google OAuth
-    // For now, navigate to dashboard
-    router.push("/dashboard");
+    // For now, check subscription and navigate accordingly
+    try {
+      const subscriptionStatus = await getSubscriptionStatus();
+      if (subscriptionStatus.hasAccess) {
+        router.push("/dashboard");
+      } else {
+        router.push("/pricing");
+      }
+    } catch (error) {
+      console.error("Error checking subscription status:", error);
+      router.push("/pricing");
+    }
   };
 
   return (
@@ -82,6 +110,7 @@ export default function LoginForm() {
           id="email"
           type="email"
           placeholder="you@example.com"
+          autoComplete="email"
           {...register("email")}
           className="border-neutral-200 dark:border-white/20 focus-visible:ring-purple-600/50 focus-visible:border-purple-600/50"
         />
@@ -98,6 +127,7 @@ export default function LoginForm() {
           id="password"
           type="password"
           placeholder="••••••••"
+          autoComplete="current-password"
           {...register("password")}
           className="border-neutral-200 dark:border-white/20 focus-visible:ring-purple-600/50 focus-visible:border-purple-600/50"
         />

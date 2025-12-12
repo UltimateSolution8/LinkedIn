@@ -1,8 +1,41 @@
+"use client";
+
+import { useEffect, useState } from "react";
 import Link from 'next/link'
 import { Button } from './ui/button'
 import Logo from './common/Logo'
+import UserProfileDropdown from './shared/UserProfileDropdown'
+import { getCurrentUser } from '@/lib/api/auth'
+import type { User } from '@/lib/api/auth'
 
 const Navbar = () => {
+  const [user, setUser] = useState<User | null>(null);
+
+  useEffect(() => {
+    // Check if user is logged in on mount
+    setUser(getCurrentUser());
+
+    // Listen for storage changes (when user logs in/out in another tab or same tab)
+    const handleStorageChange = (e: StorageEvent) => {
+      if (e.key === "user" || e.key === "accessToken" || e.key === null) {
+        setUser(getCurrentUser());
+      }
+    };
+
+    window.addEventListener('storage', handleStorageChange);
+    
+    // Also check periodically in case localStorage was updated in the same tab
+    // This catches cases where storage event doesn't fire
+    const interval = setInterval(() => {
+      setUser(getCurrentUser());
+    }, 1000);
+
+    return () => {
+      window.removeEventListener('storage', handleStorageChange);
+      clearInterval(interval);
+    };
+  }, []); // Empty dependency array - only run once on mount
+
   return (
     <nav className="fixed top-0 w-full bg-white/80 backdrop-blur-md z-50 border-b border-gray-100">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -10,16 +43,22 @@ const Navbar = () => {
           <Logo />
           <div className="hidden md:flex items-center space-x-8">
             <a href="#features" className="text-gray-600 hover:text-gray-900 transition">Features</a>
+            <Link href="/pricing" className="text-gray-600 hover:text-gray-900 transition">Pricing</Link>
             {/* <a href="#dashboard" className="text-gray-600 hover:text-gray-900 transition">Dashboard</a> */}
             <Link href={`/request-demo`}>
               <Button variant="outline" className="border-purple-600 text-purple-600 hover:bg-purple-50">
                 Request Demo
-              </Button></Link>
-            <Link href={`/login`}>
-              <Button className="bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 text-white">
-                Get Started
               </Button>
             </Link>
+            {user ? (
+              <UserProfileDropdown />
+            ) : (
+              <Link href={`/request-demo`}>
+                <Button className="bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 text-white">
+                  Get Started
+                </Button>
+              </Link>
+            )}
           </div>
         </div>
       </div>
