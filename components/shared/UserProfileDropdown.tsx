@@ -27,7 +27,7 @@ export default function UserProfileDropdown() {
   const handleLogout = () => {
     setIsLoggingOut(true);
     logout();
-    router.push("/");
+    router.push("/login");
   };
 
   const getInitials = () => {

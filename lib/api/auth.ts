@@ -1,5 +1,11 @@
 const RIXLY_API_BASE_URL = process.env.NEXT_PUBLIC_RIXLY_API_BASE_URL;
 
+if (!RIXLY_API_BASE_URL) {
+  console.error(
+    "NEXT_PUBLIC_RIXLY_API_BASE_URL is not set. Please create a .env.local file with NEXT_PUBLIC_RIXLY_API_BASE_URL=http://localhost:YOUR_PORT"
+  );
+}
+
 export interface SignupRequest {
   email: string;
   password: string;
@@ -53,6 +59,12 @@ export interface SigninResponse {
 }
 
 export async function signup(data: SignupRequest): Promise<SignupResponse> {
+  if (!RIXLY_API_BASE_URL) {
+    throw new Error(
+      "API base URL is not configured. Please set NEXT_PUBLIC_RIXLY_API_BASE_URL in your .env.local file."
+    );
+  }
+
   const response = await fetch(`${RIXLY_API_BASE_URL}/api/auth/signup`, {
     method: "POST",
     headers: {
@@ -61,16 +73,40 @@ export async function signup(data: SignupRequest): Promise<SignupResponse> {
     body: JSON.stringify(data),
   });
 
-  const responseData = await response.json();
+  let responseData;
+  const contentType = response.headers.get("content-type");
+  
+  try {
+    if (contentType && contentType.includes("application/json")) {
+      responseData = await response.json();
+    } else {
+      // Handle non-JSON responses (like HTML 404 pages)
+      const text = await response.text();
+      throw new Error(
+        `Server returned ${response.status} ${response.statusText}. ${response.status === 404 ? "API endpoint not found. Please check if the backend server is running and NEXT_PUBLIC_RIXLY_API_BASE_URL is configured correctly." : text.substring(0, 100)}`
+      );
+    }
+  } catch (error) {
+    if (error instanceof Error && error.message.includes("Server returned")) {
+      throw error;
+    }
+    throw new Error("Failed to parse server response. The server may not be running or the API URL is incorrect.");
+  }
 
   if (!response.ok) {
-    throw new Error(responseData.message || "Failed to sign up");
+    throw new Error(responseData.message || responseData.error || "Failed to sign up");
   }
 
   return responseData;
 }
 
 export async function signin(data: SigninRequest): Promise<SigninResponse> {
+  if (!RIXLY_API_BASE_URL) {
+    throw new Error(
+      "API base URL is not configured. Please set NEXT_PUBLIC_RIXLY_API_BASE_URL in your .env.local file."
+    );
+  }
+
   const response = await fetch(`${RIXLY_API_BASE_URL}/api/auth/signin`, {
     method: "POST",
     headers: {
@@ -79,19 +115,42 @@ export async function signin(data: SigninRequest): Promise<SigninResponse> {
     body: JSON.stringify(data),
   });
 
-  const responseData = await response.json();
+  let responseData;
+  const contentType = response.headers.get("content-type");
+  
+  try {
+    if (contentType && contentType.includes("application/json")) {
+      responseData = await response.json();
+    } else {
+      // Handle non-JSON responses (like HTML 404 pages)
+      const text = await response.text();
+      throw new Error(
+        `Server returned ${response.status} ${response.statusText}. ${response.status === 404 ? "API endpoint not found. Please check if the backend server is running and NEXT_PUBLIC_RIXLY_API_BASE_URL is configured correctly." : text.substring(0, 100)}`
+      );
+    }
+  } catch (error) {
+    if (error instanceof Error && error.message.includes("Server returned")) {
+      throw error;
+    }
+    throw new Error("Failed to parse server response. The server may not be running or the API URL is incorrect.");
+  }
 
   if (!response.ok) {
-    throw new Error(responseData.message || "Failed to sign in");
+    throw new Error(responseData.message || responseData.error || "Failed to sign in");
   }
 
   return responseData;
 }
 
 export function logout(): void {
-  // Clear authentication data from localStorage
+  // Clear ALL authentication and session data from localStorage
   localStorage.removeItem("accessToken");
   localStorage.removeItem("user");
+  // Clear any cached subscription data
+  localStorage.removeItem("subscriptionStatus");
+  localStorage.removeItem("subscriptionDetails");
+  // Clear any other session data that might exist
+  localStorage.clear();
 }
 
 export function getCurrentUser(): User | null {

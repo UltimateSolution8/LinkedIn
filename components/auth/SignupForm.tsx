@@ -50,13 +50,19 @@ export default function SignupForm() {
         lastName: data.lastName,
       });
 
-      // Store the access token in localStorage or a cookie
+      // IMPORTANT: Clear any cached data from previous session first
+      localStorage.clear();
+      
+      // Store the access token and user data in localStorage
       if (response.accessToken) {
         localStorage.setItem("accessToken", response.accessToken);
       }
+      if (response.user) {
+        localStorage.setItem("user", JSON.stringify(response.user));
+      }
 
-      // Navigate to dashboard on successful signup
-      router.push("/dashboard");
+      // Redirect new users to pricing page after signup
+      router.push("/pricing");
     } catch (error) {
       setApiError(error instanceof Error ? error.message : "An error occurred during signup");
     } finally {
@@ -67,8 +73,8 @@ export default function SignupForm() {
   const handleGoogleSignup = () => {
     console.log("Google signup clicked");
     // TODO: Implement Google OAuth
-    // For now, navigate to dashboard
-    router.push("/dashboard");
+    // For now, navigate to pricing page
+    router.push("/pricing");
   };
 
   return (
@@ -135,6 +141,7 @@ export default function SignupForm() {
           id="password"
           type="password"
           placeholder="••••••••"
+          autoComplete="new-password"
           {...register("password")}
           className="border-neutral-200 dark:border-white/20 focus-visible:ring-purple-600/50 focus-visible:border-purple-600/50"
         />
@@ -151,6 +158,7 @@ export default function SignupForm() {
           id="repeatPassword"
           type="password"
           placeholder="••••••••"
+          autoComplete="new-password"
           {...register("repeatPassword")}
           className="border-neutral-200 dark:border-white/20 focus-visible:ring-purple-600/50 focus-visible:border-purple-600/50"
         />

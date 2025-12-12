@@ -6,7 +6,10 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { Badge } from "@/components/ui/badge";
 import { getCurrentUser, type User } from "@/lib/api/auth";
+import { getSubscriptionDetails, cancelSubscription } from "@/lib/api/subscription";
+import type { SubscriptionDetails } from "@/lib/api/subscription";
 
 export default function ProfilePage() {
   const router = useRouter();
@@ -16,18 +19,59 @@ export default function ProfilePage() {
   const [email, setEmail] = useState("");
   const [initialFirstName, setInitialFirstName] = useState("");
   const [initialLastName, setInitialLastName] = useState("");
+  const [subscriptionDetails, setSubscriptionDetails] = useState<SubscriptionDetails | null>(null);
+  const [isLoadingSubscription, setIsLoadingSubscription] = useState(true);
+  const [isCancelling, setIsCancelling] = useState(false);
 
+  // Load user data and subscription details
   useEffect(() => {
-    const currentUser = getCurrentUser();
-    if (currentUser) {
-      setUser(currentUser);
-      setFirstName(currentUser.firstName);
-      setLastName(currentUser.lastName);
-      setEmail(currentUser.email);
-      setInitialFirstName(currentUser.firstName);
-      setInitialLastName(currentUser.lastName);
-    }
-  }, []);
+    const loadUserData = () => {
+      const currentUser = getCurrentUser();
+      if (currentUser) {
+        setUser(currentUser);
+        setFirstName(currentUser.firstName || "");
+        setLastName(currentUser.lastName || "");
+        setEmail(currentUser.email || "");
+        setInitialFirstName(currentUser.firstName || "");
+        setInitialLastName(currentUser.lastName || "");
+      }
+    };
+
+    const loadSubscriptionDetails = async () => {
+      setIsLoadingSubscription(true);
+      // Clear previous subscription data
+      setSubscriptionDetails(null);
+      
+      try {
+        const details = await getSubscriptionDetails();
+        setSubscriptionDetails(details);
+      } catch (error) {
+        console.error("Error loading subscription details:", error);
+        setSubscriptionDetails(null);
+      } finally {
+        setIsLoadingSubscription(false);
+      }
+    };
+
+    // Initial load
+    loadUserData();
+    loadSubscriptionDetails();
+
+    // Listen for storage changes (cross-tab and same-tab login/logout)
+    const handleStorageChange = (e: StorageEvent) => {
+      if (e.key === "user" || e.key === "accessToken" || e.key === null) {
+        // User changed - reload everything
+        loadUserData();
+        loadSubscriptionDetails();
+      }
+    };
+
+    window.addEventListener("storage", handleStorageChange);
+
+    return () => {
+      window.removeEventListener("storage", handleStorageChange);
+    };
+  }, []); // Only run once on mount, storage listener handles updates
 
   // Check if form has been modified and is valid
   const isFormModified = () => {
@@ -50,6 +94,40 @@ export default function ProfilePage() {
   const handleResetPassword = () => {
     // TODO: Implement password reset
     console.log("Reset password clicked");
+  };
+
+  const handleCancelSubscription = async () => {
+    if (!confirm("Are you sure you want to cancel your subscription? You will lose access to premium features.")) {
+      return;
+    }
+
+    setIsCancelling(true);
+    try {
+      await cancelSubscription();
+      // Reload subscription details
+      const details = await getSubscriptionDetails();
+      setSubscriptionDetails(details);
+      alert("Subscription cancelled successfully.");
+    } catch (error) {
+      console.error("Error cancelling subscription:", error);
+      alert(error instanceof Error ? error.message : "Failed to cancel subscription");
+    } finally {
+      setIsCancelling(false);
+    }
+  };
+
+  const formatDate = (dateString: string | null) => {
+    if (!dateString) return "N/A";
+    return new Date(dateString).toLocaleDateString("en-US", {
+      year: "numeric",
+      month: "long",
+      day: "numeric",
+    });
+  };
+
+  const getDateRegistered = () => {
+    if (!user?.createdAt) return "N/A";
+    return formatDate(user.createdAt);
   };
 
   const getInitials = () => {
@@ -78,7 +156,7 @@ export default function ProfilePage() {
             <form className="flex flex-col gap-6" onSubmit={(e) => e.preventDefault()}>
               {/* Profile Avatar Section */}
               <div className="flex flex-col sm:flex-row items-center gap-6 pb-6 border-b border-neutral-200 dark:border-neutral-800">
-                <div className="relative flex-shrink-0">
+                <div className="relative shrink-0">
                   <Avatar className="h-24 w-24">
                     <AvatarFallback className="bg-purple-600 text-white text-3xl">
                       {getInitials()}
@@ -136,6 +214,108 @@ export default function ProfilePage() {
                   readOnly
                   className="border-neutral-200 dark:border-neutral-800 bg-neutral-100/50 dark:bg-neutral-900/50 text-neutral-500 dark:text-neutral-400 cursor-not-allowed"
                 />
+              </div>
+
+              {/* Date Registered */}
+              <div className="flex flex-col gap-2">
+                <Label className="text-neutral-950 dark:text-white">
+                  Date Registered
+                </Label>
+                <Input
+                  type="text"
+                  value={getDateRegistered()}
+                  disabled
+                  readOnly
+                  className="border-neutral-200 dark:border-neutral-800 bg-neutral-100/50 dark:bg-neutral-900/50 text-neutral-500 dark:text-neutral-400 cursor-not-allowed"
+                />
+              </div>
+
+              {/* Subscription Section */}
+              <div className="border-t border-neutral-200 dark:border-neutral-800 pt-6 mt-2">
+                <h3 className="text-neutral-950 dark:text-white text-lg font-bold mb-4">Subscription</h3>
+                {isLoadingSubscription ? (
+                  <p className="text-neutral-500 dark:text-neutral-400 text-sm">Loading subscription details...</p>
+                ) : subscriptionDetails ? (
+                  <div className="flex flex-col gap-4">
+                    <div className="flex flex-col gap-2">
+                      <Label className="text-neutral-950 dark:text-white">Current Subscription Status</Label>
+                      <div className="flex items-center gap-2">
+                        {subscriptionDetails.canBypass ? (
+                          <Badge className="bg-green-600 text-white">Whitelisted</Badge>
+                        ) : subscriptionDetails.activeSubscription ? (
+                          <Badge className="bg-green-600 text-white">Active</Badge>
+                        ) : (
+                          <Badge className="bg-red-600 text-white">Inactive</Badge>
+                        )}
+                      </div>
+                    </div>
+
+                    {subscriptionDetails.activeSubscription && (
+                      <>
+                        <div className="flex flex-col gap-2">
+                          <Label className="text-neutral-950 dark:text-white">Plan Name</Label>
+                          <Input
+                            type="text"
+                            value={subscriptionDetails.activeSubscription.planName}
+                            disabled
+                            readOnly
+                            className="border-neutral-200 dark:border-neutral-800 bg-neutral-100/50 dark:bg-neutral-900/50 text-neutral-500 dark:text-neutral-400 cursor-not-allowed"
+                          />
+                        </div>
+
+                        <div className="flex flex-col gap-2">
+                          <Label className="text-neutral-950 dark:text-white">Billing Cycle / Expiration Date</Label>
+                          <Input
+                            type="text"
+                            value={
+                              subscriptionDetails.activeSubscription.expiresAt
+                                ? `Expires on ${formatDate(subscriptionDetails.activeSubscription.expiresAt)}`
+                                : "No expiration date"
+                            }
+                            disabled
+                            readOnly
+                            className="border-neutral-200 dark:border-neutral-800 bg-neutral-100/50 dark:bg-neutral-900/50 text-neutral-500 dark:text-neutral-400 cursor-not-allowed"
+                          />
+                        </div>
+
+                        <div className="flex flex-col gap-2">
+                          <Label className="text-neutral-950 dark:text-white">Amount</Label>
+                          <Input
+                            type="text"
+                            value={`${subscriptionDetails.activeSubscription.currency === "USD" ? "$" : "₹"}${subscriptionDetails.activeSubscription.amount}`}
+                            disabled
+                            readOnly
+                            className="border-neutral-200 dark:border-neutral-800 bg-neutral-100/50 dark:bg-neutral-900/50 text-neutral-500 dark:text-neutral-400 cursor-not-allowed"
+                          />
+                        </div>
+
+                        <Button
+                          type="button"
+                          variant="outline"
+                          onClick={handleCancelSubscription}
+                          disabled={isCancelling}
+                          className="mt-2 border-red-600/30 text-red-600 dark:text-red-400 hover:bg-red-600/10 disabled:opacity-50"
+                        >
+                          {isCancelling ? "Cancelling..." : "Cancel Subscription"}
+                        </Button>
+                      </>
+                    )}
+
+                    {!subscriptionDetails.activeSubscription && !subscriptionDetails.canBypass && (
+                      <div className="bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-md p-4">
+                        <p className="text-yellow-800 dark:text-yellow-200 text-sm">
+                          You don't have an active subscription.{" "}
+                          <a href="/pricing" className="underline font-semibold">
+                            Subscribe now
+                          </a>{" "}
+                          to access premium features.
+                        </p>
+                      </div>
+                    )}
+                  </div>
+                ) : (
+                  <p className="text-neutral-500 dark:text-neutral-400 text-sm">Unable to load subscription details.</p>
+                )}
               </div>
 
               {/* Security Section */}
