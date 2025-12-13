@@ -2,24 +2,13 @@
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { Globe, Check, Zap, Clock, Loader2 } from "lucide-react";
+import { Check, Zap, Clock, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import { getPricingPlans, createRazorpayOrder, verifyPayment, type PricingPlan } from "@/lib/api/pricing";
 import PaymentStatusModal from "@/components/pricing/PaymentStatusModal";
 import { getSubscriptionStatus } from "@/lib/api/subscription";
-
-const CURRENCIES = {
-  USD: { symbol: "$", code: "USD", country: "US", name: "US Dollar" },
-  INR: { symbol: "₹", code: "INR", country: "IN", name: "Indian Rupee" },
-};
+import { detectUserCurrency } from "@/lib/utils/geolocation";
 
 // Declare Razorpay types for TypeScript
 declare global {
@@ -30,7 +19,6 @@ declare global {
 
 export default function PricingPage() {
   const router = useRouter();
-  const [selectedCurrency, setSelectedCurrency] = useState<keyof typeof CURRENCIES>("USD");
   const [plans, setPlans] = useState<PricingPlan[]>([]);
   const [loading, setLoading] = useState(true);
   const [processing, setProcessing] = useState(false);
@@ -44,28 +32,26 @@ export default function PricingPage() {
     status: "loading",
   });
 
-  // Fetch pricing plans when currency changes
+  // Auto-detect currency and fetch pricing plans on mount
   useEffect(() => {
-    const fetchPlans = async () => {
+    const initializePricing = async () => {
       try {
         setLoading(true);
-        const fetchedPlans = await getPricingPlans(selectedCurrency);
+        const detectedCurrency = await detectUserCurrency();
+        console.log("Detected Currency:", detectedCurrency);
+        const fetchedPlans = await getPricingPlans(detectedCurrency);
         setPlans(fetchedPlans);
       } catch (error) {
         console.error("Error fetching pricing plans:", error);
-        // Fallback to default plans if API fails
-        setPlans(getDefaultPlans(selectedCurrency));
+        // Fallback to default USD plans if API fails
+        setPlans(getDefaultPlans("USD"));
       } finally {
         setLoading(false);
       }
     };
 
-    fetchPlans();
-  }, [selectedCurrency]);
-
-  const handleCurrencyChange = (value: string) => {
-    setSelectedCurrency(value as keyof typeof CURRENCIES);
-  };
+    initializePricing();
+  }, []); // Run once on mount
 
   const handleChoosePlan = async (plan: PricingPlan) => {
     try {
@@ -207,7 +193,7 @@ export default function PricingPage() {
   };
 
   // Fallback default plans if API is not available
-  const getDefaultPlans = (currency: keyof typeof CURRENCIES): PricingPlan[] => {
+  const getDefaultPlans = (currency: "USD" | "INR"): PricingPlan[] => {
     if (currency === "USD") {
       return [
         {
@@ -260,37 +246,6 @@ export default function PricingPage() {
           <p className="text-xl text-gray-600 max-w-2xl mx-auto">
             Choose a plan that fits your needs and start growing your business with Rixly today.
           </p>
-        </div>
-
-        {/* Currency Selector */}
-        <div className="flex justify-center mb-12">
-          <Select value={selectedCurrency} onValueChange={handleCurrencyChange}>
-            <SelectTrigger className="w-auto min-w-[180px] bg-white border-gray-300 hover:border-purple-400 focus:border-purple-500 focus:ring-purple-500">
-              <div className="flex items-center gap-2">
-                <Globe className="w-4 h-4 text-gray-600" />
-                <SelectValue>
-                  <span className="flex items-center gap-2">
-                    <span>{CURRENCIES[selectedCurrency].country}</span>
-                    <span className="text-gray-500">{CURRENCIES[selectedCurrency].code}</span>
-                  </span>
-                </SelectValue>
-              </div>
-            </SelectTrigger>
-            <SelectContent>
-              <div className="px-2 py-1.5 text-xs font-semibold text-gray-500 uppercase tracking-wide">
-                Select Currency
-              </div>
-              {Object.entries(CURRENCIES).map(([key, currency]) => (
-                <SelectItem key={key} value={key}>
-                  <div className="flex items-center gap-2">
-                    <span>{currency.country}</span>
-                    <span className="text-gray-500">{currency.code}</span>
-                    <span className="text-gray-400">{currency.name}</span>
-                  </div>
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
         </div>
 
         {/* Pricing Cards - Centered since there's only one plan */}

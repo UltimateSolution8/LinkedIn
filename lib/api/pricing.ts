@@ -16,6 +16,7 @@ export interface PricingPlan {
 
 export interface PricingResponse {
   plans: PricingPlan[];
+  message?: string;
 }
 
 export interface CreateOrderRequest {
