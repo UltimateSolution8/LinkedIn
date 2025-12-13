@@ -44,6 +44,7 @@ const Navbar = () => {
           <div className="hidden md:flex items-center space-x-8">
             <a href="#features" className="text-gray-600 hover:text-gray-900 transition">Features</a>
             <Link href="/pricing" className="text-gray-600 hover:text-gray-900 transition">Pricing</Link>
+            <Link href="/contactus" className="text-gray-600 hover:text-gray-900 transition">Contact Us</Link>
             {/* <a href="#dashboard" className="text-gray-600 hover:text-gray-900 transition">Dashboard</a> */}
             <Link href={`/request-demo`}>
               <Button variant="outline" className="border-purple-600 text-purple-600 hover:bg-purple-50">
