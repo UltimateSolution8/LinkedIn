@@ -43,8 +43,7 @@ export default function PricingPage() {
         setPlans(fetchedPlans);
       } catch (error) {
         console.error("Error fetching pricing plans:", error);
-        // Fallback to default USD plans if API fails
-        setPlans(getDefaultPlans("USD"));
+        setPlans(getDefaultPlans("INR"));
       } finally {
         setLoading(false);
       }
@@ -212,7 +211,7 @@ export default function PricingPage() {
         {
           id: "business-growth",
           name: "Business Growth",
-          currentPrice: 1399,
+          currentPrice: 1499,
           originalPrice: 4100,
           currency: "INR",
           currencySymbol: "₹",
@@ -221,7 +220,7 @@ export default function PricingPage() {
             "UNLIMITED Posts to view",
             "UNLIMITED keyword matches",
           ],
-          highlightNumber: 2,
+          highlightNumber: 1,
           highlightLabel: "Users",
           isIntroductory: true,
           buttonText: "Choose Plan",
