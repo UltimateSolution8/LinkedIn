@@ -1,6 +1,7 @@
 "use client";
 
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { ArrowRight, MessageSquare, Search, BarChart3, Sparkles, TrendingUp, Filter, Eye, Quote } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -12,6 +13,8 @@ import {
   CarouselNext,
   CarouselPrevious,
 } from "@/components/ui/carousel";
+import { checkSubscriptionAccess } from '@/lib/utils/subscription';
+import { useState } from 'react';
 
 interface Review {
   title: string;
@@ -82,6 +85,38 @@ const reviews: Review[] = [
 ];
 
 export default function LandingPage() {
+  const router = useRouter();
+  const [isLoading, setIsLoading] = useState(false);
+
+  const handleGetStarted = async () => {
+    setIsLoading(true);
+    try {
+      // Check if user is logged in
+      const accessToken = localStorage.getItem("accessToken");
+
+      if (!accessToken) {
+        // Not logged in, navigate to login
+        router.push("/login");
+        return;
+      }
+
+      // User is logged in, check subscription status
+      const hasAccess = await checkSubscriptionAccess();
+
+      if (hasAccess) {
+        router.push("/dashboard");
+      } else {
+        router.push("/pricing");
+      }
+    } catch (error) {
+      console.error("Error checking subscription:", error);
+      // On error, navigate to login to be safe
+      router.push("/login");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   return (
     // <div className="min-h-screen bg-gradient-to-br from-purple-100 via-white to-purple-50">
     //   {/* Navigation */}
@@ -96,26 +131,26 @@ export default function LandingPage() {
                 <Sparkles className="w-4 h-4" />
                 <span>AI-Powered Reddit Intelligence</span>
               </div>
-              
+
               <h1 className="text-5xl sm:text-6xl lg:text-7xl font-bold text-gray-900 leading-tight">
                 Turn Reddit into your{' '}
                 <span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-600 to-purple-800">
                   growth engine
                 </span>
               </h1>
-              
+
               <p className="text-xl text-gray-600 leading-relaxed">
                 AI-powered monitoring, smart keyword tracking, and automated comment suggestions that turn Reddit conversations into real business opportunities.
               </p>
-              
-              <Link href="/request-demo">
-                <Button
-                  size="lg"
-                  className="bg-gradient-to-r from-purple-600 to-purple-700 hover:from-purple-700 hover:to-purple-800 text-white text-lg px-8 py-6 rounded-xl"
-                >
-                  Request Demo <ArrowRight className="ml-2 w-5 h-5" />
-                </Button>
-              </Link>
+
+              <Button
+                size="lg"
+                onClick={handleGetStarted}
+                disabled={isLoading}
+                className="bg-gradient-to-r from-purple-600 to-purple-700 hover:from-purple-700 hover:to-purple-800 text-white text-lg px-8 py-6 rounded-xl disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                {isLoading ? "Loading..." : "Get Started"} <ArrowRight className="ml-2 w-5 h-5" />
+              </Button>
             </div>
 
             {/* Dashboard Preview Card */}
@@ -484,15 +519,15 @@ export default function LandingPage() {
           <p className="text-xl text-purple-100 mb-10">
             Access to keyword tracking, subreddit monitoring, and AI comment suggestions.
           </p>
-          
-          <Link href="/request-demo">
-            <Button
-              size="lg"
-              className="bg-white text-purple-700 hover:bg-gray-100 text-lg px-8 py-6 rounded-xl font-semibold shadow-xl"
-            >
-              Schedule Demo <ArrowRight className="ml-2 w-5 h-5" />
-            </Button>
-          </Link>
+
+          <Button
+            size="lg"
+            onClick={handleGetStarted}
+            disabled={isLoading}
+            className="bg-white text-purple-700 hover:bg-gray-100 text-lg px-8 py-6 rounded-xl font-semibold shadow-xl disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            {isLoading ? "Loading..." : "Get Started"} <ArrowRight className="ml-2 w-5 h-5" />
+          </Button>
         </div>
       </section>
 

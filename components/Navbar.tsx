@@ -12,10 +12,7 @@ const Navbar = () => {
   const [user, setUser] = useState<User | null>(null);
 
   useEffect(() => {
-    // Check if user is logged in on mount
     setUser(getCurrentUser());
-
-    // Listen for storage changes (when user logs in/out in another tab or same tab)
     const handleStorageChange = (e: StorageEvent) => {
       if (e.key === "user" || e.key === "accessToken" || e.key === null) {
         setUser(getCurrentUser());
@@ -23,9 +20,6 @@ const Navbar = () => {
     };
 
     window.addEventListener('storage', handleStorageChange);
-    
-    // Also check periodically in case localStorage was updated in the same tab
-    // This catches cases where storage event doesn't fire
     const interval = setInterval(() => {
       setUser(getCurrentUser());
     }, 1000);
@@ -54,7 +48,7 @@ const Navbar = () => {
             {user ? (
               <UserProfileDropdown />
             ) : (
-              <Link href={`/request-demo`}>
+              <Link href={`/login`}>
                 <Button className="bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 text-white">
                   Get Started
                 </Button>
