@@ -1,4 +1,5 @@
 import { clearCurrencyCache } from "../utils/geolocation";
+import { clearSubscriptionCache } from "../utils/subscription";
 
 const RIXLY_API_BASE_URL = process.env.NEXT_PUBLIC_RIXLY_API_BASE_URL;
 
@@ -154,6 +155,7 @@ export function logout(): void {
   // Clear any other session data that might exist
   localStorage.clear();
   clearCurrencyCache();
+  clearSubscriptionCache();
 }
 
 export function getCurrentUser(): User | null {

@@ -11,7 +11,6 @@ import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import GoogleIcon from "@/components/auth/GoogleIcon";
 import { signin } from "@/lib/api/auth";
-import { getSubscriptionStatus } from "@/lib/api/subscription";
 import { checkSubscriptionAccess } from "@/lib/utils/subscription";
 
 const loginSchema = z.object({
@@ -79,8 +78,8 @@ export default function LoginForm() {
     // TODO: Implement Google OAuth
     // For now, check subscription and navigate accordingly
     try {
-      const subscriptionStatus = await getSubscriptionStatus();
-      if (subscriptionStatus.hasAccess) {
+      const hasAccess = await checkSubscriptionAccess();
+      if (hasAccess) {
         router.push("/dashboard");
       } else {
         router.push("/pricing");

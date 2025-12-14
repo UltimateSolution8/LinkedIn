@@ -7,8 +7,8 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { getPricingPlans, createSubscription, verifySubscriptionPayment, type PricingPlan, RazorpaySubscriptionResponse } from "@/lib/api/pricing";
 import PaymentStatusModal from "@/components/pricing/PaymentStatusModal";
-import { getSubscriptionStatus } from "@/lib/api/subscription";
 import { detectUserCurrency } from "@/lib/utils/geolocation";
+import { getSubscriptionStatusCached } from "@/lib/utils/subscription";
 
 // Declare Razorpay types for TypeScript
 declare global {
@@ -89,10 +89,9 @@ export default function PricingPage() {
 
   const handleContinueToDashboard = async () => {
     setPaymentModal({ ...paymentModal, isOpen: false });
-    // Refresh subscription status to ensure it's available
-    // This prevents race condition where dashboard checks subscription too early
+    // Force refresh subscription status to get latest data after payment
     try {
-      await getSubscriptionStatus();
+      await getSubscriptionStatusCached(true);
     } catch (error) {
       console.error("Error refreshing subscription status:", error);
     }
