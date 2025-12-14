@@ -11,6 +11,12 @@ export interface SubscriptionStatus {
     expiresAt: string | null;
     amount: number;
     currency: string;
+    planDetails: {
+      name: string;
+      amount: number;
+      currency: string;
+      interval: string;
+    };
   } | null;
 }
 

@@ -8,8 +8,8 @@ import { Label } from "@/components/ui/label";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { getCurrentUser, type User } from "@/lib/api/auth";
-import { getSubscriptionDetails, cancelSubscription } from "@/lib/api/subscription";
-import type { SubscriptionDetails } from "@/lib/api/subscription";
+import { SubscriptionStatus, cancelSubscription } from "@/lib/api/subscription";
+import { getSubscriptionStatusCached } from "@/lib/utils/subscription";
 
 export default function ProfilePage() {
   const router = useRouter();
@@ -19,7 +19,7 @@ export default function ProfilePage() {
   const [email, setEmail] = useState("");
   const [initialFirstName, setInitialFirstName] = useState("");
   const [initialLastName, setInitialLastName] = useState("");
-  const [subscriptionDetails, setSubscriptionDetails] = useState<SubscriptionDetails | null>(null);
+  const [subscriptionDetails, setSubscriptionDetails] = useState<SubscriptionStatus | null>(null);
   const [isLoadingSubscription, setIsLoadingSubscription] = useState(true);
   const [isCancelling, setIsCancelling] = useState(false);
 
@@ -39,11 +39,10 @@ export default function ProfilePage() {
 
     const loadSubscriptionDetails = async () => {
       setIsLoadingSubscription(true);
-      // Clear previous subscription data
       setSubscriptionDetails(null);
       
       try {
-        const details = await getSubscriptionDetails();
+        const details = await getSubscriptionStatusCached();
         setSubscriptionDetails(details);
       } catch (error) {
         console.error("Error loading subscription details:", error);
@@ -105,7 +104,7 @@ export default function ProfilePage() {
     try {
       await cancelSubscription();
       // Reload subscription details
-      const details = await getSubscriptionDetails();
+      const details = await getSubscriptionStatusCached(true);
       setSubscriptionDetails(details);
       alert("Subscription cancelled successfully.");
     } catch (error) {
@@ -242,7 +241,7 @@ export default function ProfilePage() {
                       <div className="flex items-center gap-2">
                         {subscriptionDetails.canBypass ? (
                           <Badge className="bg-green-600 text-white">Whitelisted</Badge>
-                        ) : subscriptionDetails.activeSubscription ? (
+                        ) : subscriptionDetails.subscription ? (
                           <Badge className="bg-green-600 text-white">Active</Badge>
                         ) : (
                           <Badge className="bg-red-600 text-white">Inactive</Badge>
@@ -250,13 +249,13 @@ export default function ProfilePage() {
                       </div>
                     </div>
 
-                    {subscriptionDetails.activeSubscription && (
+                    {subscriptionDetails.subscription && (
                       <>
                         <div className="flex flex-col gap-2">
                           <Label className="text-neutral-950 dark:text-white">Plan Name</Label>
                           <Input
                             type="text"
-                            value={subscriptionDetails.activeSubscription.planName}
+                            value={subscriptionDetails.subscription.planDetails.name}
                             disabled
                             readOnly
                             className="border-neutral-200 dark:border-neutral-800 bg-neutral-100/50 dark:bg-neutral-900/50 text-neutral-500 dark:text-neutral-400 cursor-not-allowed"
@@ -268,8 +267,8 @@ export default function ProfilePage() {
                           <Input
                             type="text"
                             value={
-                              subscriptionDetails.activeSubscription.expiresAt
-                                ? `Expires on ${formatDate(subscriptionDetails.activeSubscription.expiresAt)}`
+                              subscriptionDetails.subscription.expiresAt
+                                ? `Expires on ${formatDate(subscriptionDetails.subscription.expiresAt)}`
                                 : "No expiration date"
                             }
                             disabled
@@ -282,7 +281,7 @@ export default function ProfilePage() {
                           <Label className="text-neutral-950 dark:text-white">Amount</Label>
                           <Input
                             type="text"
-                            value={`${subscriptionDetails.activeSubscription.currency === "USD" ? "$" : "₹"}${subscriptionDetails.activeSubscription.amount}`}
+                            value={`${subscriptionDetails.subscription.planDetails.currency === "USD" ? "$" : "₹"}${subscriptionDetails.subscription.planDetails.amount}`}
                             disabled
                             readOnly
                             className="border-neutral-200 dark:border-neutral-800 bg-neutral-100/50 dark:bg-neutral-900/50 text-neutral-500 dark:text-neutral-400 cursor-not-allowed"
@@ -301,7 +300,7 @@ export default function ProfilePage() {
                       </>
                     )}
 
-                    {!subscriptionDetails.activeSubscription && !subscriptionDetails.canBypass && (
+                    {!subscriptionDetails.subscription && !subscriptionDetails.canBypass && (
                       <div className="bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-md p-4">
                         <p className="text-yellow-800 dark:text-yellow-200 text-sm">
                           You don't have an active subscription.{" "}
