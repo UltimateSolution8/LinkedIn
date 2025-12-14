@@ -1,3 +1,5 @@
+import { clearCurrencyCache } from "../utils/geolocation";
+
 const RIXLY_API_BASE_URL = process.env.NEXT_PUBLIC_RIXLY_API_BASE_URL;
 
 if (!RIXLY_API_BASE_URL) {
@@ -151,6 +153,7 @@ export function logout(): void {
   localStorage.removeItem("subscriptionDetails");
   // Clear any other session data that might exist
   localStorage.clear();
+  clearCurrencyCache();
 }
 
 export function getCurrentUser(): User | null {

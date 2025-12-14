@@ -12,6 +12,7 @@ import Link from "next/link";
 import GoogleIcon from "@/components/auth/GoogleIcon";
 import { signin } from "@/lib/api/auth";
 import { getSubscriptionStatus } from "@/lib/api/subscription";
+import { checkSubscriptionAccess } from "@/lib/utils/subscription";
 
 const loginSchema = z.object({
   email: z.string().email("Please enter a valid email address"),
@@ -45,6 +46,7 @@ export default function LoginForm() {
 
       // IMPORTANT: Clear any cached data from previous session first
       localStorage.clear();
+      sessionStorage.clear();
       
       // Store the access token and user data in localStorage
       if (response.accessToken) {
@@ -54,19 +56,14 @@ export default function LoginForm() {
         localStorage.setItem("user", JSON.stringify(response.user));
       }
 
-      // Check subscription status and redirect accordingly
-      // ALWAYS fetch fresh data after login
       try {
-        const subscriptionStatus = await getSubscriptionStatus();
-        if (subscriptionStatus.hasAccess) {
-          // User has active subscription or can bypass - go to dashboard
+        const hasAccess = await checkSubscriptionAccess();
+        if (hasAccess) {
           router.push("/dashboard");
         } else {
-          // User doesn't have active subscription - redirect to pricing
           router.push("/pricing");
         }
       } catch (error) {
-        // If subscription check fails, redirect to pricing for safety
         console.error("Error checking subscription status:", error);
         router.push("/pricing");
       }
