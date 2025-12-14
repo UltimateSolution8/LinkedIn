@@ -57,7 +57,7 @@ export async function getSubscriptionStatus(): Promise<SubscriptionStatus> {
   }
 
   try {
-    const response = await fetch(`${RIXLY_API_BASE_URL}/api/subscription/status`, {
+    const response = await fetch(`${RIXLY_API_BASE_URL}/api/subscriptions/current`, {
       method: "GET",
       headers: {
         "Content-Type": "application/json",

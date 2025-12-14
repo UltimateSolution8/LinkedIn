@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { Check, Zap, Clock, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
-import { getPricingPlans, createRazorpayOrder, verifyPayment, type PricingPlan } from "@/lib/api/pricing";
+import { getPricingPlans, createSubscription, verifySubscriptionPayment, type PricingPlan, RazorpaySubscriptionResponse } from "@/lib/api/pricing";
 import PaymentStatusModal from "@/components/pricing/PaymentStatusModal";
 import { getSubscriptionStatus } from "@/lib/api/subscription";
 import { detectUserCurrency } from "@/lib/utils/geolocation";
@@ -64,14 +64,13 @@ export default function PricingPage() {
         return;
       }
 
-      // Create Razorpay order
-      const orderData = await createRazorpayOrder({
-        planId: plan.id,
-        currency: plan.currency,
+      // Create subscription
+      const subscriptionData = await createSubscription({
+        planId: plan.id
       });
 
       // Initialize Razorpay checkout
-      await initializeRazorpayPayment(orderData, plan);
+      await initializeRazorpayPayment(subscriptionData, plan);
     } catch (error) {
       console.error("Error initiating payment:", error);
       setPaymentModal({
@@ -103,7 +102,7 @@ export default function PricingPage() {
     router.push("/dashboard");
   };
 
-  const initializeRazorpayPayment = async (orderData: any, plan: PricingPlan) => {
+  const initializeRazorpayPayment = async (orderData: RazorpaySubscriptionResponse, plan: PricingPlan) => {
     // Load Razorpay script dynamically
     const script = document.createElement("script");
     script.src = "https://checkout.razorpay.com/v1/checkout.js";
@@ -112,23 +111,17 @@ export default function PricingPage() {
 
     script.onload = () => {
       const options = {
-        key: orderData.keyId, // Your Razorpay key ID from backend
-        amount: orderData.amount,
-        currency: orderData.currency,
+        key: orderData.keyId,
         name: "Rixly",
         description: `Payment for ${plan.name} plan`,
-        order_id: orderData.orderId,
+        subscription_id: orderData.subscription.vendorSubscriptionId,
         handler: async (response: any) => {
           try {
-            // Show loading modal
             showPaymentModal("loading", "Verifying Payment", "Please wait while we verify your payment...");
-
-            // Verify payment on backend
-            const verification = await verifyPayment({
-              razorpayOrderId: response.razorpay_order_id,
+            const verification = await verifySubscriptionPayment({
+              razorpaySubscriptionId: response.razorpay_subscription_id,
               razorpayPaymentId: response.razorpay_payment_id,
               razorpaySignature: response.razorpay_signature,
-              planId: plan.id,
             });
 
             if (verification.success) {
@@ -163,7 +156,7 @@ export default function PricingPage() {
           // You can prefill user details if available
         },
         theme: {
-          color: "#9333ea", // Purple color matching your brand
+          color: "#9333ea",
         },
         modal: {
           ondismiss: () => {

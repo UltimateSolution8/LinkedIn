@@ -19,27 +19,37 @@ export interface PricingResponse {
   message?: string;
 }
 
-export interface CreateOrderRequest {
+export interface CreateSubscriptionRequest {
   planId: string;
-  currency: string;
 }
 
-export interface RazorpayOrderResponse {
-  orderId: string;
-  amount: number;
-  currency: string;
+export interface RazorpaySubscriptionResponse {
+  success: boolean;
+  message: string;
+  subscription: {
+    id: string;
+    planId: string;
+    status: string;
+    currentPeriodStart: string;
+    currentPeriodEnd: string;
+    vendorSubscriptionId: string;
+    planDetails: {
+      name: string;
+      amount: number;
+      currency: string;
+      interval: string;
+    };
+  };
   keyId: string;
-  planId: string;
 }
 
-export interface PaymentVerificationRequest {
-  razorpayOrderId: string;
+export interface SubscriptionPaymentVerificationRequest {
+  razorpaySubscriptionId: string;
   razorpayPaymentId: string;
   razorpaySignature: string;
-  planId: string;
 }
 
-export interface PaymentVerificationResponse {
+export interface SubscriptionPaymentVerificationResponse {
   success: boolean;
   message: string;
   subscriptionId?: string;
@@ -71,11 +81,11 @@ export async function getPricingPlans(currency: string = "USD"): Promise<Pricing
 }
 
 /**
- * Create a Razorpay order for payment
+ * Create a subscription for payment
  */
-export async function createRazorpayOrder(
-  data: CreateOrderRequest
-): Promise<RazorpayOrderResponse> {
+export async function createSubscription(
+  data: CreateSubscriptionRequest
+): Promise<RazorpaySubscriptionResponse> {
   const accessToken = localStorage.getItem("accessToken");
 
   if (!accessToken) {
@@ -83,7 +93,7 @@ export async function createRazorpayOrder(
   }
 
   try {
-    const response = await fetch(`${RIXLY_API_BASE_URL}/api/pricing/create-order`, {
+    const response = await fetch(`${RIXLY_API_BASE_URL}/api/subscriptions`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -95,22 +105,22 @@ export async function createRazorpayOrder(
     const responseData = await response.json();
 
     if (!response.ok) {
-      throw new Error(responseData.message || "Failed to create order");
+      throw new Error(responseData.message || "Failed to create subscription");
     }
 
     return responseData;
   } catch (error) {
-    console.error("Error creating Razorpay order:", error);
+    console.error("Error creating subscription:", error);
     throw error;
   }
 }
 
 /**
- * Verify payment signature after Razorpay payment
+ * Verify subscription payment signature after Razorpay payment
  */
-export async function verifyPayment(
-  data: PaymentVerificationRequest
-): Promise<PaymentVerificationResponse> {
+export async function verifySubscriptionPayment(
+  data: SubscriptionPaymentVerificationRequest
+): Promise<SubscriptionPaymentVerificationResponse> {
   const accessToken = localStorage.getItem("accessToken");
 
   if (!accessToken) {
@@ -118,7 +128,7 @@ export async function verifyPayment(
   }
 
   try {
-    const response = await fetch(`${RIXLY_API_BASE_URL}/api/pricing/verify-payment`, {
+    const response = await fetch(`${RIXLY_API_BASE_URL}/api/subscriptions/verify-payment`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -135,7 +145,7 @@ export async function verifyPayment(
 
     return responseData;
   } catch (error) {
-    console.error("Error verifying payment:", error);
+    console.error("Error verifying subscription payment:", error);
     throw error;
   }
 }

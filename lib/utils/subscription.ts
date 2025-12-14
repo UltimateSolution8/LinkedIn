@@ -7,7 +7,7 @@ import { getSubscriptionStatus } from "@/lib/api/subscription";
 export async function checkSubscriptionAccess(): Promise<boolean> {
   try {
     const status = await getSubscriptionStatus();
-    return status.hasAccess;
+    return  status.subscription?.status === "active" || status.canBypass;
   } catch (error) {
     console.error("Error checking subscription access:", error);
     // On error, deny access for safety
