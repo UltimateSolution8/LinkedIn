@@ -7,6 +7,14 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import { getCurrentUser, type User } from "@/lib/api/auth";
 import { SubscriptionStatus, cancelSubscription } from "@/lib/api/subscription";
 import { getSubscriptionStatusCached } from "@/lib/utils/subscription";
@@ -22,6 +30,7 @@ export default function ProfilePage() {
   const [subscriptionDetails, setSubscriptionDetails] = useState<SubscriptionStatus | null>(null);
   const [isLoadingSubscription, setIsLoadingSubscription] = useState(true);
   const [isCancelling, setIsCancelling] = useState(false);
+  const [showCancelDialog, setShowCancelDialog] = useState(false);
 
   // Load user data and subscription details
   useEffect(() => {
@@ -96,13 +105,11 @@ export default function ProfilePage() {
   };
 
   const handleCancelSubscription = async () => {
-    if (!confirm("Are you sure you want to cancel your subscription? You will lose access to premium features.")) {
-      return;
-    }
-
     setIsCancelling(true);
+    setShowCancelDialog(false);
+
     try {
-      await cancelSubscription();
+      await cancelSubscription(subscriptionDetails?.subscription?.id || "");
       // Reload subscription details
       const details = await getSubscriptionStatusCached(true);
       setSubscriptionDetails(details);
@@ -241,6 +248,8 @@ export default function ProfilePage() {
                       <div className="flex items-center gap-2">
                         {subscriptionDetails.canBypass ? (
                           <Badge className="bg-green-600 text-white">Whitelisted</Badge>
+                        ) : subscriptionDetails.subscription?.status === "created" ? (
+                          <Badge className="bg-yellow-600 text-white">Pending Verification</Badge>
                         ) : subscriptionDetails.subscription ? (
                           <Badge className="bg-green-600 text-white">Active</Badge>
                         ) : (
@@ -249,7 +258,36 @@ export default function ProfilePage() {
                       </div>
                     </div>
 
-                    {subscriptionDetails.subscription && (
+                    {subscriptionDetails.subscription?.status === "created" ? (
+                      <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-md p-6">
+                        <div className="flex items-start gap-3">
+                          <svg
+                            className="w-6 h-6 text-blue-600 dark:text-blue-400 flex-shrink-0 mt-0.5"
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                          >
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth={2}
+                              d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
+                            />
+                          </svg>
+                          <div className="flex-1">
+                            <h4 className="text-blue-900 dark:text-blue-100 font-semibold mb-2">
+                              Payment Verification in Progress
+                            </h4>
+                            <p className="text-blue-800 dark:text-blue-200 text-sm mb-3">
+                              Your payment is currently being verified by our payment processor. This typically takes a few minutes but may take up to 24 hours in some cases.
+                            </p>
+                            <p className="text-blue-700 dark:text-blue-300 text-sm">
+                              Please check back shortly. If the verification takes longer than expected, feel free to contact our support team.
+                            </p>
+                          </div>
+                        </div>
+                      </div>
+                    ) : subscriptionDetails.subscription ? (
                       <>
                         <div className="flex flex-col gap-2">
                           <Label className="text-neutral-950 dark:text-white">Plan Name</Label>
@@ -267,8 +305,8 @@ export default function ProfilePage() {
                           <Input
                             type="text"
                             value={
-                              subscriptionDetails.subscription.expiresAt
-                                ? `Expires on ${formatDate(subscriptionDetails.subscription.expiresAt)}`
+                              subscriptionDetails.subscription.currentPeriodEnd
+                                ? `Next Billing on ${formatDate(subscriptionDetails.subscription.currentPeriodEnd)}`
                                 : "No expiration date"
                             }
                             disabled
@@ -288,17 +326,25 @@ export default function ProfilePage() {
                           />
                         </div>
 
-                        <Button
+                         {subscriptionDetails.subscription.cancelAtPeriodEnd ?<Button
                           type="button"
                           variant="outline"
-                          onClick={handleCancelSubscription}
+                          onClick={() => setShowCancelDialog(true)}
+                          disabled={isCancelling}
+                          className="mt-2 border-blue-600/30 text-black dark:text-red-400 hover:bg-blue-600/10 disabled:opacity-50"
+                        >
+                          {isCancelling ? "Cancelling..." : "Reactivate Subscription"}
+                        </Button> : <Button
+                         type="button"
+                          variant="outline"
+                          onClick={() => setShowCancelDialog(true)}
                           disabled={isCancelling}
                           className="mt-2 border-red-600/30 text-red-600 dark:text-red-400 hover:bg-red-600/10 disabled:opacity-50"
                         >
                           {isCancelling ? "Cancelling..." : "Cancel Subscription"}
-                        </Button>
+                        </Button> }
                       </>
-                    )}
+                    ) : null}
 
                     {!subscriptionDetails.subscription && !subscriptionDetails.canBypass && (
                       <div className="bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-md p-4">
@@ -354,6 +400,45 @@ export default function ProfilePage() {
           </div>
         </div>
       </div>
+
+      {/* Cancel Subscription Dialog */}
+      <Dialog open={showCancelDialog} onOpenChange={setShowCancelDialog}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Cancel Subscription</DialogTitle>
+            <DialogDescription>
+              Are you sure you want to cancel your subscription?
+            </DialogDescription>
+          </DialogHeader>
+          <div className="py-4">
+            <p className="text-neutral-700 dark:text-neutral-300 text-sm">
+              Your subscription will be cancelled, but you will retain access to all premium features until the end of your current billing cycle
+              {subscriptionDetails?.subscription?.expiresAt && (
+                <span className="font-semibold">
+                  {" "}({formatDate(subscriptionDetails.subscription.expiresAt)})
+                </span>
+              )}.
+            </p>
+          </div>
+          <DialogFooter>
+            <Button
+              variant="outline"
+              onClick={() => setShowCancelDialog(false)}
+              disabled={isCancelling}
+            >
+              Keep Subscription
+            </Button>
+            <Button
+              variant="destructive"
+              onClick={handleCancelSubscription}
+              disabled={isCancelling}
+              className="bg-red-600 hover:bg-red-700 text-white"
+            >
+              {isCancelling ? "Cancelling..." : "Cancel Subscription"}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

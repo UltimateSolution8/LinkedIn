@@ -4,13 +4,15 @@ export interface SubscriptionStatus {
   hasAccess: boolean;
   canBypass: boolean;
   subscription: {
-    id: number;
+    id: string;
     planId: string;
     status: string;
     startsAt: string;
     expiresAt: string | null;
     amount: number;
     currency: string;
+    cancelAtPeriodEnd: boolean;
+    currentPeriodEnd: string;
     planDetails: {
       name: string;
       amount: number;
@@ -125,7 +127,7 @@ export async function getSubscriptionDetails(): Promise<SubscriptionDetails> {
 /**
  * Cancel user's active subscription
  */
-export async function cancelSubscription(): Promise<{ message: string }> {
+export async function cancelSubscription(subscriptionId: string): Promise<{ message: string }> {
   const accessToken = localStorage.getItem("accessToken");
 
   if (!accessToken) {
@@ -139,8 +141,8 @@ export async function cancelSubscription(): Promise<{ message: string }> {
   }
 
   try {
-    const response = await fetch(`${RIXLY_API_BASE_URL}/api/subscription/cancel`, {
-      method: "POST",
+    const response = await fetch(`${RIXLY_API_BASE_URL}/api/subscriptions/${subscriptionId}/cancel`, {
+      method: "PUT",
       headers: {
         "Content-Type": "application/json",
         Authorization: `Bearer ${accessToken}`,

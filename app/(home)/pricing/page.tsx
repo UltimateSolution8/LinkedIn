@@ -9,6 +9,7 @@ import { getPricingPlans, createSubscription, verifySubscriptionPayment, type Pr
 import PaymentStatusModal from "@/components/pricing/PaymentStatusModal";
 import { detectUserCurrency } from "@/lib/utils/geolocation";
 import { getSubscriptionStatusCached } from "@/lib/utils/subscription";
+import { type SubscriptionStatus } from "@/lib/api/subscription";
 
 // Declare Razorpay types for TypeScript
 declare global {
@@ -22,6 +23,8 @@ export default function PricingPage() {
   const [plans, setPlans] = useState<PricingPlan[]>([]);
   const [loading, setLoading] = useState(true);
   const [processing, setProcessing] = useState(false);
+  const [subscriptionStatus, setSubscriptionStatus] = useState<SubscriptionStatus | null>(null);
+  const [checkingSubscription, setCheckingSubscription] = useState(true);
   const [paymentModal, setPaymentModal] = useState<{
     isOpen: boolean;
     status: "success" | "error" | "loading";
@@ -31,6 +34,27 @@ export default function PricingPage() {
     isOpen: false,
     status: "loading",
   });
+
+  // Check subscription status on mount
+  useEffect(() => {
+    const checkSubscription = async () => {
+      try {
+        setCheckingSubscription(true);
+        const accessToken = localStorage.getItem("accessToken");
+
+        if (accessToken) {
+          const status = await getSubscriptionStatusCached();
+          setSubscriptionStatus(status);
+        }
+      } catch (error) {
+        console.error("Error checking subscription status:", error);
+      } finally {
+        setCheckingSubscription(false);
+      }
+    };
+
+    checkSubscription();
+  }, []);
 
   // Auto-detect currency and fetch pricing plans on mount
   useEffect(() => {
@@ -227,6 +251,89 @@ export default function PricingPage() {
       ];
     }
   };
+
+  // Show loading state while checking subscription
+  if (checkingSubscription) {
+    return (
+      <div className="min-h-screen bg-white flex items-center justify-center">
+        <Loader2 className="w-8 h-8 animate-spin text-purple-600" />
+      </div>
+    );
+  }
+
+  // Show pending verification message if subscription is pending
+  if (subscriptionStatus?.subscription?.status === "pending") {
+    return (
+      <div className="min-h-screen bg-white py-12 px-4 sm:px-6 lg:px-8">
+        <div className="max-w-3xl mx-auto">
+          <div className="text-center mb-8">
+            <h1 className="text-4xl sm:text-5xl font-bold text-gray-900 mb-4">Payment Verification</h1>
+          </div>
+
+          <Card className="border-0 shadow-lg">
+            <CardContent className="p-8">
+              <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-8">
+                <div className="flex flex-col items-center text-center gap-6">
+                  <div className="w-16 h-16 bg-blue-100 dark:bg-blue-900/40 rounded-full flex items-center justify-center">
+                    <svg
+                      className="w-8 h-8 text-blue-600 dark:text-blue-400"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
+                      />
+                    </svg>
+                  </div>
+
+                  <div className="space-y-3">
+                    <h2 className="text-2xl font-bold text-blue-900 dark:text-blue-100">
+                      Payment Verification in Progress
+                    </h2>
+                    <p className="text-blue-800 dark:text-blue-200 text-base max-w-lg">
+                      Your payment is currently being verified by our payment processor. This typically takes a few minutes but may take up to 24 hours in some cases.
+                    </p>
+                    <p className="text-blue-700 dark:text-blue-300 text-sm">
+                      You will receive an email confirmation once your subscription is activated. Please check back shortly or visit your profile page for updates.
+                    </p>
+                  </div>
+
+                  <div className="flex flex-col sm:flex-row gap-3 w-full sm:w-auto mt-4">
+                    <Button
+                      onClick={() => router.push("/profile")}
+                      className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2"
+                    >
+                      View Profile
+                    </Button>
+                    <Button
+                      onClick={() => router.push("/dashboard")}
+                      variant="outline"
+                      className="border-blue-600 text-blue-600 hover:bg-blue-50 px-6 py-2"
+                    >
+                      Go to Dashboard
+                    </Button>
+                  </div>
+
+                  <div className="mt-4 pt-4 border-t border-blue-200 dark:border-blue-800 w-full">
+                    <p className="text-blue-600 dark:text-blue-400 text-sm">
+                      Need help? Contact our support team at{" "}
+                      <a href="mailto:support@rixly.com" className="font-semibold underline">
+                        support@rixly.com
+                      </a>
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-white py-12 px-4 sm:px-6 lg:px-8">
