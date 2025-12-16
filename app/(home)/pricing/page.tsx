@@ -262,7 +262,7 @@ export default function PricingPage() {
   }
 
   // Show pending verification message if subscription is pending
-  if (subscriptionStatus?.subscription?.status === "pending") {
+  if (subscriptionStatus?.subscription?.status === "created") {
     return (
       <div className="min-h-screen bg-white py-12 px-4 sm:px-6 lg:px-8">
         <div className="max-w-3xl mx-auto">
