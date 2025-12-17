@@ -168,3 +168,99 @@ export function getCurrentUser(): User | null {
     return null;
   }
 }
+
+export interface VerifyEmailResponse {
+  message: string;
+  user?: User;
+}
+
+export async function verifyEmail(token: string): Promise<VerifyEmailResponse> {
+  if (!RIXLY_API_BASE_URL) {
+    throw new Error(
+      "API base URL is not configured. Please set NEXT_PUBLIC_RIXLY_API_BASE_URL in your .env.local file."
+    );
+  }
+
+  const response = await fetch(`${RIXLY_API_BASE_URL}/api/auth/verify-email?token=${encodeURIComponent(token)}`, {
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json",
+    },
+  });
+
+  let responseData;
+  const contentType = response.headers.get("content-type");
+
+  try {
+    if (contentType && contentType.includes("application/json")) {
+      responseData = await response.json();
+    } else {
+      const text = await response.text();
+      throw new Error(
+        `Server returned ${response.status} ${response.statusText}. ${response.status === 404 ? "API endpoint not found. Please check if the backend server is running and NEXT_PUBLIC_RIXLY_API_BASE_URL is configured correctly." : text.substring(0, 100)}`
+      );
+    }
+  } catch (error) {
+    if (error instanceof Error && error.message.includes("Server returned")) {
+      throw error;
+    }
+    throw new Error("Failed to parse server response. The server may not be running or the API URL is incorrect.");
+  }
+
+  if (!response.ok) {
+    throw new Error(responseData.message || responseData.error || "Failed to verify email");
+  }
+
+  return responseData;
+}
+
+export interface ResendVerificationResponse {
+  message: string;
+}
+
+export async function resendVerificationEmail(): Promise<ResendVerificationResponse> {
+  const accessToken = localStorage.getItem("accessToken");
+
+  if (!accessToken) {
+    throw new Error("No access token found. Please login.");
+  }
+
+  if (!RIXLY_API_BASE_URL) {
+    throw new Error(
+      "API base URL is not configured. Please set NEXT_PUBLIC_RIXLY_API_BASE_URL in your .env.local file."
+    );
+  }
+
+  const response = await fetch(`${RIXLY_API_BASE_URL}/api/auth/resend-verification-email`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${accessToken}`,
+    },
+  });
+
+  let responseData;
+  const contentType = response.headers.get("content-type");
+
+  try {
+    if (contentType && contentType.includes("application/json")) {
+      responseData = await response.json();
+    } else {
+      const text = await response.text();
+      throw new Error(
+        `Server returned ${response.status} ${response.statusText}. ${response.status === 404 ? "API endpoint not found. Please check if the backend server is running and NEXT_PUBLIC_RIXLY_API_BASE_URL is configured correctly." : text.substring(0, 100)}`
+      );
+    }
+  } catch (error) {
+    if (error instanceof Error && error.message.includes("Server returned")) {
+      throw error;
+    }
+    throw new Error("Failed to parse server response. The server may not be running or the API URL is incorrect.");
+  }
+
+  if (!response.ok) {
+    throw new Error(responseData.message || responseData.error || "Failed to resend verification email");
+  }
+
+  return responseData;
+}

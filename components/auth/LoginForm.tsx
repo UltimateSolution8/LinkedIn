@@ -46,7 +46,7 @@ export default function LoginForm() {
       // IMPORTANT: Clear any cached data from previous session first
       localStorage.clear();
       sessionStorage.clear();
-      
+
       // Store the access token and user data in localStorage
       if (response.accessToken) {
         localStorage.setItem("accessToken", response.accessToken);
@@ -55,6 +55,13 @@ export default function LoginForm() {
         localStorage.setItem("user", JSON.stringify(response.user));
       }
 
+      // Check email verification first
+      if (!response.user.isEmailVerified) {
+        router.push("/verify-email-prompt");
+        return;
+      }
+
+      // Then check subscription access
       try {
         const hasAccess = await checkSubscriptionAccess();
         if (hasAccess) {

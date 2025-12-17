@@ -52,7 +52,7 @@ export default function SignupForm() {
 
       // IMPORTANT: Clear any cached data from previous session first
       localStorage.clear();
-      
+
       // Store the access token and user data in localStorage
       if (response.accessToken) {
         localStorage.setItem("accessToken", response.accessToken);
@@ -61,8 +61,12 @@ export default function SignupForm() {
         localStorage.setItem("user", JSON.stringify(response.user));
       }
 
-      // Redirect new users to pricing page after signup
-      router.push("/pricing");
+      // Check if email is verified and redirect accordingly
+      if (response.user.isEmailVerified) {
+        router.push("/pricing");
+      } else {
+        router.push("/verify-email-prompt");
+      }
     } catch (error) {
       setApiError(error instanceof Error ? error.message : "An error occurred during signup");
     } finally {

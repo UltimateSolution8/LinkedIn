@@ -10,6 +10,7 @@ import PaymentStatusModal from "@/components/pricing/PaymentStatusModal";
 import { detectUserCurrency } from "@/lib/utils/geolocation";
 import { getSubscriptionStatusCached } from "@/lib/utils/subscription";
 import { type SubscriptionStatus } from "@/lib/api/subscription";
+import { getCurrentUser } from "@/lib/api/auth";
 
 // Declare Razorpay types for TypeScript
 declare global {
@@ -35,26 +36,34 @@ export default function PricingPage() {
     status: "loading",
   });
 
-  // Check subscription status on mount
+  // Check email verification and subscription status on mount
   useEffect(() => {
-    const checkSubscription = async () => {
+    const checkUserAccess = async () => {
       try {
         setCheckingSubscription(true);
         const accessToken = localStorage.getItem("accessToken");
 
         if (accessToken) {
+          // Check if email is verified first
+          const currentUser = getCurrentUser();
+          if (currentUser && !currentUser.isEmailVerified) {
+            router.push("/verify-email-prompt");
+            return;
+          }
+
+          // Then check subscription status
           const status = await getSubscriptionStatusCached();
           setSubscriptionStatus(status);
         }
       } catch (error) {
-        console.error("Error checking subscription status:", error);
+        console.error("Error checking user access:", error);
       } finally {
         setCheckingSubscription(false);
       }
     };
 
-    checkSubscription();
-  }, []);
+    checkUserAccess();
+  }, [router]);
 
   // Auto-detect currency and fetch pricing plans on mount
   useEffect(() => {
