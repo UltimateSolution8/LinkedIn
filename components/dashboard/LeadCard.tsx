@@ -133,17 +133,7 @@ export default function LeadCard({
         </div>
 
         {/* Reason for Match */}
-        <div className="p-4 rounded-lg bg-purple-600/5 dark:bg-neutral-900 mt-4">
-          <p className="text-sm font-semibold text-neutral-950 dark:text-white">
-            Reason for Match
-          </p>
-          <p
-            ref={reasonRef}
-            className="text-neutral-500 dark:text-neutral-400 text-sm font-normal leading-normal mt-1 line-clamp-3"
-          >
-            {reasonForMatch}
-          </p>
-        </div>
+        
 
         {/* Show More Button */}
         {showDialog && (
