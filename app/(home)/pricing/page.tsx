@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { getPricingPlans, createSubscription, verifySubscriptionPayment, type PricingPlan, RazorpaySubscriptionResponse } from "@/lib/api/pricing";
 import PaymentStatusModal from "@/components/pricing/PaymentStatusModal";
+import AuthDialog from "@/components/pricing/AuthDialog";
 import { detectUserCurrency } from "@/lib/utils/geolocation";
 import { getSubscriptionStatusCached } from "@/lib/utils/subscription";
 import { type SubscriptionStatus } from "@/lib/api/subscription";
@@ -26,6 +27,8 @@ export default function PricingPage() {
   const [processing, setProcessing] = useState(false);
   const [subscriptionStatus, setSubscriptionStatus] = useState<SubscriptionStatus | null>(null);
   const [checkingSubscription, setCheckingSubscription] = useState(true);
+  const [authDialogOpen, setAuthDialogOpen] = useState(false);
+  const [selectedPlan, setSelectedPlan] = useState<PricingPlan | null>(null);
   const [paymentModal, setPaymentModal] = useState<{
     isOpen: boolean;
     status: "success" | "error" | "loading";
@@ -87,14 +90,16 @@ export default function PricingPage() {
 
   const handleChoosePlan = async (plan: PricingPlan) => {
     try {
-      setProcessing(true);
-
       // Check if user is logged in
       const accessToken = localStorage.getItem("accessToken");
       if (!accessToken) {
-        router.push("/login?redirect=/pricing");
+        // Save the selected plan and open auth dialog
+        setSelectedPlan(plan);
+        setAuthDialogOpen(true);
         return;
       }
+
+      setProcessing(true);
 
       // Create subscription
       const subscriptionData = await createSubscription({
@@ -112,6 +117,42 @@ export default function PricingPage() {
         message: error instanceof Error ? error.message : "Failed to initiate payment. Please try again.",
       });
       setProcessing(false);
+    }
+  };
+
+  const handleAuthSuccess = async () => {
+    // Close the auth dialog
+    setAuthDialogOpen(false);
+
+    // If there's a selected plan, proceed with payment
+    if (selectedPlan) {
+      try {
+        setProcessing(true);
+
+        // Check if email is verified
+        const currentUser = getCurrentUser();
+        if (currentUser && !currentUser.isEmailVerified) {
+          router.push("/verify-email-prompt");
+          return;
+        }
+
+        // Create subscription
+        const subscriptionData = await createSubscription({
+          planId: selectedPlan.id
+        });
+
+        // Initialize Razorpay checkout
+        await initializeRazorpayPayment(subscriptionData, selectedPlan);
+      } catch (error) {
+        console.error("Error initiating payment:", error);
+        setPaymentModal({
+          isOpen: true,
+          status: "error",
+          title: "Payment Error",
+          message: error instanceof Error ? error.message : "Failed to initiate payment. Please try again.",
+        });
+        setProcessing(false);
+      }
     }
   };
 
@@ -387,6 +428,14 @@ export default function PricingPage() {
               ? handleContinueToDashboard
               : undefined
           }
+        />
+
+        {/* Auth Dialog */}
+        <AuthDialog
+          isOpen={authDialogOpen}
+          onClose={() => setAuthDialogOpen(false)}
+          onAuthSuccess={handleAuthSuccess}
+          defaultView="login"
         />
       </div>
     </div>

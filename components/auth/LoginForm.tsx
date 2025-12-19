@@ -20,7 +20,11 @@ const loginSchema = z.object({
 
 type LoginFormData = z.infer<typeof loginSchema>;
 
-export default function LoginForm() {
+interface LoginFormProps {
+  onSuccess?: () => void;
+}
+
+export default function LoginForm({ onSuccess }: LoginFormProps = {}) {
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
   const [apiError, setApiError] = useState<string | null>(null);
@@ -57,7 +61,17 @@ export default function LoginForm() {
 
       // Check email verification first
       if (!response.user.isEmailVerified) {
-        router.push("/verify-email-prompt");
+        if (onSuccess) {
+          onSuccess();
+        } else {
+          router.push("/verify-email-prompt");
+        }
+        return;
+      }
+
+      // If onSuccess callback is provided, call it instead of redirecting
+      if (onSuccess) {
+        onSuccess();
         return;
       }
 

@@ -25,7 +25,11 @@ const signupSchema = z.object({
 
 type SignupFormData = z.infer<typeof signupSchema>;
 
-export default function SignupForm() {
+interface SignupFormProps {
+  onSuccess?: () => void;
+}
+
+export default function SignupForm({ onSuccess }: SignupFormProps = {}) {
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
   const [apiError, setApiError] = useState<string | null>(null);
@@ -61,6 +65,12 @@ export default function SignupForm() {
         localStorage.setItem("user", JSON.stringify(response.user));
       }
 
+      // If onSuccess callback is provided, call it instead of redirecting
+      if (onSuccess) {
+        onSuccess();
+        return;
+      }
+
       // Check if email is verified and redirect accordingly
       if (response.user.isEmailVerified) {
         router.push("/pricing");
@@ -89,36 +99,38 @@ export default function SignupForm() {
         </div>
       )}
 
-      <div className="flex flex-col gap-1.5">
-        <Label htmlFor="firstName" className="text-neutral-950/80 dark:text-white/80">
-          First Name
-        </Label>
-        <Input
-          id="firstName"
-          type="text"
-          placeholder="John"
-          {...register("firstName")}
-          className="border-neutral-200 dark:border-white/20 focus-visible:ring-purple-600/50 focus-visible:border-purple-600/50"
-        />
-        {errors.firstName && (
-          <p className="text-sm text-red-500">{errors.firstName.message}</p>
-        )}
-      </div>
+      <div className="grid grid-cols-2 gap-3">
+        <div className="flex flex-col gap-1.5">
+          <Label htmlFor="firstName" className="text-neutral-950/80 dark:text-white/80">
+            First Name
+          </Label>
+          <Input
+            id="firstName"
+            type="text"
+            placeholder="John"
+            {...register("firstName")}
+            className="border-neutral-200 dark:border-white/20 focus-visible:ring-purple-600/50 focus-visible:border-purple-600/50"
+          />
+          {errors.firstName && (
+            <p className="text-sm text-red-500">{errors.firstName.message}</p>
+          )}
+        </div>
 
-      <div className="flex flex-col gap-1.5">
-        <Label htmlFor="lastName" className="text-neutral-950/80 dark:text-white/80">
-          Last Name
-        </Label>
-        <Input
-          id="lastName"
-          type="text"
-          placeholder="Doe"
-          {...register("lastName")}
-          className="border-neutral-200 dark:border-white/20 focus-visible:ring-purple-600/50 focus-visible:border-purple-600/50"
-        />
-        {errors.lastName && (
-          <p className="text-sm text-red-500">{errors.lastName.message}</p>
-        )}
+        <div className="flex flex-col gap-1.5">
+          <Label htmlFor="lastName" className="text-neutral-950/80 dark:text-white/80">
+            Last Name
+          </Label>
+          <Input
+            id="lastName"
+            type="text"
+            placeholder="Doe"
+            {...register("lastName")}
+            className="border-neutral-200 dark:border-white/20 focus-visible:ring-purple-600/50 focus-visible:border-purple-600/50"
+          />
+          {errors.lastName && (
+            <p className="text-sm text-red-500">{errors.lastName.message}</p>
+          )}
+        </div>
       </div>
 
       <div className="flex flex-col gap-1.5">
