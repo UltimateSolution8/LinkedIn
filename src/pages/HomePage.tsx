@@ -116,28 +116,25 @@ export default function LandingPage() {
   };
 
   return (
-    // <div className="min-h-screen bg-gradient-to-br from-purple-100 via-white to-purple-50">
-    //   {/* Navigation */}
-    //    <Navbar/>
        <>
       {/* Hero Section */}
-      <section className=" px-4 sm:px-6 lg:px-8">
+      <section className="px-4 sm:px-6 lg:px-8 py-12 sm:py-20">
         <div className="max-w-7xl mx-auto">
-          <div className="grid lg:grid-cols-2 gap-12 items-center">
+          <div className="grid lg:grid-cols-2 gap-8 lg:gap-12 items-center">
             <div className="space-y-8">
               <div className="inline-flex items-center space-x-2 bg-purple-100 text-purple-700 px-4 py-2 rounded-full text-sm font-medium">
                 <Sparkles className="w-4 h-4" />
                 <span>AI-Powered Reddit Intelligence</span>
               </div>
 
-              <h1 className="text-5xl sm:text-6xl lg:text-7xl font-bold text-gray-900 leading-tight">
+              <h1 className="text-4xl sm:text-6xl lg:text-7xl font-bold text-gray-900 leading-tight">
                 Turn Reddit into your{' '}
                 <span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-600 to-purple-800">
                   growth engine
                 </span>
               </h1>
 
-              <p className="text-xl text-gray-600 leading-relaxed">
+              <p className="text-lg sm:text-xl text-gray-600 leading-relaxed">
                 AI-powered monitoring, smart keyword tracking, and automated comment suggestions that turn Reddit conversations into real business opportunities.
               </p>
 
@@ -145,7 +142,7 @@ export default function LandingPage() {
               <Button
                 size="lg"
                 disabled={isLoading}
-                className="bg-gradient-to-r from-purple-600 to-purple-700 hover:from-purple-700 hover:to-purple-800 text-white text-lg px-8 py-6 rounded-xl disabled:opacity-50 disabled:cursor-not-allowed"
+                className="bg-gradient-to-r from-purple-600 to-purple-700 hover:from-purple-700 hover:to-purple-800 text-white text-base sm:text-lg px-6 py-4 sm:px-8 sm:py-6 rounded-xl disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 {isLoading ? "Loading..." : "Get Started"} <ArrowRight className="ml-2 w-5 h-5" />
               </Button>
@@ -153,7 +150,7 @@ export default function LandingPage() {
             </div>
 
             {/* Dashboard Preview Card */}
-            <div className="relative">
+            <div className="relative flex justify-center">
               <Card className="bg-white shadow-2xl border-0 overflow-hidden">
                 <CardContent className="p-6 space-y-6">
                   <div className="flex items-center justify-between">
@@ -210,21 +207,21 @@ export default function LandingPage() {
       </section>
 
       {/* Features Section */}
-      <section id="features" className="py-20 px-4 sm:px-6 lg:px-8 ">
+      <section id="features" className="py-16 sm:py-20 px-4 sm:px-6 lg:px-8 ">
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-16">
-            <h2 className="text-4xl sm:text-5xl font-bold text-gray-900 mb-4">
+            <h2 className="text-3xl sm:text-5xl font-bold text-gray-900 mb-4">
               Everything you need to spot<br />and act on opportunities
             </h2>
-            <p className="text-xl text-gray-600">
+            <p className="text-lg sm:text-xl text-gray-600">
               Track what matters, discover what&apos;s next, and respond with AI — all in one place
             </p>
           </div>
 
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 justify-items-center">
             {/* Keyword Tracking */}
-            <Card className="border-0 shadow-lg hover:shadow-xl transition-shadow duration-300">
-              <CardContent className="p-8 space-y-4">
+            <Card className="border-0 shadow-lg hover:shadow-xl transition-shadow duration-300 max-w-sm">
+              <CardContent className="p-6 sm:p-8 space-y-4">
                 <div className="w-12 h-12 bg-gradient-to-br from-purple-500 to-purple-600 rounded-xl flex items-center justify-center">
                   <Search className="w-6 h-6 text-white" />
                 </div>
@@ -236,9 +233,9 @@ export default function LandingPage() {
             </Card>
 
             {/* Auto Keyword Extraction */}
-            <Card className="border-0 shadow-lg hover:shadow-xl transition-shadow duration-300 relative">
+            <Card className="border-0 shadow-lg hover:shadow-xl transition-shadow duration-300 relative max-w-sm">
               <Badge className="absolute top-4 right-4 bg-purple-100 text-purple-700 hover:bg-purple-100">New</Badge>
-              <CardContent className="p-8 space-y-4">
+              <CardContent className="p-6 sm:p-8 space-y-4">
                 <div className="w-12 h-12 bg-gradient-to-br from-purple-500 to-purple-600 rounded-xl flex items-center justify-center">
                   <Sparkles className="w-6 h-6 text-white" />
                 </div>
@@ -250,8 +247,8 @@ export default function LandingPage() {
             </Card>
 
             {/* Reddit Monitoring */}
-            <Card className="border-0 shadow-lg hover:shadow-xl transition-shadow duration-300">
-              <CardContent className="p-8 space-y-4">
+            <Card className="border-0 shadow-lg hover:shadow-xl transition-shadow duration-300 max-w-sm">
+              <CardContent className="p-6 sm:p-8 space-y-4">
                 <div className="w-12 h-12 bg-gradient-to-br from-purple-500 to-purple-600 rounded-xl flex items-center justify-center">
                   <MessageSquare className="w-6 h-6 text-white" />
                 </div>
@@ -263,8 +260,8 @@ export default function LandingPage() {
             </Card>
 
             {/* AI Comment Suggestions */}
-            <Card className="border-0 shadow-lg hover:shadow-xl transition-shadow duration-300">
-              <CardContent className="p-8 space-y-4">
+            <Card className="border-0 shadow-lg hover:shadow-xl transition-shadow duration-300 max-w-sm">
+              <CardContent className="p-6 sm:p-8 space-y-4">
                 <div className="w-12 h-12 bg-gradient-to-br from-purple-500 to-purple-600 rounded-xl flex items-center justify-center">
                   <Sparkles className="w-6 h-6 text-white" />
                 </div>
@@ -276,8 +273,8 @@ export default function LandingPage() {
             </Card>
 
             {/* Dashboard & Alerts */}
-            <Card className="border-0 shadow-lg hover:shadow-xl transition-shadow duration-300">
-              <CardContent className="p-8 space-y-4">
+            <Card className="border-0 shadow-lg hover:shadow-xl transition-shadow duration-300 max-w-sm">
+              <CardContent className="p-6 sm:p-8 space-y-4">
                 <div className="w-12 h-12 bg-gradient-to-br from-purple-500 to-purple-600 rounded-xl flex items-center justify-center">
                   <BarChart3 className="w-6 h-6 text-white" />
                 </div>
@@ -292,14 +289,14 @@ export default function LandingPage() {
       </section>
 
       {/* Dashboard Section */}
-      <section id="dashboard" className="py-20 px-4 sm:px-6 lg:px-8 bg-gradient-to-br from-purple-50 to-white">
+      <section id="dashboard" className="py-16 sm:py-20 px-4 sm:px-6 lg:px-8 bg-gradient-to-br from-purple-50 to-white">
         <div className="max-w-7xl mx-auto">
-          <div className="grid lg:grid-cols-2 gap-12 items-center">
+          <div className="grid lg:grid-cols-2 gap-8 lg:gap-12 items-center">
             <div className="space-y-6">
-              <h2 className="text-4xl sm:text-5xl font-bold text-gray-900">
+              <h2 className="text-3xl sm:text-5xl font-bold text-gray-900">
                 A dashboard built for speed and clarity
               </h2>
-              <p className="text-xl text-gray-600">
+              <p className="text-lg sm:text-xl text-gray-600">
                 Scan trending posts, prioritize outreach, and approve AI-suggested replies in seconds. No more lost chaos or manual keyword searches — just a clean inbox for Reddit opportunities.
               </p>
               <ul className="space-y-3">
@@ -320,8 +317,8 @@ export default function LandingPage() {
 
             {/* Dashboard Card */}
             <Card className="bg-white shadow-2xl border-0">
-              <CardContent className="p-6 space-y-6">
-                <div className="flex items-center justify-between">
+              <CardContent className="p-4 sm:p-6 space-y-6">
+                <div className="flex flex-wrap items-center justify-between gap-4">
                   <div className="flex items-center space-x-2">
                     <div className="w-8 h-8 bg-gradient-to-br from-purple-600 to-purple-800 rounded-lg flex items-center justify-center">
                       <Sparkles className="w-4 h-4 text-white" />
@@ -341,7 +338,7 @@ export default function LandingPage() {
                   </div>
                 </div>
 
-                <div className="grid grid-cols-3 gap-4">
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                   <div className="text-center p-4 bg-purple-50 rounded-lg">
                     <div className="text-3xl font-bold text-gray-900">23</div>
                     <div className="text-sm text-emerald-600 font-medium">+12% Rush today</div>
@@ -438,17 +435,17 @@ export default function LandingPage() {
       </section>
 
       {/* Testimonials Section */}
-      <section className="py-24 px-4 sm:px-6 lg:px-8 bg-gradient-to-br from-purple-50 via-white to-purple-50">
+      <section className="py-16 sm:py-24 px-4 sm:px-6 lg:px-8 bg-gradient-to-br from-purple-50 via-white to-purple-50">
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-16">
             <div className="inline-flex items-center space-x-2 bg-purple-100 text-purple-700 px-4 py-2 rounded-full text-sm font-medium mb-6">
               <Sparkles className="w-4 h-4" />
               <span>Customer Success Stories</span>
             </div>
-            <h2 className="text-4xl sm:text-5xl font-bold text-gray-900 mb-4">
+            <h2 className="text-3xl sm:text-5xl font-bold text-gray-900 mb-4">
               Loved by marketing teams worldwide
             </h2>
-            <p className="text-xl text-gray-600 max-w-2xl mx-auto">
+            <p className="text-lg sm:text-xl text-gray-600 max-w-2xl mx-auto">
               See how companies are using Rixly to discover leads and grow their business on Reddit
             </p>
           </div>
@@ -503,7 +500,7 @@ export default function LandingPage() {
       </section>
 
       {/* CTA Section */}
-      <section className="py-24 px-4 sm:px-6 lg:px-8 bg-gradient-to-r from-purple-600 via-purple-700 to-purple-800 relative overflow-hidden">
+      <section className="py-16 sm:py-24 px-4 sm:px-6 lg:px-8 bg-gradient-to-r from-purple-600 via-purple-700 to-purple-800 relative overflow-hidden">
         <div className="absolute inset-0 bg-grid-white/5"></div>
         <div className="max-w-4xl mx-auto text-center relative z-10">
           <div className="inline-flex items-center space-x-2 bg-white/20 text-white px-4 py-2 rounded-full text-sm font-medium mb-8">
@@ -511,11 +508,11 @@ export default function LandingPage() {
             <span>AI-Powered Reddit Intelligence</span>
           </div>
           
-          <h2 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-white mb-6">
+          <h2 className="text-3xl sm:text-5xl font-bold text-white mb-6">
             Start tracking conversations that convert
           </h2>
           
-          <p className="text-xl text-purple-100 mb-10">
+          <p className="text-lg sm:text-xl text-purple-100 mb-10">
             Access to keyword tracking, subreddit monitoring, and AI comment suggestions.
           </p>
 
@@ -523,16 +520,13 @@ export default function LandingPage() {
           <Button
             size="lg"
             disabled={isLoading}
-            className="bg-white text-purple-700 hover:bg-gray-100 text-lg px-8 py-6 rounded-xl font-semibold shadow-xl disabled:opacity-50 disabled:cursor-not-allowed"
+            className="bg-white text-purple-700 hover:bg-gray-100 text-base sm:text-lg px-6 py-4 sm:px-8 sm:py-6 rounded-xl font-semibold shadow-xl disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {isLoading ? "Loading..." : "Get Started"} <ArrowRight className="ml-2 w-5 h-5" />
           </Button>
           </Link>
         </div>
       </section>
-
-      {/* Footer */}
-       
     </>
   );
 }
