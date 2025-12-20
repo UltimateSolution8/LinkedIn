@@ -48,7 +48,7 @@ const Navbar = () => {
             {user ? (
               <UserProfileDropdown />
             ) : (
-              <Link href={`/login`}>
+              <Link href={`/request-demo`}>
                 <Button className="bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 text-white">
                   Get Started
                 </Button>

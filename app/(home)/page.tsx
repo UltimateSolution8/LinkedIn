@@ -143,14 +143,15 @@ export default function LandingPage() {
                 AI-powered monitoring, smart keyword tracking, and automated comment suggestions that turn Reddit conversations into real business opportunities.
               </p>
 
+                <Link href={`/request-demo`}>
               <Button
                 size="lg"
-                onClick={handleGetStarted}
                 disabled={isLoading}
                 className="bg-gradient-to-r from-purple-600 to-purple-700 hover:from-purple-700 hover:to-purple-800 text-white text-lg px-8 py-6 rounded-xl disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 {isLoading ? "Loading..." : "Get Started"} <ArrowRight className="ml-2 w-5 h-5" />
               </Button>
+              </Link>
             </div>
 
             {/* Dashboard Preview Card */}
@@ -520,14 +521,15 @@ export default function LandingPage() {
             Access to keyword tracking, subreddit monitoring, and AI comment suggestions.
           </p>
 
+          <Link href={`/request-demo`}>    
           <Button
             size="lg"
-            onClick={handleGetStarted}
             disabled={isLoading}
             className="bg-white text-purple-700 hover:bg-gray-100 text-lg px-8 py-6 rounded-xl font-semibold shadow-xl disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {isLoading ? "Loading..." : "Get Started"} <ArrowRight className="ml-2 w-5 h-5" />
           </Button>
+          </Link>
         </div>
       </section>
 
