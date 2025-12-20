@@ -7,10 +7,13 @@ import UserProfileDropdown from './shared/UserProfileDropdown'
 import { getCurrentUser } from '@/lib/api/auth'
 import type { User } from '@/lib/api/auth'
 import { Menu, X } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
 
 const Navbar = () => {
   const [user, setUser] = useState<User | null>(null);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+
+  const closeMenu = () => setIsMenuOpen(false);
 
   useEffect(() => {
     setUser(getCurrentUser());
@@ -63,31 +66,38 @@ const Navbar = () => {
           </div>
         </div>
       </div>
-      {isMenuOpen && (
-        <div className="md:hidden">
-          <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3">
-            <a href="#features" className="text-gray-600 hover:text-gray-900 block px-3 py-2 rounded-md text-base font-medium">Features</a>
-            <Link to="/pricing" className="text-gray-600 hover:text-gray-900 block px-3 py-2 rounded-md text-base font-medium">Pricing</Link>
-            <Link to="/contactus" className="text-gray-600 hover:text-gray-900 block px-3 py-2 rounded-md text-base font-medium">Contact Us</Link>
-            <Link to={`/request-demo`}>
-              <Button variant="outline" className="w-full mt-2 border-purple-600 text-purple-600 hover:bg-purple-50">
-                Request Demo
-              </Button>
-            </Link>
-            {user ? (
-              <div className="pt-4 pb-3 border-t border-gray-200">
-                <UserProfileDropdown />
-              </div>
-            ) : (
-              <Link to={`/request-demo`}>
-                <Button className="w-full mt-2 bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 text-white">
-                  Get Started
+      <AnimatePresence>
+        {isMenuOpen && (
+          <motion.div
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ opacity: 1, height: "auto" }}
+            exit={{ opacity: 0, height: 0 }}
+            className="md:hidden overflow-hidden"
+          >
+            <div className="px-4 pt-2 pb-4 space-y-1 sm:px-6">
+              <a href="#features" onClick={closeMenu} className="text-gray-600 hover:text-gray-900 block px-3 py-2 rounded-md text-base font-medium">Features</a>
+              <Link to="/pricing" onClick={closeMenu} className="text-gray-600 hover:text-gray-900 block px-3 py-2 rounded-md text-base font-medium">Pricing</Link>
+              <Link to="/contactus" onClick={closeMenu} className="text-gray-600 hover:text-gray-900 block px-3 py-2 rounded-md text-base font-medium">Contact Us</Link>
+              <Link to={`/request-demo`} onClick={closeMenu}>
+                <Button variant="outline" className="w-full mt-2 border-purple-600 text-purple-600 hover:bg-purple-50">
+                  Request Demo
                 </Button>
               </Link>
-            )}
-          </div>
-        </div>
-      )}
+              {user ? (
+                <div className="pt-4 pb-3 border-t border-gray-200">
+                  <UserProfileDropdown />
+                </div>
+              ) : (
+                <Link to={`/request-demo`} onClick={closeMenu}>
+                  <Button className="w-full mt-2 bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 text-white">
+                    Get Started
+                  </Button>
+                </Link>
+              )}
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </nav>
   )
 }

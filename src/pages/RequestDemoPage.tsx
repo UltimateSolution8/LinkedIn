@@ -114,7 +114,7 @@ const RequestDemoPage = () => {
         initial={{ opacity: 0, y: 15 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.4 }}
-        className="w-full max-w-md bg-white shadow-xl rounded-2xl p-8 border border-gray-200"
+        className="w-full max-w-md bg-white shadow-xl rounded-2xl p-6 sm:p-8 border border-gray-200"
       >
         <h2 className="text-2xl font-semibold text-gray-900 mb-1">
           Request a Demo
@@ -172,7 +172,7 @@ const RequestDemoPage = () => {
             <label className="block text-sm font-medium text-gray-700 mb-1">
               Phone Number
             </label>
-            <div className="flex gap-2">
+            <div className="flex flex-col sm:flex-row gap-2">
               <SearchableCountrySelect
                 countries={countries}
                 value={selectedCountryCode}
