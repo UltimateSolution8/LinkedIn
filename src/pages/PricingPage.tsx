@@ -453,12 +453,12 @@ function PricingCard({ plan, onChoosePlan, processing = false }: PricingCardProp
       {/* Purple Accent Header */}
       <div className="h-2 bg-gradient-to-r from-purple-600 to-purple-700"></div>
 
-      <CardHeader className="px-6 pt-6 pb-4">
-        <h3 className="text-2xl font-bold text-gray-900 mb-4">{plan.name}</h3>
+      <CardHeader className="p-4 sm:p-6 pb-4">
+        <h3 className="text-xl sm:text-2xl font-bold text-gray-900 mb-4">{plan.name}</h3>
 
         {/* Pricing Section */}
         <div className="flex items-baseline gap-3 mb-4">
-          <span className="text-5xl font-bold text-gray-900">
+          <span className="text-4xl sm:text-5xl font-bold text-gray-900">
             {plan.currencySymbol}
             {plan.currentPrice.toLocaleString(undefined, {
               minimumFractionDigits: plan.currency === "USD" ? 2 : 0,
@@ -486,7 +486,7 @@ function PricingCard({ plan, onChoosePlan, processing = false }: PricingCardProp
         )}
       </CardHeader>
 
-      <CardContent className="px-6 pb-6">
+      <CardContent className="p-4 sm:p-6">
         {/* Features List */}
         <ul className="space-y-3 mb-6">
           {plan.features.map((feature, index) => (
@@ -501,7 +501,7 @@ function PricingCard({ plan, onChoosePlan, processing = false }: PricingCardProp
         <Button
           onClick={onChoosePlan}
           disabled={processing}
-          className="w-full bg-gradient-to-r from-purple-600 to-purple-700 hover:from-purple-700 hover:to-purple-800 text-white py-6 rounded-xl text-base font-semibold disabled:opacity-50 disabled:cursor-not-allowed"
+          className="w-full bg-gradient-to-r from-purple-600 to-purple-700 hover:from-purple-700 hover:to-purple-800 text-white py-4 sm:py-6 rounded-xl text-sm sm:text-base font-semibold disabled:opacity-50 disabled:cursor-not-allowed"
         >
           {processing ? (
             <>
