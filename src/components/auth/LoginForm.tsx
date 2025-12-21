@@ -152,12 +152,12 @@ export default function LoginForm({ onSuccess }: LoginFormProps = {}) {
         )}
       </div>
 
-      <Link
+      <a
         href="#"
         className="text-sm text-purple-600 dark:text-purple-500 hover:underline self-end"
       >
         Forgot Password?
-      </Link>
+      </a>
 
       <Button
         type="submit"

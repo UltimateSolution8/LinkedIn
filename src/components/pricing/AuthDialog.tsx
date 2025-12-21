@@ -15,7 +15,7 @@ import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { AlertCircle } from "lucide-react";
 import GoogleIcon from "@/components/auth/GoogleIcon";
-import { signin, signup, getCurrentUser, verifyOtp } from "@/lib/api/auth";
+import { signin, signup, verifyOtp } from "@/lib/api/auth";
 import { checkSubscriptionAccess } from "@/lib/utils/subscription";
 
 interface AuthDialogProps {

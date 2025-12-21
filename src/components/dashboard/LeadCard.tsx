@@ -10,7 +10,6 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { Link } from "react-router-dom";
 import GenerateMessageDialog from "./GenerateMessageDialog";
 
 interface LeadCardProps {
@@ -76,13 +75,14 @@ export default function LeadCard({
         <div className="flex justify-between items-start">
           <div>
             <div className="flex items-center gap-2">
-              <Link
+              <a
                 href={`https://reddit.com/user/${username.replace('u/', '')}`}
                 target="_blank"
+                rel="noopener noreferrer"
                 className="text-neutral-950 dark:text-white text-lg font-semibold leading-normal hover:underline"
               >
                 {username}
-              </Link>
+              </a>
               <ExternalLink className="w-4 h-4 text-neutral-500 dark:text-neutral-400 " />
             </div>
           </div>
@@ -120,14 +120,15 @@ export default function LeadCard({
               <span>•</span>
               <span>in {subreddit}</span>
             </div>
-            <Link
+            <a
               href={postUrl}
               target="_blank"
+              rel="noopener noreferrer"
               className="flex items-center gap-1.5 text-purple-600 dark:text-teal-400 text-sm font-bold hover:underline"
             >
               <span>View Post</span>
                <ExternalLink className="w-4 h-4 text-neutral-500 dark:text-neutral-400 " />
-            </Link>
+            </a>
           </div>
         </div>
 
@@ -149,12 +150,13 @@ export default function LeadCard({
               <DialogHeader>
                 <DialogTitle className="text-xl font-semibold flex items-center gap-2">
                   <span>{username}</span>
-                  <Link
+                  <a
                     href={`https://reddit.com/user/${username.replace('u/', '')}`}
                     target="_blank"
+                    rel="noopener noreferrer"
                   >
                     <ExternalLink className="w-4 h-4 text-neutral-500 dark:text-neutral-400" />
-                  </Link>
+                  </a>
                 </DialogTitle>
                 <DialogDescription className="text-sm text-neutral-500 dark:text-neutral-400">
                   <div className="flex items-center gap-2 mt-2">
@@ -189,14 +191,15 @@ export default function LeadCard({
                       <span>•</span>
                       <span>in {subreddit}</span>
                     </div>
-                    <Link
+                    <a
                       href={postUrl}
                       target="_blank"
+                      rel="noopener noreferrer"
                       className="flex items-center gap-1.5 text-purple-600 dark:text-teal-400 text-sm font-bold hover:underline"
                     >
                       <span>View Post</span>
                       <ArrowRight className="w-4 h-4" />
-                    </Link>
+                    </a>
                   </div>
                 </div>
 

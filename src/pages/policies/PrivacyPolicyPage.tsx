@@ -1,8 +1,6 @@
 
-import Navbar from "@/components/Navbar";
 import { Card, CardContent } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
-import { Link } from "react-router-dom";
 
 export default function PrivacyPolicyPage() {
   return (
@@ -101,7 +99,7 @@ export default function PrivacyPolicyPage() {
               Plot NO- 321/2487, BJB College Cooperative Society, Azad Nagar Khorda, ODISHA 751002
             </p>
             <p className="text-gray-700">
-              Phone: 8249467209<br />Email: <Link className="text-primary hover:underline" href="mailto:admin@userixly.com">admin@userixly.com</Link>
+              Phone: 8249467209<br />Email: <a className="text-primary hover:underline" href="mailto:admin@userixly.com">admin@userixly.com</a>
             </p>
             <p className="text-gray-700">We will promptly correct any information found to be incorrect.</p>
           </section>

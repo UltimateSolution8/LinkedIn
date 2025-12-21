@@ -8,7 +8,7 @@ import { verifyEmail, getCurrentUser } from "@/lib/api/auth";
 
 function VerifyEmailContent() {
   const navigate = useNavigate();
-  const searchParams = useSearchParams();
+  const [searchParams] = useSearchParams();
   const [status, setStatus] = useState<"loading" | "success" | "error">("loading");
   const [message, setMessage] = useState("");
 

@@ -86,6 +86,7 @@ export default function LandingPage() {
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(false);
 
+  // @ts-expect-error - handleGetStarted is defined but not used
   const handleGetStarted = async () => {
     setIsLoading(true);
     try {

@@ -1,7 +1,6 @@
 
 import { useState } from "react";
 import { Badge } from "@/components/ui/badge";
-import MetricsPanel from "@/components/dashboard/MetricsPanel";
 import FindPostsTab from "@/components/dashboard/FindPostsTab";
 import FindLeadsTab from "@/components/dashboard/FindLeadsTab";
 import SettingsTab from "@/components/dashboard/SettingsTab";
