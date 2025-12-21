@@ -119,16 +119,16 @@ export default function LandingPage() {
   return (
        <>
       {/* Hero Section */}
-      <section className="px-4 sm:px-6 lg:px-8 py-12 sm:py-20">
+      <section className="px-4 sm:px-6 lg:px-8 pt-24 sm:pt-32 pb-16 sm:pb-20">
         <div className="max-w-7xl mx-auto">
-          <div className="grid lg:grid-cols-2 gap-8 lg:gap-12 items-center">
+          <div className="grid lg:grid-cols-2 gap-12 items-center">
             <div className="space-y-8">
               <div className="inline-flex items-center space-x-2 bg-purple-100 text-purple-700 px-4 py-2 rounded-full text-sm font-medium">
                 <Sparkles className="w-4 h-4" />
                 <span>AI-Powered Reddit Intelligence</span>
               </div>
 
-              <h1 className="text-4xl sm:text-6xl lg:text-7xl font-bold text-gray-900 leading-tight">
+              <h1 className="text-5xl sm:text-6xl lg:text-7xl font-bold text-gray-900 leading-tight">
                 Turn Reddit into your{' '}
                 <span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-600 to-purple-800">
                   growth engine
@@ -151,7 +151,7 @@ export default function LandingPage() {
             </div>
 
             {/* Dashboard Preview Card */}
-            <div className="relative flex justify-center">
+            <div className="relative">
               <Card className="bg-white shadow-2xl border-0 overflow-hidden">
                 <CardContent className="p-6 space-y-6">
                   <div className="flex items-center justify-between">
@@ -208,7 +208,7 @@ export default function LandingPage() {
       </section>
 
       {/* Features Section */}
-      <section id="features" className="py-16 sm:py-20 px-4 sm:px-6 lg:px-8 ">
+      <section id="features" className="py-20 px-4 sm:px-6 lg:px-8 ">
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-16">
             <h2 className="text-3xl sm:text-5xl font-bold text-gray-900 mb-4">
