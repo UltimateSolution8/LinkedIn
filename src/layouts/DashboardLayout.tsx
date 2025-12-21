@@ -86,12 +86,14 @@ export default function DashboardLayout() {
 
   return (
     <ProjectProvider>
-      <div className="flex h-screen w-full">
-        <Sidebar />
-        <main className="flex-1 flex flex-col overflow-hidden">
-          <DashboardHeader />
-          <Outlet />
-        </main>
+      <div className="flex flex-col h-screen w-full">
+        <DashboardHeader />
+        <div className="flex flex-1">
+          <Sidebar />
+          <main className="flex-1 overflow-hidden">
+            <Outlet />
+          </main>
+        </div>
       </div>
     </ProjectProvider>
   )

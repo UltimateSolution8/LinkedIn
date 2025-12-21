@@ -4,7 +4,6 @@ import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { useNavigate } from "react-router-dom";
 import { useProject } from "@/contexts/ProjectContext";
-import Logo from "@/components/common/Logo";
 
 export default function Sidebar() {
   const navigate = useNavigate();
@@ -19,14 +18,11 @@ export default function Sidebar() {
   };
 
   return (
-    <aside className="flex w-64 flex-col border-r border-neutral-200 dark:border-neutral-800 bg-white dark:bg-neutral-950">
+    <aside className="flex w-64 flex-col border-r border-neutral-200 dark:border-neutral-800 bg-white dark:bg-neutral-950" style={{ height: 'calc(100vh - 64px)' }}>
       <div className="flex h-full flex-col justify-between p-4">
         <div className="flex flex-col gap-4">
-          {/* Logo Section */}
-          <Logo />
-
           {/* Projects List */}
-          <div className="flex flex-col gap-2 mt-4">
+          <div className="flex flex-col gap-2">
             {isLoading ? (
               <div className="flex items-center justify-center py-8">
                 <p className="text-sm text-neutral-500 dark:text-neutral-400">Loading projects...</p>
