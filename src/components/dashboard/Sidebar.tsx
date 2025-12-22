@@ -5,12 +5,21 @@ import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { useNavigate } from "react-router-dom";
 import { useProject } from "@/contexts/ProjectContext";
 
+// Maximum number of projects a user can create
+const MAX_PROJECTS = 2;
+
 export default function Sidebar() {
   const navigate = useNavigate();
   const { selectedProjectId, setSelectedProjectId, projects, isLoading, error } = useProject();
 
+  // Disable create button when user has reached the maximum project limit
+  const isCreateButtonDisabled = projects.length >= MAX_PROJECTS;
+
   const handleCreateProject = () => {
-    navigate("/create-project");
+    // Only navigate if user hasn't reached the project limit
+    if (!isCreateButtonDisabled) {
+      navigate("/create-project");
+    }
   };
 
   const getProjectInitial = (projectName: string) => {
@@ -81,10 +90,18 @@ export default function Sidebar() {
         {/* Create New Project Button */}
         <Button
           onClick={handleCreateProject}
-          className="w-full bg-purple-600 hover:bg-purple-700 text-white gap-2"
+          disabled={isCreateButtonDisabled}
+          title={isCreateButtonDisabled ? `You can create a maximum of ${MAX_PROJECTS} projects` : "Create a new project"}
+          className={`w-full gap-2 ${
+            isCreateButtonDisabled
+              ? "bg-neutral-400 hover:bg-neutral-400 text-neutral-600 cursor-not-allowed"
+              : "bg-purple-600 hover:bg-purple-700 text-white"
+          }`}
         >
           <Plus className="w-5 h-5" />
-          <span className="truncate">Create New Project</span>
+          <span className="truncate">
+            {isCreateButtonDisabled ? `Max ${MAX_PROJECTS} Projects` : "Create New Project"}
+          </span>
         </Button>
       </div>
     </aside>
