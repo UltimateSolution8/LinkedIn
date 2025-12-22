@@ -229,6 +229,7 @@ export async function getAdminProjects(): Promise<Project[]> {
   // Transform API response to match Project interface
   return responseData.projects.map((project: any) => ({
     _id: String(project.id),
+    url: project.url,
     projectName: project.projectName,
     websiteUrl: project.projectUrl,
     description: project.projectDescription,

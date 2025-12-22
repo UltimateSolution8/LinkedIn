@@ -22,35 +22,10 @@ export default function SettingsTab({ projectId }: SettingsTabProps) {
     );
   }
 
-  const { keywords = [], semanticQueries = [], description = "" } = project;
+  const { keywords = [], semanticQueries = [] } = project;
 
   return (
     <div className="flex flex-col pt-6 gap-8 max-w-5xl">
-      {/* Product Description Section */}
-      <div className="space-y-4">
-        <div>
-          <h2 className="text-xl font-bold text-neutral-950 dark:text-white">
-            Product Description
-          </h2>
-          <p className="text-sm text-neutral-500 dark:text-neutral-400 mt-1">
-            Description of your product
-          </p>
-        </div>
-        {description ? (
-          <div className="bg-neutral-50 dark:bg-neutral-800/50 border border-neutral-200 dark:border-neutral-700 rounded-lg p-6">
-            <p className="text-sm text-neutral-700 dark:text-neutral-300 leading-relaxed">
-              {description}
-            </p>
-          </div>
-        ) : (
-          <div className="bg-neutral-50 dark:bg-neutral-800/50 border border-neutral-200 dark:border-neutral-700 rounded-lg p-6">
-            <p className="text-sm text-neutral-500 dark:text-neutral-400 italic">
-              No description available
-            </p>
-          </div>
-        )}
-      </div>
-
       {/* Keywords Section */}
       <div className="space-y-4">
         <div>
