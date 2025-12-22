@@ -5,7 +5,7 @@
 
 const GEOLOCATION_CACHE_KEY = 'rixly_user_currency';
 const GEOLOCATION_API_URL = 'https://ipapi.co/json/';
-const DEFAULT_CURRENCY = 'INR';
+const DEFAULT_CURRENCY = 'USD';
 const INDIA_CURRENCY = 'INR';
 const REQUEST_TIMEOUT = 5000; // 5 seconds
 
