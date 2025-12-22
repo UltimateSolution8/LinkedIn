@@ -86,11 +86,14 @@ export default function DashboardLayout() {
 
   return (
     <ProjectProvider>
-      <div className="flex flex-col h-screen w-full">
+      <div className="flex flex-col h-screen w-full overflow-hidden">
         <DashboardHeader />
-        <div className="flex flex-1">
-          <Sidebar />
-          <main className="flex-1 overflow-hidden">
+        <div className="flex flex-1 overflow-hidden">
+          {/* Hide sidebar on mobile (md and below), show on desktop (lg and above) */}
+          <div className="hidden lg:block">
+            <Sidebar />
+          </div>
+          <main className="flex-1 w-full h-full">
             <Outlet />
           </main>
         </div>

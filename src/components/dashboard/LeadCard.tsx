@@ -40,8 +40,6 @@ export default function LeadCard({
   const sourcePostRef = useRef<HTMLParagraphElement>(null);
   const reasonRef = useRef<HTMLParagraphElement>(null);
 
-  const maxStars = 10;
-
   const formatTimeAgo = (timestamp: string) => {
     const now = new Date();
     const created = new Date(timestamp);
@@ -86,20 +84,9 @@ export default function LeadCard({
               <ExternalLink className="w-4 h-4 text-neutral-500 dark:text-neutral-400 " />
             </div>
           </div>
-          <div className="flex items-center gap-2">
-            <div className="flex items-center gap-0.5">
-              {[...Array(maxStars)].map((_, index) => (
-                <Star
-                  key={index}
-                  className={`w-4 h-4 ${
-                    index < rating
-                      ? "fill-teal-500 text-teal-500"
-                      : "fill-neutral-300 text-neutral-300 dark:fill-neutral-600 dark:text-neutral-600"
-                  }`}
-                />
-              ))}
-            </div>
-            <span className="font-bold text-teal-500 text-sm">{rating}/10</span>
+          <div className="flex items-center gap-1.5 bg-teal-50 dark:bg-teal-900/20 px-2 py-1 rounded-md border border-teal-100 dark:border-teal-800/50">
+            <Star className="w-4 h-4 fill-teal-500 text-teal-500" />
+            <span className="font-bold text-teal-700 dark:text-teal-400 text-sm">{rating}/10</span>
           </div>
         </div>
 
@@ -159,20 +146,9 @@ export default function LeadCard({
                   </a>
                 </DialogTitle>
                 <DialogDescription className="text-sm text-neutral-500 dark:text-neutral-400">
-                  <div className="flex items-center gap-2 mt-2">
-                    <div className="flex items-center gap-0.5">
-                      {[...Array(maxStars)].map((_, index) => (
-                        <Star
-                          key={index}
-                          className={`w-4 h-4 ${
-                            index < rating
-                              ? "fill-teal-500 text-teal-500"
-                              : "fill-neutral-300 text-neutral-300 dark:fill-neutral-600 dark:text-neutral-600"
-                          }`}
-                        />
-                      ))}
-                    </div>
-                    <span className="font-bold text-teal-500">{rating}/10</span>
+                  <div className="flex items-center gap-1.5 bg-teal-50 dark:bg-teal-900/20 px-2 py-1 rounded-md border border-teal-100 dark:border-teal-800/50 mt-2 w-fit">
+                    <Star className="w-4 h-4 fill-teal-500 text-teal-500" />
+                    <span className="font-bold text-teal-700 dark:text-teal-400 text-sm">{rating}/10</span>
                   </div>
                 </DialogDescription>
               </DialogHeader>
