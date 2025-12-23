@@ -7,6 +7,7 @@ import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { getPricingPlans, createSubscription, verifySubscriptionPayment, type PricingPlan, RazorpaySubscriptionResponse } from "@/lib/api/pricing";
 import PaymentStatusModal from "@/components/pricing/PaymentStatusModal";
 import AuthDialog from "@/components/pricing/AuthDialog";
+import RequestDemoDialog from "@/components/shared/RequestDemoDialog";
 import { detectUserCurrency } from "@/lib/utils/geolocation";
 import { getSubscriptionStatusCached } from "@/lib/utils/subscription";
 import { type SubscriptionStatus } from "@/lib/api/subscription";
@@ -435,6 +436,12 @@ export default function PricingPage() {
           onClose={() => setAuthDialogOpen(false)}
           onAuthSuccess={handleAuthSuccess}
           defaultView="login"
+        />
+
+        {/* Request Demo Dialog */}
+        <RequestDemoDialog
+          isOpen={requestDemoDialogOpen}
+          onClose={() => setRequestDemoDialogOpen(false)}
         />
       </div>
     </div>
