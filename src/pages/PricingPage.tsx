@@ -28,6 +28,7 @@ export default function PricingPage() {
   const [subscriptionStatus, setSubscriptionStatus] = useState<SubscriptionStatus | null>(null);
   const [checkingSubscription, setCheckingSubscription] = useState(true);
   const [authDialogOpen, setAuthDialogOpen] = useState(false);
+  const [requestDemoDialogOpen, setRequestDemoDialogOpen] = useState(false);
   const [selectedPlan, setSelectedPlan] = useState<PricingPlan | null>(null);
   const [paymentModal, setPaymentModal] = useState<{
     isOpen: boolean;
@@ -99,15 +100,14 @@ export default function PricingPage() {
         return;
       }
 
-      setProcessing(true);
+      // Check if email is verified
+      const currentUser = getCurrentUser();
+      if (currentUser && !currentUser.isEmailVerified) {
+        navigate("/verify-email-prompt");
+        return;
+      }
 
-      // Create subscription
-      const subscriptionData = await createSubscription({
-        planId: plan.id
-      });
-
-      // Initialize Razorpay checkout
-      await initializeRazorpayPayment(subscriptionData, plan);
+      setRequestDemoDialogOpen(true);
     } catch (error) {
       console.error("Error initiating payment:", error);
       setPaymentModal({
