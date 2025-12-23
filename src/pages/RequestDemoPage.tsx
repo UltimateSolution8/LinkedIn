@@ -1,7 +1,6 @@
 
 import { useState } from "react";
 import { useForm } from "react-hook-form";
-import { useForm as useFormspree } from "@formspree/react";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { motion } from "framer-motion";
@@ -10,7 +9,7 @@ import { getCountriesWithDialCodes, type CountryOption } from "@/lib/countries";
 import { CheckCircle } from "lucide-react";
 import { SearchableCountrySelect } from "@/components/ui/searchable-country-select";
 
-const FORM_ID = "myzoqkpa";
+const RIXLY_API_BASE_URL = import.meta.env.VITE_RIXLY_API_BASE_URL;
 
 const demoSchema = z.object({
   fullName: z.string().min(2, "Full name is required"),
@@ -40,7 +39,8 @@ const RequestDemoPage = () => {
   const [countries] = useState<CountryOption[]>(() => getCountriesWithDialCodes());
   const [selectedCountryCode, setSelectedCountryCode] = useState<string>("");
   const [selectedIndustry, setSelectedIndustry] = useState<string>("");
-  const [formspreeState, submitToFormspree] = useFormspree(FORM_ID);
+  const [submitSuccess, setSubmitSuccess] = useState(false);
+  const [submitError, setSubmitError] = useState(false);
 
   const {
     register,
@@ -53,31 +53,50 @@ const RequestDemoPage = () => {
   });
 
   const onSubmit = async (data: DemoFormValues) => {
-    // Determine the industry value - use otherIndustry if "other" was selected
-    const industryValue = data.industry === "other" && data.otherIndustry
-      ? data.otherIndustry
-      : data.industry || "N/A";
+    try {
+      setSubmitError(false);
 
-    // Submit to Formspree
-    await submitToFormspree({
-      fullName: data.fullName,
-      email: data.email,
-      phone: `${data.countryCode} ${data.phone}`,
-      industry: industryValue,
-      insights: data.insights || "N/A",
-    });
+      // Determine the industry value - use otherIndustry if "other" was selected
+      const industryValue = data.industry === "other" && data.otherIndustry
+        ? data.otherIndustry
+        : data.industry || "";
+
+      // Call the Rixly backend API endpoint
+      const response = await fetch(`${RIXLY_API_BASE_URL}/api/demo/request-sheet`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          fullName: data.fullName,
+          email: data.email,
+          phone: `${data.countryCode} ${data.phone}`,
+          industry: industryValue,
+          additionalInsight: data.insights || "",
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to submit demo request");
+      }
+
+      setSubmitSuccess(true);
+    } catch (error) {
+      console.error("Error submitting demo request:", error);
+      setSubmitError(true);
+    }
   };
 
   const handleNewRequest = () => {
     reset();
     setSelectedCountryCode("");
     setSelectedIndustry("");
-    // Reset Formspree state by reloading or using a key prop
-    window.location.reload();
+    setSubmitSuccess(false);
+    setSubmitError(false);
   };
 
   // Success state
-  if (formspreeState.succeeded) {
+  if (submitSuccess) {
     return (
       <div className="min-h-screen flex items-center justify-center px-4">
         <motion.div
@@ -123,8 +142,8 @@ const RequestDemoPage = () => {
           Fill out the form below and we&apos;ll get back to you within 24 hours.
         </p>
 
-        {/* Formspree Error Message */}
-        {formspreeState.errors && (
+        {/* Error Message */}
+        {submitError && (
           <div className="mb-4 bg-red-50 border border-red-200 text-red-600 px-4 py-3 rounded-lg text-sm">
             There was an error submitting your request. Please try again.
           </div>
@@ -266,10 +285,10 @@ const RequestDemoPage = () => {
             </button>
             <button
               type="submit"
-              disabled={isSubmitting || formspreeState.submitting}
+              disabled={isSubmitting}
               className="w-1/2 py-2 rounded-lg bg-purple-600 text-white font-medium hover:bg-purple-700 disabled:opacity-60"
             >
-              {isSubmitting || formspreeState.submitting ? "Submitting..." : "Submit"}
+              {isSubmitting ? "Submitting..." : "Submit"}
             </button>
           </div>
         </form>
