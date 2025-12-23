@@ -91,22 +91,6 @@ export default function PricingPage() {
 
   const handleChoosePlan = async (plan: PricingPlan) => {
     try {
-      // Check if user is logged in
-      const accessToken = localStorage.getItem("accessToken");
-      if (!accessToken) {
-        // Save the selected plan and open auth dialog
-        setSelectedPlan(plan);
-        setAuthDialogOpen(true);
-        return;
-      }
-
-      // Check if email is verified
-      const currentUser = getCurrentUser();
-      if (currentUser && !currentUser.isEmailVerified) {
-        navigate("/verify-email-prompt");
-        return;
-      }
-
       setRequestDemoDialogOpen(true);
     } catch (error) {
       console.error("Error initiating payment:", error);
