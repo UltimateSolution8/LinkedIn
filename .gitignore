@@ -48,3 +48,6 @@ yarn-error.log*
 /.next/
 /out/
 .vercel
+
+package-lock.json
+yarn.lock
