@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { useNavigate } from "react-router-dom";
 import { useProject } from "@/contexts/ProjectContext";
+import { getCurrentUser } from "@/lib/api/auth";
 
 // Maximum number of projects a user can create
 const MAX_PROJECTS = 2;
@@ -12,8 +13,12 @@ export default function Sidebar() {
   const navigate = useNavigate();
   const { selectedProjectId, setSelectedProjectId, projects, isLoading, error } = useProject();
 
-  // Disable create button when user has reached the maximum project limit
-  const isCreateButtonDisabled = projects.length >= MAX_PROJECTS;
+  // Check if user is admin
+  const currentUser = getCurrentUser();
+  const isAdmin = currentUser?.role === 'admin';
+
+  // Disable create button when user has reached the maximum project limit (unless they're an admin)
+  const isCreateButtonDisabled = !isAdmin && projects.length >= MAX_PROJECTS;
 
   const handleCreateProject = () => {
     // Only navigate if user hasn't reached the project limit
@@ -91,7 +96,13 @@ export default function Sidebar() {
         <Button
           onClick={handleCreateProject}
           disabled={isCreateButtonDisabled}
-          title={isCreateButtonDisabled ? `You can create a maximum of ${MAX_PROJECTS} projects` : "Create a new project"}
+          title={
+            isAdmin
+              ? "Create a new project (Admin - Unlimited)"
+              : isCreateButtonDisabled
+                ? `You can create a maximum of ${MAX_PROJECTS} projects`
+                : "Create a new project"
+          }
           className={`w-full gap-2 ${
             isCreateButtonDisabled
               ? "bg-neutral-400 hover:bg-neutral-400 text-neutral-600 cursor-not-allowed"

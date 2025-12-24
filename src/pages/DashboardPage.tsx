@@ -8,6 +8,7 @@ import FindPostsTab from "@/components/dashboard/FindPostsTab";
 import FindLeadsTab from "@/components/dashboard/FindLeadsTab";
 import SettingsTab from "@/components/dashboard/SettingsTab";
 import { useProject } from "@/contexts/ProjectContext";
+import { getCurrentUser } from "@/lib/api/auth";
 
 const MAX_PROJECTS = 2;
 
@@ -18,8 +19,12 @@ export default function DashboardPage() {
   const [postsCount, setPostsCount] = useState(0);
   const [leadsCount, setLeadsCount] = useState(0);
 
+  // Check if user is admin
+  const currentUser = getCurrentUser();
+  const isAdmin = currentUser?.role === 'admin';
+
   const project = selectedProjectId ? getProjectById(selectedProjectId) : null;
-  const isCreateButtonDisabled = projects.length >= MAX_PROJECTS;
+  const isCreateButtonDisabled = !isAdmin && projects.length >= MAX_PROJECTS;
 
   const getProjectInitial = (projectName: string) => {
     return projectName.charAt(0).toUpperCase();
@@ -96,7 +101,13 @@ export default function DashboardPage() {
                       ? "bg-neutral-100 dark:bg-neutral-800 text-neutral-400 cursor-not-allowed"
                       : "bg-neutral-100 dark:bg-neutral-800 text-purple-600 hover:bg-neutral-200 dark:hover:bg-neutral-700"
                   }`}
-                  title={isCreateButtonDisabled ? `Max ${MAX_PROJECTS} projects` : "Create new project"}
+                  title={
+                    isAdmin
+                      ? "Create new project (Admin - Unlimited)"
+                      : isCreateButtonDisabled
+                        ? `Max ${MAX_PROJECTS} projects`
+                        : "Create new project"
+                  }
                 >
                   <Plus className="w-5 h-5" />
                 </button>
