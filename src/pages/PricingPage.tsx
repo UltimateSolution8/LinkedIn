@@ -29,7 +29,7 @@ export default function PricingPage() {
   const [checkingSubscription, setCheckingSubscription] = useState(true);
   const [authDialogOpen, setAuthDialogOpen] = useState(false);
   const [requestDemoDialogOpen, setRequestDemoDialogOpen] = useState(false);
-  const [selectedPlan, setSelectedPlan] = useState<PricingPlan | null>(null);
+  const [selectedPlan, _setSelectedPlan] = useState<PricingPlan | null>(null);
   const [paymentModal, setPaymentModal] = useState<{
     isOpen: boolean;
     status: "success" | "error" | "loading";
@@ -89,7 +89,7 @@ export default function PricingPage() {
     initializePricing();
   }, []); // Run once on mount
 
-  const handleChoosePlan = async (plan: PricingPlan) => {
+  const handleChoosePlan = async (_plan: PricingPlan) => {
     try {
       setRequestDemoDialogOpen(true);
     } catch (error) {
