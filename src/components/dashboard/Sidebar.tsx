@@ -33,9 +33,9 @@ export default function Sidebar() {
 
   return (
     <aside className="flex w-64 flex-col border-r border-neutral-200 dark:border-neutral-800 bg-white dark:bg-neutral-950" style={{ height: 'calc(100vh - 64px)' }}>
-      <div className="flex h-full flex-col justify-between p-4">
-        <div className="flex flex-col gap-4">
-          {/* Projects List */}
+      <div className="flex h-full flex-col p-4">
+        {/* Projects List - Scrollable */}
+        <div className="flex-1 overflow-y-auto mb-4">
           <div className="flex flex-col gap-2">
             {isLoading ? (
               <div className="flex items-center justify-center py-8">
@@ -92,28 +92,30 @@ export default function Sidebar() {
           </div>
         </div>
 
-        {/* Create New Project Button */}
-        <Button
-          onClick={handleCreateProject}
-          disabled={isCreateButtonDisabled}
-          title={
-            isAdmin
-              ? "Create a new project (Admin - Unlimited)"
-              : isCreateButtonDisabled
-                ? `You can create a maximum of ${MAX_PROJECTS} projects`
-                : "Create a new project"
-          }
-          className={`w-full gap-2 ${
-            isCreateButtonDisabled
-              ? "bg-neutral-400 hover:bg-neutral-400 text-neutral-600 cursor-not-allowed"
-              : "bg-purple-600 hover:bg-purple-700 text-white"
-          }`}
-        >
-          <Plus className="w-5 h-5" />
-          <span className="truncate">
-            {isCreateButtonDisabled ? `Max ${MAX_PROJECTS} Projects` : "Create New Project"}
-          </span>
-        </Button>
+        {/* Create New Project Button - Fixed at bottom */}
+        <div className="flex-shrink-0">
+          <Button
+            onClick={handleCreateProject}
+            disabled={isCreateButtonDisabled}
+            title={
+              isAdmin
+                ? "Create a new project (Admin - Unlimited)"
+                : isCreateButtonDisabled
+                  ? `You can create a maximum of ${MAX_PROJECTS} projects`
+                  : "Create a new project"
+            }
+            className={`w-full gap-2 ${
+              isCreateButtonDisabled
+                ? "bg-neutral-400 hover:bg-neutral-400 text-neutral-600 cursor-not-allowed"
+                : "bg-purple-600 hover:bg-purple-700 text-white"
+            }`}
+          >
+            <Plus className="w-5 h-5" />
+            <span className="truncate">
+              {isCreateButtonDisabled ? `Max ${MAX_PROJECTS} Projects` : "Create New Project"}
+            </span>
+          </Button>
+        </div>
       </div>
     </aside>
   );
