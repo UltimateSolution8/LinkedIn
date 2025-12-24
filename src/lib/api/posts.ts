@@ -66,7 +66,9 @@ export interface GenerateCommentResponse {
 export async function getPosts(
   projectId: string,
   page: number = 1,
-  limit: number = 10
+  limit: number = 10,
+  sortBy?: "hotness" | "comments" | "date",
+  sortOrder?: "asc" | "desc"
 ): Promise<GetPostsResponse> {
   const accessToken = localStorage.getItem("accessToken");
 
@@ -74,8 +76,16 @@ export async function getPosts(
     throw new Error("No access token found. Please login.");
   }
 
+  const params = new URLSearchParams({
+    page: page.toString(),
+    limit: limit.toString(),
+  });
+
+  if (sortBy) params.append('sort_by', sortBy);
+  if (sortOrder) params.append('sort_order', sortOrder);
+
   const response = await fetch(
-    `${RIXLY_API_BASE_URL}/api/projects/${projectId}/reddit-posts?page=${page}&limit=${limit}`,
+    `${RIXLY_API_BASE_URL}/api/projects/${projectId}/reddit-posts?${params.toString()}`,
     {
       method: "GET",
       headers: {
