@@ -11,6 +11,7 @@ import {
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import GenerateCommentDialog from "./GenerateCommentDialog";
+import GenerateMessageDialog from "./GenerateMessageDialog";
 
 interface PostCardProps {
   postId: string;
@@ -39,6 +40,7 @@ export default function PostCard({
   const [isTruncated, setIsTruncated] = useState(false);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [isCommentDialogOpen, setIsCommentDialogOpen] = useState(false);
+  const [isMessageDialogOpen, setIsMessageDialogOpen] = useState(false);
   const excerptRef = useRef<HTMLParagraphElement>(null);
 
   // Lead type configuration
@@ -191,12 +193,34 @@ export default function PostCard({
         </div>
       )}
 
+      {/* Generate Response Button - Only for SALES leads */}
+      {leadType === "SALES" && (
+        <div className="flex items-center justify-end">
+          <Button
+            onClick={() => setIsMessageDialogOpen(true)}
+            variant="outline"
+            className="gap-2 text-purple-600 dark:text-purple-400 border-purple-600 dark:border-purple-400 hover:bg-purple-50 dark:hover:bg-purple-950"
+          >
+            <Sparkles className="w-4 h-4" />
+            <span className="text-sm">Generate Response</span>
+          </Button>
+        </div>
+      )}
+
       {/* Generate Comment Dialog */}
       <GenerateCommentDialog
         isOpen={isCommentDialogOpen}
         onOpenChange={setIsCommentDialogOpen}
         leadId={leadId}
         postTitle={title}
+      />
+
+      {/* Generate Message Dialog */}
+      <GenerateMessageDialog
+        isOpen={isMessageDialogOpen}
+        onOpenChange={setIsMessageDialogOpen}
+        leadId={leadId}
+        username={username}
       />
     </div>
   );
