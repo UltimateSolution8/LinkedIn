@@ -205,6 +205,18 @@ export async function generateSemanticQueries(data: GenerateSemanticQueriesReque
   return responseData;
 }
 
+export interface AdminProjectsResponse {
+  success: boolean;
+  data: Array<{
+    projectId: number;
+    projectName: string;
+    projectUrl: string;
+    projectDescription: string;
+    status: string;
+  }>;
+  totalProjects: number;
+}
+
 export async function getAdminProjects(): Promise<Project[]> {
   const accessToken = localStorage.getItem("accessToken");
 
@@ -220,21 +232,22 @@ export async function getAdminProjects(): Promise<Project[]> {
     },
   });
 
-  const responseData: GetProjectsResponse = await response.json();
+  const responseData: AdminProjectsResponse = await response.json();
 
   if (!response.ok) {
-    throw new Error(responseData.message || "Failed to fetch admin projects");
+    throw new Error("Failed to fetch admin projects");
   }
 
   // Transform API response to match Project interface
-  return responseData.projects.map((project: any) => ({
-    _id: String(project.id),
-    url: project.url,
+  return responseData.data.map((project) => ({
+    _id: String(project.projectId),
+    projectId: project.projectId,
     projectName: project.projectName,
     websiteUrl: project.projectUrl,
     description: project.projectDescription,
-    keywords: project.keywords || [],
-    semanticQueries: project.semanticQueries || [],
+    status: project.status,
+    keywords: [],
+    semanticQueries: [],
   }));
 }
 
