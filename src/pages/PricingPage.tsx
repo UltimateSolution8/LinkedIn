@@ -27,6 +27,7 @@ export default function PricingPage() {
   const [processing, setProcessing] = useState(false);
   const [subscriptionStatus, setSubscriptionStatus] = useState<SubscriptionStatus | null>(null);
   const [checkingSubscription, setCheckingSubscription] = useState(true);
+  const [isCheckingStatus, setIsCheckingStatus] = useState(false);
   const [authDialogOpen, setAuthDialogOpen] = useState(false);
   const [requestDemoDialogOpen, setRequestDemoDialogOpen] = useState(false);
   const [selectedPlan, _setSelectedPlan] = useState<PricingPlan | null>(null);
@@ -241,6 +242,24 @@ export default function PricingPage() {
     });
   };
 
+  const handleCheckStatus = async () => {
+    setIsCheckingStatus(true);
+    try {
+      // Force refresh subscription status from API (bypass cache)
+      const status = await getSubscriptionStatusCached(true);
+      setSubscriptionStatus(status);
+
+      // If subscription is now active, redirect to dashboard
+      if (status.hasAccess) {
+        navigate("/dashboard");
+      }
+    } catch (error) {
+      console.error("Error checking subscription status:", error);
+    } finally {
+      setIsCheckingStatus(false);
+    }
+  };
+
   // Fallback default plans if API is not available
   const getDefaultPlans = (currency: "USD" | "INR"): PricingPlan[] => {
     if (currency === "USD") {
@@ -349,6 +368,24 @@ export default function PricingPage() {
                       className="border-blue-600 text-blue-600 hover:bg-blue-50 px-6 py-2"
                     >
                       Go to Dashboard
+                    </Button>
+                  </div>
+
+                  <div className="w-full mt-4">
+                    <Button
+                      onClick={handleCheckStatus}
+                      disabled={isCheckingStatus}
+                      variant="outline"
+                      className="w-full border-blue-600 text-blue-600 hover:bg-blue-50 px-6 py-2"
+                    >
+                      {isCheckingStatus ? (
+                        <>
+                          <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                          Checking Status...
+                        </>
+                      ) : (
+                        "Check Payment Status"
+                      )}
                     </Button>
                   </div>
 
