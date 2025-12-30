@@ -72,7 +72,7 @@ export default function SignupForm({ onSuccess }: SignupFormProps = {}) {
 
       // Check if email is verified and redirect accordingly
       if (response.user.isEmailVerified) {
-        navigate("/pricing");
+        navigate("/auth-pricing");
       } else {
         navigate("/verify-email-prompt");
       }
@@ -86,8 +86,8 @@ export default function SignupForm({ onSuccess }: SignupFormProps = {}) {
   const handleGoogleSignup = () => {
     console.log("Google signup clicked");
     // TODO: Implement Google OAuth
-    // For now, navigate to pricing page
-    navigate("/pricing");
+    // For now, navigate to auth pricing page
+    navigate("/auth-pricing");
   };
 
   return (

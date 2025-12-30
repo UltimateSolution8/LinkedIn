@@ -80,11 +80,11 @@ export default function LoginForm({ onSuccess }: LoginFormProps = {}) {
         if (hasAccess) {
           navigate("/dashboard");
         } else {
-          navigate("/pricing");
+          navigate("/auth-pricing");
         }
       } catch (error) {
         console.error("Error checking subscription status:", error);
-        navigate("/pricing");
+        navigate("/auth-pricing");
       }
     } catch (error) {
       setApiError(error instanceof Error ? error.message : "An error occurred during signin");
@@ -102,11 +102,11 @@ export default function LoginForm({ onSuccess }: LoginFormProps = {}) {
       if (hasAccess) {
         navigate("/dashboard");
       } else {
-        navigate("/pricing");
+        navigate("/auth-pricing");
       }
     } catch (error) {
       console.error("Error checking subscription status:", error);
-      navigate("/pricing");
+      navigate("/auth-pricing");
     }
   };
 

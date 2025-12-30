@@ -42,8 +42,8 @@ function VerifyEmailContent() {
           const accessToken = localStorage.getItem("accessToken");
 
           if (updatedUser && accessToken) {
-            // User is logged in, redirect to pricing (they'll need to subscribe)
-            navigate("/pricing");
+            // User is logged in, redirect to auth pricing (they'll need to subscribe)
+            navigate("/auth-pricing");
           } else {
             // User is not logged in, redirect to login
             navigate("/login");
@@ -97,7 +97,7 @@ function VerifyEmailContent() {
                       const currentUser = getCurrentUser();
                       const accessToken = localStorage.getItem("accessToken");
                       if (currentUser && accessToken) {
-                        navigate("/pricing");
+                        navigate("/auth-pricing");
                       } else {
                         navigate("/login");
                       }

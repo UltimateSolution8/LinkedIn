@@ -26,6 +26,7 @@ import NotificationsPage from '@/pages/NotificationsPage'
 import AdminPage from '@/pages/AdminPage'
 import VerifyEmailPage from '@/pages/verify-email/VerifyEmailPage'
 import VerifyEmailPromptPage from '@/pages/verify-email-prompt/VerifyEmailPromptPage'
+import AuthPricingPage from '@/pages/AuthPricingPage'
 
 export default function AppRouter() {
   // Set default page title and meta description
@@ -57,6 +58,9 @@ export default function AppRouter() {
         {/* Verify Email Routes (no layout) */}
         <Route path="/verify-email" element={<VerifyEmailPage />} />
         <Route path="/verify-email-prompt" element={<VerifyEmailPromptPage />} />
+
+        {/* Auth Pricing Route */}
+        <Route path="/auth-pricing" element={<AuthPricingPage />} />
 
         {/* Dashboard Routes */}
         <Route element={<DashboardLayout />}>
