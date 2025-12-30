@@ -257,7 +257,7 @@ export default function AuthDialog({
               {isLoading ? "Logging in..." : "Log in"}
             </Button>
 
-            <div className="flex items-center gap-2 py-1">
+            {/* <div className="flex items-center gap-2 py-1">
               <hr className="flex-1 border-neutral-200 dark:border-white/20" />
               <span className="text-[10px] text-neutral-400">OR</span>
               <hr className="flex-1 border-neutral-200 dark:border-white/20" />
@@ -271,7 +271,7 @@ export default function AuthDialog({
             >
               <GoogleIcon className="w-4 h-4 mr-2" />
               Continue with Google
-            </Button>
+            </Button> */}
 
             <div className="pt-2 border-t">
               <p className="text-[10px] text-center text-neutral-600 dark:text-neutral-400 mb-1.5">
@@ -373,7 +373,7 @@ export default function AuthDialog({
               {isLoading ? "Creating account..." : "Create Account"}
             </Button>
 
-            <div className="flex items-center gap-2 py-1">
+            {/* <div className="flex items-center gap-2 py-1">
               <hr className="flex-1 border-neutral-200 dark:border-white/20" />
               <span className="text-[10px] text-neutral-400">OR</span>
               <hr className="flex-1 border-neutral-200 dark:border-white/20" />
@@ -387,7 +387,7 @@ export default function AuthDialog({
             >
               <GoogleIcon className="w-4 h-4 mr-2" />
               Continue with Google
-            </Button>
+            </Button> */}
 
             <div className="pt-2 border-t">
               <p className="text-[10px] text-center text-neutral-600 dark:text-neutral-400 mb-1.5">

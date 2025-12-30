@@ -190,7 +190,7 @@ export default function SignupForm({ onSuccess }: SignupFormProps = {}) {
         {isLoading ? "Creating Account..." : "Continue with Email"}
       </Button>
 
-      <div className="flex items-center gap-2 my-2">
+      {/* <div className="flex items-center gap-2 my-2">
         <hr className="w-full border-neutral-200 dark:border-white/20" />
         <span className="text-xs text-neutral-500 dark:text-neutral-400">OR</span>
         <hr className="w-full border-neutral-200 dark:border-white/20" />
@@ -204,7 +204,7 @@ export default function SignupForm({ onSuccess }: SignupFormProps = {}) {
       >
         <GoogleIcon className="w-5 h-5 mr-2" />
         Continue with Google
-      </Button>
+      </Button> */}
 
       <p className="text-xs text-center text-neutral-500 dark:text-neutral-400 mt-8">
         By continuing, you agree to Rixly&apos;s{" "}
