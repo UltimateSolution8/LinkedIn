@@ -8,7 +8,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
-import GoogleIcon from "@/components/auth/GoogleIcon";
+// import GoogleIcon from "@/components/auth/GoogleIcon";
 import { signin } from "@/lib/api/auth";
 import { checkSubscriptionAccess } from "@/lib/utils/subscription";
 
@@ -93,22 +93,22 @@ export default function LoginForm({ onSuccess }: LoginFormProps = {}) {
     }
   };
 
-  const handleGoogleLogin = async () => {
-    console.log("Google login clicked");
-    // TODO: Implement Google OAuth
-    // For now, check subscription and navigate accordingly
-    try {
-      const hasAccess = await checkSubscriptionAccess();
-      if (hasAccess) {
-        navigate("/dashboard");
-      } else {
-        navigate("/auth-pricing");
-      }
-    } catch (error) {
-      console.error("Error checking subscription status:", error);
-      navigate("/auth-pricing");
-    }
-  };
+  // const handleGoogleLogin = async () => {
+  //   console.log("Google login clicked");
+  //   // TODO: Implement Google OAuth
+  //   // For now, check subscription and navigate accordingly
+  //   try {
+  //     const hasAccess = await checkSubscriptionAccess();
+  //     if (hasAccess) {
+  //       navigate("/dashboard");
+  //     } else {
+  //       navigate("/auth-pricing");
+  //     }
+  //   } catch (error) {
+  //     console.error("Error checking subscription status:", error);
+  //     navigate("/auth-pricing");
+  //   }
+  // };
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4 mt-4">

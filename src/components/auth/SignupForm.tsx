@@ -8,7 +8,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
-import GoogleIcon from "@/components/auth/GoogleIcon";
+//import GoogleIcon from "@/components/auth/GoogleIcon";
 import { signup } from "@/lib/api/auth";
 
 const signupSchema = z.object({
@@ -83,12 +83,12 @@ export default function SignupForm({ onSuccess }: SignupFormProps = {}) {
     }
   };
 
-  const handleGoogleSignup = () => {
-    console.log("Google signup clicked");
-    // TODO: Implement Google OAuth
-    // For now, navigate to auth pricing page
-    navigate("/auth-pricing");
-  };
+  // const handleGoogleSignup = () => {
+  //   console.log("Google signup clicked");
+  //   // TODO: Implement Google OAuth
+  //   // For now, navigate to auth pricing page
+  //   navigate("/auth-pricing");
+  // };
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4 mt-4">

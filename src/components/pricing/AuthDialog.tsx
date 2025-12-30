@@ -14,7 +14,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { AlertCircle } from "lucide-react";
-import GoogleIcon from "@/components/auth/GoogleIcon";
+//import GoogleIcon from "@/components/auth/GoogleIcon";
 import { signin, signup, verifyOtp } from "@/lib/api/auth";
 import { checkSubscriptionAccess } from "@/lib/utils/subscription";
 
@@ -189,10 +189,10 @@ export default function AuthDialog({
     }
   };
 
-  const handleGoogleAuth = async () => {
-    console.log("Google auth clicked");
-    // TODO: Implement Google OAuth
-  };
+  // const handleGoogleAuth = async () => {
+  //   console.log("Google auth clicked");
+  //   // TODO: Implement Google OAuth
+  // };
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
