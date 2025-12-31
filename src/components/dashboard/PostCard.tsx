@@ -1,6 +1,6 @@
 
 import { useState, useRef, useEffect } from "react";
-import { Star, TrendingUp, DollarSign, Sparkles, Clock, User, MessageSquare } from "lucide-react";
+import { Star, TrendingUp, DollarSign, Sparkles, Clock, User, MessageSquare, EllipsisVertical, CheckCircle, Clock as ClockIcon, XCircle, AlertCircle } from "lucide-react";
 import {
   Dialog,
   DialogContent,
@@ -10,8 +10,15 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import GenerateCommentDialog from "./GenerateCommentDialog";
 import GenerateMessageDialog from "./GenerateMessageDialog";
+import UpdateLeadStatusDialog from "./UpdateLeadStatusDialog";
 
 interface PostCardProps {
   postId: string;
@@ -24,9 +31,18 @@ interface PostCardProps {
   rating: number;
   postUrl?: string;
   leadType: "SALES" | "ENGAGEMENT";
+  // Lead status fields
+  status?: "NEW" | "IN_PROGRESS" | "FOLLOW_UP_SCHEDULED" | "CONVERTED" | "NOT_INTERESTED" | "DUPLICATE" | "DONE";
+  followUpAt?: string;
+  notes?: string;
+  statusReason?: string;
+  assignedTo?: string;
+  updatedAt?: string;
+  onStatusUpdate?: (updatedPost: any) => void;
 }
 
 export default function PostCard({
+  postId,
   leadId,
   title,
   excerpt,
@@ -36,11 +52,19 @@ export default function PostCard({
   rating,
   postUrl = "#",
   leadType,
+  status = "NEW",
+  followUpAt,
+  notes,
+  statusReason,
+  assignedTo,
+  updatedAt,
+  onStatusUpdate,
 }: PostCardProps) {
   const [isTruncated, setIsTruncated] = useState(false);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [isCommentDialogOpen, setIsCommentDialogOpen] = useState(false);
   const [isMessageDialogOpen, setIsMessageDialogOpen] = useState(false);
+  const [isStatusDialogOpen, setIsStatusDialogOpen] = useState(false);
   const excerptRef = useRef<HTMLParagraphElement>(null);
 
   // Lead type configuration
@@ -66,6 +90,72 @@ export default function PostCard({
   const config = leadTypeConfig[leadType] ?? leadTypeConfig.ENGAGEMENT;
   const LeadIcon =  config.icon;
 
+  // Status configuration
+  const statusConfig = {
+    NEW: {
+      label: "New",
+      icon: AlertCircle,
+      bgColor: "bg-gray-50 dark:bg-gray-950",
+      textColor: "text-gray-700 dark:text-gray-400",
+      borderColor: "border-gray-200 dark:border-gray-800",
+      iconColor: "text-gray-600 dark:text-gray-400",
+    },
+    IN_PROGRESS: {
+      label: "In Progress",
+      icon: ClockIcon,
+      bgColor: "bg-blue-50 dark:bg-blue-950",
+      textColor: "text-blue-700 dark:text-blue-400",
+      borderColor: "border-blue-200 dark:border-blue-800",
+      iconColor: "text-blue-600 dark:text-blue-400",
+    },
+    FOLLOW_UP_SCHEDULED: {
+      label: "Follow-up",
+      icon: ClockIcon,
+      bgColor: "bg-amber-50 dark:bg-amber-950",
+      textColor: "text-amber-700 dark:text-amber-400",
+      borderColor: "border-amber-200 dark:border-amber-800",
+      iconColor: "text-amber-600 dark:text-amber-400",
+    },
+    CONVERTED: {
+      label: "Converted",
+      icon: CheckCircle,
+      bgColor: "bg-green-50 dark:bg-green-950",
+      textColor: "text-green-700 dark:text-green-400",
+      borderColor: "border-green-200 dark:border-green-800",
+      iconColor: "text-green-600 dark:text-green-400",
+    },
+    NOT_INTERESTED: {
+      label: "Not Interested",
+      icon: XCircle,
+      bgColor: "bg-red-50 dark:bg-red-950",
+      textColor: "text-red-700 dark:text-red-400",
+      borderColor: "border-red-200 dark:border-red-800",
+      iconColor: "text-red-600 dark:text-red-400",
+    },
+    DUPLICATE: {
+      label: "Duplicate",
+      icon: XCircle,
+      bgColor: "bg-red-50 dark:bg-red-950",
+      textColor: "text-red-700 dark:text-red-400",
+      borderColor: "border-red-200 dark:border-red-800",
+      iconColor: "text-red-600 dark:text-red-400",
+    },
+    DONE: {
+      label: "Done",
+      icon: CheckCircle,
+      bgColor: "bg-green-50 dark:bg-green-950",
+      textColor: "text-green-700 dark:text-green-400",
+      borderColor: "border-green-200 dark:border-green-800",
+      iconColor: "text-green-600 dark:text-green-400",
+    },
+  };
+
+  const statusCfg = statusConfig[status] ?? statusConfig.NEW;
+  const StatusIcon = statusCfg.icon;
+
+  // Check if follow-up is due soon
+  const isFollowUpDueSoon = followUpAt && new Date(followUpAt) <= new Date(Date.now() + 24 * 60 * 60 * 1000);
+
   // Check if content is truncated
   useEffect(() => {
     const element = excerptRef.current;
@@ -75,13 +165,44 @@ export default function PostCard({
   }, [excerpt]);
 
   return (
-    <div className="flex flex-col gap-4 bg-white dark:bg-neutral-950 rounded-xl p-6 border border-neutral-200 dark:border-neutral-800 shadow-sm hover:shadow-md hover:border-purple-600/20 transition-all cursor-pointer group">
-      {/* Lead Type Badge */}
-      <div className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full border ${config.bgColor} ${config.borderColor} w-fit`}>
-        <LeadIcon className={`w-3.5 h-3.5 ${config.iconColor}`} />
-        <span className={`text-xs font-semibold ${config.textColor}`}>
-          {config.label}
-        </span>
+    <div className={`flex flex-col gap-4 bg-white dark:bg-neutral-950 rounded-xl p-6 border border-neutral-200 dark:border-neutral-800 shadow-sm hover:shadow-md hover:border-purple-600/20 transition-all cursor-pointer group ${isFollowUpDueSoon ? 'ring-2 ring-amber-500/20' : ''}`}>
+      {/* Header with badges and menu */}
+      <div className="flex items-start justify-between gap-4">
+        <div className="flex items-center gap-2 flex-wrap">
+          {/* Lead Type Badge */}
+          <div className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full border ${config.bgColor} ${config.borderColor} w-fit`}>
+            <LeadIcon className={`w-3.5 h-3.5 ${config.iconColor}`} />
+            <span className={`text-xs font-semibold ${config.textColor}`}>
+              {config.label}
+            </span>
+          </div>
+
+          {/* Status Badge */}
+          <div className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full border ${statusCfg.bgColor} ${statusCfg.borderColor} w-fit`}>
+            <StatusIcon className={`w-3.5 h-3.5 ${statusCfg.iconColor}`} />
+            <span className={`text-xs font-semibold ${statusCfg.textColor}`}>
+              {statusCfg.label}
+            </span>
+          </div>
+        </div>
+
+        {/* Three-dot menu */}
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button
+              variant="ghost"
+              size="sm"
+              className="h-8 w-8 p-0 opacity-0 group-hover:opacity-100 transition-opacity"
+            >
+              <EllipsisVertical className="h-4 w-4" />
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end">
+            <DropdownMenuItem onClick={() => setIsStatusDialogOpen(true)}>
+              Update Status
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
       </div>
 
       {/* Title and Rating */}
@@ -221,6 +342,35 @@ export default function PostCard({
         onOpenChange={setIsMessageDialogOpen}
         leadId={leadId}
         username={username}
+      />
+
+      {/* Update Lead Status Dialog */}
+      <UpdateLeadStatusDialog
+        isOpen={isStatusDialogOpen}
+        onOpenChange={setIsStatusDialogOpen}
+        lead={{
+          postId,
+          leadId,
+          title,
+          description: excerpt,
+          timeCreated: "",
+          subreddit,
+          originalPosterId: username,
+          rixlyRating: rating,
+          url: postUrl,
+          leadType,
+          status,
+          followUpAt,
+          notes,
+          statusReason,
+          assignedTo,
+          updatedAt,
+        }}
+        onStatusUpdated={(updatedLead) => {
+          if (onStatusUpdate) {
+            onStatusUpdate(updatedLead);
+          }
+        }}
       />
     </div>
   );

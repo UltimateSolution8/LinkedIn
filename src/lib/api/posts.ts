@@ -11,6 +11,13 @@ export interface Post {
   rixlyRating: number;
   url: string;
   leadType: "SALES" | "ENGAGEMENT";
+  // Lead status fields
+  status: "NEW" | "IN_PROGRESS" | "FOLLOW_UP_SCHEDULED" | "CONVERTED" | "NOT_INTERESTED" | "DUPLICATE" | "DONE";
+  followUpAt?: string;
+  notes?: string;
+  statusReason?: string;
+  assignedTo?: string;
+  updatedAt?: string;
 }
 
 export interface PaginationInfo {
@@ -63,11 +70,25 @@ export interface GenerateCommentResponse {
   };
 }
 
+export interface UpdateLeadStatusRequest {
+  status: "NEW" | "IN_PROGRESS" | "FOLLOW_UP_SCHEDULED" | "CONVERTED" | "NOT_INTERESTED" | "DUPLICATE" | "DONE";
+  followUpAt?: string;
+  notes?: string;
+  statusReason?: string;
+  assignedTo?: string;
+}
+
+export interface UpdateLeadStatusResponse {
+  success: boolean;
+  message: string;
+  data: Post;
+}
+
 export async function getPosts(
   projectId: string,
   page: number = 1,
   limit: number = 10,
-  sortBy?: "hotness" | "comments" | "date",
+  sortBy?: "hotness" | "comments" | "date" | "status",
   sortOrder?: "asc" | "desc"
 ): Promise<GetPostsResponse> {
   const accessToken = localStorage.getItem("accessToken");
@@ -165,6 +186,37 @@ export async function generatePostComment(
 
   if (!response.ok) {
     throw new Error(responseData.message || "Failed to generate comment");
+  }
+
+  return responseData;
+}
+
+export async function updateLeadStatus(
+  leadId: string,
+  statusUpdate: UpdateLeadStatusRequest
+): Promise<UpdateLeadStatusResponse> {
+  const accessToken = localStorage.getItem("accessToken");
+
+  if (!accessToken) {
+    throw new Error("No access token found. Please login.");
+  }
+
+  const response = await fetch(
+    `${RIXLY_API_BASE_URL}/api/leads/${leadId}/status`,
+    {
+      method: "PATCH",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${accessToken}`,
+      },
+      body: JSON.stringify(statusUpdate),
+    }
+  );
+
+  const responseData = await response.json();
+
+  if (!response.ok) {
+    throw new Error(responseData.message || "Failed to update lead status");
   }
 
   return responseData;

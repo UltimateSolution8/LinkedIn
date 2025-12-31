@@ -16,7 +16,7 @@ export default function FindPostsTab({ projectId, onCountChange }: FindPostsTabP
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
-  const [sortBy, setSortBy] = useState<"hotness" | "comments" | "date">("date");
+  const [sortBy, setSortBy] = useState<"hotness" | "comments" | "date" | "status">("date");
   const [sortOrder, setSortOrder] = useState<"asc" | "desc">("desc");
   const [pagination, setPagination] = useState({
     totalPages: 1,
@@ -66,7 +66,7 @@ export default function FindPostsTab({ projectId, onCountChange }: FindPostsTabP
     setCurrentPage(page);
   };
 
-  const handleSortByChange = (value: "hotness" | "comments" | "date") => {
+  const handleSortByChange = (value: "hotness" | "comments" | "date" | "status") => {
     setSortBy(value);
     setCurrentPage(1); // Reset to first page when sorting changes
   };
@@ -132,6 +132,7 @@ export default function FindPostsTab({ projectId, onCountChange }: FindPostsTabP
             <SelectItem value="date">Date</SelectItem>
             <SelectItem value="hotness">Hotness</SelectItem>
             <SelectItem value="comments">Comments</SelectItem>
+            <SelectItem value="status">Status</SelectItem>
           </SelectContent>
         </Select>
 
@@ -170,6 +171,28 @@ export default function FindPostsTab({ projectId, onCountChange }: FindPostsTabP
             rating={post.rixlyRating}
             postUrl={post.url}
             leadType={post.leadType}
+            status={post.status}
+            followUpAt={post.followUpAt}
+            notes={post.notes}
+            statusReason={post.statusReason}
+            assignedTo={post.assignedTo}
+            updatedAt={post.updatedAt}
+            onStatusUpdate={(updatedPost) => {
+              // Update the post in the local state
+              // Note: updatedPost has 'id' field instead of 'leadId', and only contains updated status fields
+              setPosts(prevPosts =>
+                prevPosts.map(p =>
+                  p.leadId === updatedPost.id ? {
+                    ...p,
+                    status: updatedPost.status,
+                    followUpAt: updatedPost.followUpAt,
+                    notes: updatedPost.notes,
+                    statusReason: updatedPost.statusReason,
+                    updatedAt: updatedPost.updatedAt
+                  } : p
+                )
+              );
+            }}
           />
         ))}
       </div>
