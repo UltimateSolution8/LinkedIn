@@ -1,5 +1,7 @@
 const RIXLY_API_BASE_URL = import.meta.env.VITE_RIXLY_API_BASE_URL;
 
+import type { GetLeadsResponse } from './leads';
+
 export interface UserProject {
   projectId: number;
   projectName: string;
@@ -197,6 +199,62 @@ export async function getAdminUsers(): Promise<AdminUser[]> {
     return responseData.data;
   } catch (error) {
     console.error("Error fetching admin users:", error);
+    throw error;
+  }
+}
+
+/**
+ * Get Reddit leads for a specific project (admin only)
+ */
+export async function getAdminProjectLeads(
+  userId: number,
+  projectId: number,
+  page: number = 1,
+  limit: number = 10,
+  source?: string
+): Promise<GetLeadsResponse> {
+  const accessToken = localStorage.getItem("accessToken");
+
+  if (!accessToken) {
+    throw new Error("No access token found. Please login.");
+  }
+
+  if (!RIXLY_API_BASE_URL) {
+    throw new Error(
+      "API base URL is not configured. Please set VITE_RIXLY_API_BASE_URL in your .env file."
+    );
+  }
+
+  try {
+    const params = new URLSearchParams({
+      page: page.toString(),
+      limit: limit.toString(),
+    });
+
+    if (source) {
+      params.append("source", source);
+    }
+
+    const response = await fetch(
+      `${RIXLY_API_BASE_URL}/api/admin/users/${userId}/projects/${projectId}/reddit-leads?${params}`,
+      {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${accessToken}`,
+        },
+      }
+    );
+
+    const responseData: GetLeadsResponse = await response.json();
+
+    if (!response.ok) {
+      throw new Error(responseData.message || "Failed to fetch project leads");
+    }
+
+    return responseData;
+  } catch (error) {
+    console.error("Error fetching admin project leads:", error);
     throw error;
   }
 }

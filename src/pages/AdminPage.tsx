@@ -9,6 +9,7 @@ import { Label } from "@/components/ui/label";
 import { Loader2, PlayCircle, AlertCircle, FolderKanban, ExternalLink, CreditCard, Calendar } from "lucide-react";
 import { scrapeReddit } from "@/lib/api/projects";
 import { getAdminUsers, getProjectDetail, updatePaymentBypass, type AdminUser, type ProjectDetail } from "@/lib/api/admin";
+import AdminProjectLeads from "@/components/admin/AdminProjectLeads";
 
 export default function AdminPage() {
   const [users, setUsers] = useState<AdminUser[]>([]);
@@ -20,6 +21,7 @@ export default function AdminPage() {
   const [selectedUser, setSelectedUser] = useState<AdminUser | null>(null);
   const [isPaymentBypassDialogOpen, setIsPaymentBypassDialogOpen] = useState(false);
   const [bypassEndDate, setBypassEndDate] = useState<string>("");
+  const [selectedProjectUserId, setSelectedProjectUserId] = useState<number | null>(null);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -40,10 +42,11 @@ export default function AdminPage() {
     fetchData();
   }, []);
 
-  const handleProjectClick = async (projectId: number) => {
+  const handleProjectClick = async (projectId: number, userId: number) => {
     try {
       setIsLoadingProjectDetail(true);
       setIsProjectDialogOpen(true);
+      setSelectedProjectUserId(userId);
       const projectDetail = await getProjectDetail(projectId);
       setSelectedProject(projectDetail);
     } catch (err) {
@@ -314,7 +317,7 @@ export default function AdminPage() {
                                 <Button
                                   size="sm"
                                   variant="outline"
-                                  onClick={() => handleProjectClick(project.projectId)}
+                                  onClick={() => handleProjectClick(project.projectId, user.userId)}
                                   className="ml-2"
                                 >
                                   View Details
@@ -538,6 +541,17 @@ export default function AdminPage() {
                   Scrape Posts
                 </Button>
               </div>
+
+              {/* Reddit Leads Section */}
+              {selectedProjectUserId && (
+                <div className="pt-6 border-t border-neutral-200 dark:border-neutral-800">
+                  <AdminProjectLeads
+                    userId={selectedProjectUserId}
+                    projectId={selectedProject.projectId}
+                    projectName={selectedProject.projectName}
+                  />
+                </div>
+              )}
             </div>
           ) : null}
         </DialogContent>
