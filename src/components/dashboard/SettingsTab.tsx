@@ -22,10 +22,66 @@ export default function SettingsTab({ projectId }: SettingsTabProps) {
     );
   }
 
-  const { keywords = [], semanticQueries = [] } = project;
+  const { keywords = [], targetAudience = [], valuePropositions = [] } = project;
 
   return (
     <div className="flex flex-col pt-6 gap-8 max-w-5xl">
+      {/* Target Audience Section */}
+      <div className="space-y-4">
+        <div>
+          <h2 className="text-xl font-bold text-neutral-950 dark:text-white">Target Audience</h2>
+          <p className="text-sm text-neutral-500 dark:text-neutral-400 mt-1">
+            Your ideal customer segments and personas
+          </p>
+        </div>
+        {targetAudience.length > 0 ? (
+          <div className="flex flex-wrap gap-2">
+            {targetAudience.map((audience, index) => (
+              <Badge
+                key={index}
+                className="bg-blue-600/10 dark:bg-blue-600/20 text-blue-600 dark:text-blue-400 hover:bg-blue-600/20 text-sm px-3 py-1.5"
+              >
+                {audience}
+              </Badge>
+            ))}
+          </div>
+        ) : (
+          <div className="bg-neutral-50 dark:bg-neutral-800/50 border border-neutral-200 dark:border-neutral-700 rounded-lg p-6">
+            <p className="text-sm text-neutral-500 dark:text-neutral-400 italic">
+              No target audience defined
+            </p>
+          </div>
+        )}
+      </div>
+
+      {/* Value Propositions Section */}
+      <div className="space-y-4">
+        <div>
+          <h2 className="text-xl font-bold text-neutral-950 dark:text-white">Value Propositions</h2>
+          <p className="text-sm text-neutral-500 dark:text-neutral-400 mt-1">
+            Key benefits and solutions your product offers
+          </p>
+        </div>
+        {valuePropositions.length > 0 ? (
+          <div className="flex flex-wrap gap-2">
+            {valuePropositions.map((valueProposition, index) => (
+              <Badge
+                key={index}
+                className="bg-red-600/10 dark:bg-red-600/20 text-red-600 dark:text-red-400 hover:bg-red-600/20 text-sm px-3 py-1.5"
+              >
+                {valueProposition}
+              </Badge>
+            ))}
+          </div>
+        ) : (
+          <div className="bg-neutral-50 dark:bg-neutral-800/50 border border-neutral-200 dark:border-neutral-700 rounded-lg p-6">
+            <p className="text-sm text-neutral-500 dark:text-neutral-400 italic">
+              No value propositions defined
+            </p>
+          </div>
+        )}
+      </div>
+
       {/* Keywords Section */}
       <div className="space-y-4">
         <div>
@@ -49,43 +105,6 @@ export default function SettingsTab({ projectId }: SettingsTabProps) {
           <div className="bg-neutral-50 dark:bg-neutral-800/50 border border-neutral-200 dark:border-neutral-700 rounded-lg p-6">
             <p className="text-sm text-neutral-500 dark:text-neutral-400 italic">
               No keywords available
-            </p>
-          </div>
-        )}
-      </div>
-
-      {/* Semantic Queries Section */}
-      <div className="space-y-4">
-        <div>
-          <h2 className="text-xl font-bold text-neutral-950 dark:text-white">Semantic Queries</h2>
-          <p className="text-sm text-neutral-500 dark:text-neutral-400 mt-1">
-            Semantic search queries for finding relevant content
-          </p>
-        </div>
-        {semanticQueries.length > 0 ? (
-          <div className="space-y-3">
-            {semanticQueries.map((semantic, index) => (
-              <div
-                key={index}
-                className="bg-neutral-50 dark:bg-neutral-800/50 border border-neutral-200 dark:border-neutral-700 rounded-lg p-4 hover:border-purple-600/50 dark:hover:border-purple-500/50 transition-colors"
-              >
-                <div className="flex items-start gap-3">
-                  <div className="flex-shrink-0 w-6 h-6 rounded-full bg-purple-600/10 dark:bg-purple-600/20 flex items-center justify-center mt-0.5">
-                    <span className="text-xs font-semibold text-purple-600 dark:text-purple-400">
-                      {index + 1}
-                    </span>
-                  </div>
-                  <p className="text-sm text-neutral-700 dark:text-neutral-300 leading-relaxed">
-                    {semantic}
-                  </p>
-                </div>
-              </div>
-            ))}
-          </div>
-        ) : (
-          <div className="bg-neutral-50 dark:bg-neutral-800/50 border border-neutral-200 dark:border-neutral-700 rounded-lg p-6">
-            <p className="text-sm text-neutral-500 dark:text-neutral-400 italic">
-              No semantic queries available
             </p>
           </div>
         )}

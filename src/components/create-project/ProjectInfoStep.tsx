@@ -1,21 +1,37 @@
 
-import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
-import { Sparkles, Loader2 } from "lucide-react";
-import { generateDescription } from "@/lib/api/projects";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 const projectSchema = z.object({
   projectName: z.string().min(3, "Project name must be at least 3 characters"),
-  companyWebsite: z.string().url("Please enter a valid URL"),
-  projectDescription: z
-    .string()
-    .min(20, "Description must be at least 20 characters"),
-});
+  location: z.string().min(2, "Location must be at least 2 characters"),
+  businessType: z.enum(["saas", "product", "other"]).refine((val) => val !== undefined, {
+    message: "Please select a business type",
+  }),
+  businessTypeOther: z.string().optional(),
+}).refine(
+  (data) => {
+    if (data.businessType === "other") {
+      return data.businessTypeOther && data.businessTypeOther.trim().length > 0;
+    }
+    return true;
+  },
+  {
+    message: "Please specify the type of your business",
+    path: ["businessTypeOther"],
+  }
+);
 
 export type ProjectInfoData = z.infer<typeof projectSchema>;
 
@@ -30,9 +46,6 @@ export default function ProjectInfoStep({
   onCancel,
   initialData,
 }: ProjectInfoStepProps) {
-  const [isGenerating, setIsGenerating] = useState(false);
-  const [generationError, setGenerationError] = useState<string | null>(null);
-
   const {
     register,
     handleSubmit,
@@ -44,48 +57,7 @@ export default function ProjectInfoStep({
     defaultValues: initialData,
   });
 
-  const companyWebsite = watch("companyWebsite");
-  const projectDescription = watch("projectDescription");
-
-  const handleGenerateDescription = async () => {
-    if (!companyWebsite) {
-      setGenerationError("Please enter a company website first");
-      return;
-    }
-
-    try {
-      const url = new URL(companyWebsite);
-      if (!url.protocol.startsWith("http")) {
-        setGenerationError("Please enter a valid URL");
-        return;
-      }
-    } catch {
-      setGenerationError("Please enter a valid URL");
-      return;
-    }
-
-    setIsGenerating(true);
-    setGenerationError(null);
-
-    try {
-      const response = await generateDescription({
-        applicationUrl: companyWebsite,
-      });
-      console.log("Data:",response);
-      if (response.data.description) {
-        setValue("projectDescription", response.data.description, {
-          shouldValidate: true,
-          shouldDirty: true
-        });
-      }
-    } catch (error) {
-      setGenerationError(
-        error instanceof Error ? error.message : "Failed to generate description"
-      );
-    } finally {
-      setIsGenerating(false);
-    }
-  };
+  const businessType = watch("businessType");
 
   return (
     <div className="w-full bg-white dark:bg-neutral-950 border border-neutral-200 dark:border-neutral-800 rounded-xl shadow-sm">
@@ -110,70 +82,76 @@ export default function ProjectInfoStep({
           )}
         </div>
 
-        {/* Company Website */}
+        {/* Primary Operating Location */}
         <div className="flex flex-col gap-2">
           <Label
-            htmlFor="company-website"
+            htmlFor="location"
             className="text-neutral-800 dark:text-neutral-200 text-sm font-medium"
           >
-            Company Website
+            Primary Operating Location
           </Label>
           <Input
-            id="company-website"
-            type="url"
-            placeholder="e.g., https://www.yourcompany.com"
-            {...register("companyWebsite")}
+            id="location"
+            type="text"
+            placeholder="e.g., San Francisco, CA or United States"
+            {...register("location")}
             className="border-neutral-300 dark:border-neutral-700 bg-white dark:bg-neutral-900 focus-visible:ring-purple-600/50 focus-visible:border-purple-600/80"
           />
-          {errors.companyWebsite && (
-            <p className="text-sm text-red-500">{errors.companyWebsite.message}</p>
+          {errors.location && (
+            <p className="text-sm text-red-500">{errors.location.message}</p>
           )}
         </div>
 
-        {/* Project Description */}
+        {/* Type of Business */}
         <div className="flex flex-col gap-2">
-          <div className="flex items-center justify-between">
-            <Label
-              htmlFor="project-description"
-              className="text-neutral-800 dark:text-neutral-200 text-sm font-medium"
+          <Label
+            htmlFor="business-type"
+            className="text-neutral-800 dark:text-neutral-200 text-sm font-medium"
+          >
+            Type of Business
+          </Label>
+          <Select
+            value={businessType}
+            onValueChange={(value) => setValue("businessType", value as "saas" | "product" | "other", { shouldValidate: true })}
+          >
+            <SelectTrigger
+              id="business-type"
+              className="border-neutral-300 dark:border-neutral-700 bg-white dark:bg-neutral-900 focus:ring-purple-600/50 focus:border-purple-600/80"
             >
-              Project Description
-            </Label>
-            <Button
-              type="button"
-              variant="ghost"
-              size="sm"
-              onClick={handleGenerateDescription}
-              disabled={isGenerating || !companyWebsite}
-              className="text-purple-600 hover:text-purple-700 hover:bg-purple-50 dark:hover:bg-purple-950/20 text-xs h-7 px-2 gap-1"
-            >
-              {isGenerating ? (
-                <>
-                  <Loader2 className="h-3 w-3 animate-spin" />
-                  Generating...
-                </>
-              ) : (
-                <>
-                  <Sparkles className="h-3 w-3" />
-                  Generate with AI
-                </>
-              )}
-            </Button>
-          </div>
-          <textarea
-            id="project-description"
-            placeholder="Describe what you're looking for, what your company does, and who your target customers are..."
-            value={projectDescription || ""}
-            onChange={(e) => setValue("projectDescription", e.target.value, { shouldValidate: true, shouldDirty: true })}
-            className="flex w-full min-w-0 flex-1 resize-y overflow-hidden rounded-lg text-neutral-900 dark:text-white focus:outline-0 focus:ring-2 focus:ring-purple-600/50 border border-neutral-300 dark:border-neutral-700 bg-white dark:bg-neutral-900 focus:border-purple-600/80 min-h-[120px] placeholder:text-neutral-400 dark:placeholder:text-neutral-600 p-4 text-sm font-normal leading-normal"
-          />
-          {errors.projectDescription && (
-            <p className="text-sm text-red-500">{errors.projectDescription.message}</p>
-          )}
-          {generationError && (
-            <p className="text-sm text-red-500">{generationError}</p>
+              <SelectValue placeholder="Select business type" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="saas">SaaS</SelectItem>
+              <SelectItem value="product">Product</SelectItem>
+              <SelectItem value="other">Other</SelectItem>
+            </SelectContent>
+          </Select>
+          {errors.businessType && (
+            <p className="text-sm text-red-500">{errors.businessType.message}</p>
           )}
         </div>
+
+        {/* Other Business Type (Conditional) */}
+        {businessType === "other" && (
+          <div className="flex flex-col gap-2">
+            <Label
+              htmlFor="business-type-other"
+              className="text-neutral-800 dark:text-neutral-200 text-sm font-medium"
+            >
+              Please specify
+            </Label>
+            <Input
+              id="business-type-other"
+              type="text"
+              placeholder="Describe your business type"
+              {...register("businessTypeOther")}
+              className="border-neutral-300 dark:border-neutral-700 bg-white dark:bg-neutral-900 focus-visible:ring-purple-600/50 focus-visible:border-purple-600/80"
+            />
+            {errors.businessTypeOther && (
+              <p className="text-sm text-red-500">{errors.businessTypeOther.message}</p>
+            )}
+          </div>
+        )}
 
         {/* Action Buttons */}
         <div className="flex items-center justify-end gap-4 pt-4 border-t border-neutral-200 dark:border-neutral-800">

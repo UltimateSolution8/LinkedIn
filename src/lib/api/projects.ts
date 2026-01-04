@@ -7,6 +7,8 @@ export interface Project {
   description: string;
   keywords: string[];
   semanticQueries: string[];
+  targetAudience?: string[];
+  valuePropositions?: string[];
 }
 
 export interface GetProjectsResponse {
@@ -23,10 +25,13 @@ export interface ApiError {
 
 export interface CreateProjectRequest {
   projectName: string;
+  location: string;
+  businessType: string;
   websiteUrl: string;
   description: string;
+  targetAudience: string[];
+  valuePropositions: string[];
   keywords: string[];
-  semanticQueries: string[];
 }
 
 export interface CreateProjectResponse {
@@ -73,6 +78,20 @@ export interface GenerateSemanticQueriesResponse {
   data: GenerateSemanticQueriesResponseData;
 }
 
+export interface GenerateProductInsightsRequest {
+  productDescription: string;
+}
+
+export interface GenerateProductInsightsResponseData {
+  targetAudience: string[];
+  valuePropositions: string[];
+}
+
+export interface GenerateProductInsightsResponse {
+  message: string;
+  data: GenerateProductInsightsResponseData;
+}
+
 export async function getProjects(): Promise<Project[]> {
   const response = await fetch(`${RIXLY_API_BASE_URL}/api/projects`, {
     method: "GET",
@@ -96,6 +115,8 @@ export async function getProjects(): Promise<Project[]> {
     description: project.projectDescription,
     keywords: project.keywords || [],
     semanticQueries: project.semanticQueries || [],
+    targetAudience: project.targetAudience || [],
+    valuePropositions: project.valuePropositions || [],
   }));
 }
 
@@ -170,6 +191,25 @@ export async function generateSemanticQueries(data: GenerateSemanticQueriesReque
 
   if (!response.ok) {
     throw new Error(responseData.message || "Failed to generate semantic queries");
+  }
+
+  return responseData;
+}
+
+export async function generateProductInsights(data: GenerateProductInsightsRequest): Promise<GenerateProductInsightsResponse> {
+  const response = await fetch(`${RIXLY_API_BASE_URL}/api/ai/generate-product-insights`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    credentials: "include",
+    body: JSON.stringify(data),
+  });
+
+  const responseData = await response.json();
+
+  if (!response.ok) {
+    throw new Error(responseData.message || "Failed to generate product insights");
   }
 
   return responseData;

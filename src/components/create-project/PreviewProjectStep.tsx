@@ -1,13 +1,16 @@
 
-import { Globe, FileText, Tag, Network } from "lucide-react";
+import { MapPin, FileText, Tag, Briefcase, Globe, Users, AlertCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 export interface PreviewProjectData {
   projectName: string;
-  companyWebsite: string;
-  projectDescription: string;
+  location: string;
+  businessType: string;
+  websiteUrl: string;
+  description: string;
+  targetAudience: string[];
+  valuePropositions: string[];
   keywords: string[];
-  semanticQueries: string[];
 }
 
 interface PreviewProjectStepProps {
@@ -58,20 +61,50 @@ export default function PreviewProjectStep({
 
           <hr className="border-neutral-200 dark:border-neutral-800" />
 
-          {/* Company Website */}
+          {/* Primary Operating Location */}
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 sm:gap-4">
+            <label className="font-medium text-neutral-500 dark:text-neutral-400 flex items-center gap-2">
+              <MapPin className="w-4 h-4 text-neutral-400" />
+              Primary Operating Location
+            </label>
+            <div className="sm:col-span-2">
+              <p className="text-neutral-800 dark:text-neutral-200 font-medium">
+                {projectData.location}
+              </p>
+            </div>
+          </div>
+
+          <hr className="border-neutral-200 dark:border-neutral-800" />
+
+          {/* Type of Business */}
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 sm:gap-4">
+            <label className="font-medium text-neutral-500 dark:text-neutral-400 flex items-center gap-2">
+              <Briefcase className="w-4 h-4 text-neutral-400" />
+              Type of Business
+            </label>
+            <div className="sm:col-span-2">
+              <p className="text-neutral-800 dark:text-neutral-200 font-medium capitalize">
+                {projectData.businessType}
+              </p>
+            </div>
+          </div>
+
+          <hr className="border-neutral-200 dark:border-neutral-800" />
+
+          {/* Project Website URL */}
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 sm:gap-4">
             <label className="font-medium text-neutral-500 dark:text-neutral-400 flex items-center gap-2">
               <Globe className="w-4 h-4 text-neutral-400" />
-              Company Website
+              Website URL
             </label>
             <div className="sm:col-span-2">
               <a
-                href={projectData.companyWebsite}
+                href={projectData.websiteUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex items-center gap-1 text-purple-600 hover:underline"
+                className="inline-flex items-center gap-1 text-purple-600 hover:underline break-all"
               >
-                <span>{projectData.companyWebsite}</span>
+                <span>{projectData.websiteUrl}</span>
                 <span className="text-sm">↗</span>
               </a>
             </div>
@@ -86,9 +119,65 @@ export default function PreviewProjectStep({
               Description
             </label>
             <div className="sm:col-span-2">
-              <p className="text-neutral-700 dark:text-neutral-300 leading-relaxed">
-                {projectData.projectDescription}
+              <p className="text-neutral-700 dark:text-neutral-300 leading-relaxed text-sm">
+                {projectData.description}
               </p>
+            </div>
+          </div>
+
+          <hr className="border-neutral-200 dark:border-neutral-800" />
+
+          {/* Target Audience */}
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 sm:gap-4">
+            <label className="font-medium text-neutral-500 dark:text-neutral-400 flex items-center gap-2 pt-1 sm:pt-0">
+              <Users className="w-4 h-4 text-neutral-400" />
+              Target Audience
+            </label>
+            <div className="sm:col-span-2">
+              {projectData.targetAudience.length === 0 ? (
+                <p className="text-neutral-500 dark:text-neutral-400 text-sm">
+                  No target audience added
+                </p>
+              ) : (
+                <div className="flex flex-wrap gap-2">
+                  {projectData.targetAudience.map((audience, index) => (
+                    <span
+                      key={index}
+                      className="bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-300 text-sm font-medium px-3 py-1 rounded-full"
+                    >
+                      {audience}
+                    </span>
+                  ))}
+                </div>
+              )}
+            </div>
+          </div>
+
+          <hr className="border-neutral-200 dark:border-neutral-800" />
+
+          {/* Value Propositions */}
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 sm:gap-4">
+            <label className="font-medium text-neutral-500 dark:text-neutral-400 flex items-center gap-2 pt-1 sm:pt-0">
+              <AlertCircle className="w-4 h-4 text-neutral-400" />
+              Value Propositions
+            </label>
+            <div className="sm:col-span-2">
+              {projectData.valuePropositions.length === 0 ? (
+                <p className="text-neutral-500 dark:text-neutral-400 text-sm">
+                  No value propositions added
+                </p>
+              ) : (
+                <div className="flex flex-wrap gap-2">
+                  {projectData.valuePropositions.map((valueProposition, index) => (
+                    <span
+                      key={index}
+                      className="bg-red-100 dark:bg-red-900/30 text-red-800 dark:text-red-300 text-sm font-medium px-3 py-1 rounded-full"
+                    >
+                      {valueProposition}
+                    </span>
+                  ))}
+                </div>
+              )}
             </div>
           </div>
 
@@ -100,7 +189,7 @@ export default function PreviewProjectStep({
               <Tag className="w-4 h-4 text-neutral-400" />
               Keywords
             </label>
-            <div className="sm:col-span-2 h-32 overflow-y-auto rounded-md bg-neutral-50 dark:bg-neutral-900/50 p-3">
+            <div className="sm:col-span-2 max-h-32 overflow-y-auto rounded-md bg-neutral-50 dark:bg-neutral-900/50 p-3">
               {projectData.keywords.length === 0 ? (
                 <p className="text-neutral-500 dark:text-neutral-400 text-sm">
                   No keywords added
@@ -120,33 +209,6 @@ export default function PreviewProjectStep({
             </div>
           </div>
 
-          <hr className="border-neutral-200 dark:border-neutral-800" />
-
-          {/* Semantic Queries */}
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 sm:gap-4">
-            <label className="font-medium text-neutral-500 dark:text-neutral-400 flex items-center gap-2 pt-1 sm:pt-0">
-              <Network className="w-4 h-4 text-neutral-400" />
-              Semantic Queries
-            </label>
-            <div className="sm:col-span-2 h-32 overflow-y-auto rounded-md bg-neutral-50 dark:bg-neutral-900/50 p-2">
-              {projectData.semanticQueries.length === 0 ? (
-                <p className="text-neutral-500 dark:text-neutral-400 text-sm p-2">
-                  No semantic queries added
-                </p>
-              ) : (
-                <ul className="space-y-2">
-                  {projectData.semanticQueries.map((query, index) => (
-                    <li
-                      key={index}
-                      className="bg-teal-100 dark:bg-teal-900/30 text-teal-800 dark:text-teal-300 text-sm font-medium px-3 py-2 rounded-md"
-                    >
-                      {query}
-                    </li>
-                  ))}
-                </ul>
-              )}
-            </div>
-          </div>
         </div>
       </div>
 

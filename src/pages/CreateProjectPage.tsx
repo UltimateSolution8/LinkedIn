@@ -6,10 +6,10 @@ import { Button } from "@/components/ui/button";
 import ProjectInfoStep, {
   ProjectInfoData,
 } from "@/components/create-project/ProjectInfoStep";
+import ProjectDetailsStep, {
+  ProjectDetailsData,
+} from "@/components/create-project/ProjectDetailsStep";
 import KeywordSetupStep, { Keyword } from "@/components/create-project/KeywordSetupStep";
-import SemanticQueriesStep, {
-  SemanticQuery,
-} from "@/components/create-project/SemanticQueriesStep";
 import PreviewProjectStep from "@/components/create-project/PreviewProjectStep";
 import { createProject } from "@/lib/api/projects";
 
@@ -17,8 +17,8 @@ export default function CreateProjectPage() {
   const navigate = useNavigate();
   const [currentStep, setCurrentStep] = useState(1);
   const [projectInfo, setProjectInfo] = useState<ProjectInfoData | null>(null);
+  const [projectDetails, setProjectDetails] = useState<ProjectDetailsData | null>(null);
   const [keywords, setKeywords] = useState<Keyword[]>([  ]);
-  const [semanticQueries, setSemanticQueries] = useState<SemanticQuery[]>([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -30,8 +30,8 @@ export default function CreateProjectPage() {
     setCurrentStep(2);
   };
 
-  const handleStep2Next = () => {
-    console.log("Keywords:", keywords);
+  const handleStep2Next = (data: ProjectDetailsData) => {
+    setProjectDetails(data);
     setCurrentStep(3);
   };
 
@@ -40,7 +40,7 @@ export default function CreateProjectPage() {
   };
 
   const handleStep3Next = () => {
-    console.log("Semantic Queries:", semanticQueries);
+    console.log("Keywords:", keywords);
     setCurrentStep(4);
   };
 
@@ -50,7 +50,7 @@ export default function CreateProjectPage() {
 
   const handleStep4Next = async () => {
     // Validate required data
-    if (!projectInfo) {
+    if (!projectInfo || !projectDetails) {
       setError("Project information is missing. Please go back and complete all steps.");
       return;
     }
@@ -62,10 +62,15 @@ export default function CreateProjectPage() {
       // Transform data to match API contract
       const projectData = {
         projectName: projectInfo.projectName,
-        websiteUrl: projectInfo.companyWebsite,
-        description: projectInfo.projectDescription,
+        location: projectInfo.location,
+        businessType: projectInfo.businessType === "other"
+          ? projectInfo.businessTypeOther || projectInfo.businessType
+          : projectInfo.businessType,
+        websiteUrl: projectDetails.websiteUrl,
+        description: projectDetails.description,
+        targetAudience: projectDetails.targetAudience,
+        valuePropositions: projectDetails.valuePropositions,
         keywords: keywords.map((k) => k.text),
-        semanticQueries: semanticQueries.map((q) => q.text),
       };
 
       // Call the API
@@ -96,11 +101,11 @@ export default function CreateProjectPage() {
       case 1:
         return "Create a New Project";
       case 2:
-        return "Set Up Your Keywords";
+        return ""; // Project Details has its own heading
       case 3:
-        return ""; // No title for step 3, it has its own heading
+        return "Set Up Your Keywords";
       case 4:
-        return ""; // No title for step 4, it has its own heading
+        return ""; // Preview has its own heading
       default:
         return "Create a New Project";
     }
@@ -111,11 +116,11 @@ export default function CreateProjectPage() {
       case 1:
         return "Start by telling us about your project. This helps our AI find the most relevant leads for you.";
       case 2:
-        return "Enter keywords or phrases Rixly should monitor on Reddit. Use our AI to discover related terms.";
+        return ""; // Project Details has its own description
       case 3:
-        return ""; // No description for step 3
+        return "Enter keywords or phrases Rixly should monitor on Reddit. Use our AI to discover related terms.";
       case 4:
-        return ""; // No description for step 4
+        return ""; // Preview has its own description
       default:
         return "";
     }
@@ -124,9 +129,9 @@ export default function CreateProjectPage() {
   const getStepLabel = () => {
     switch (currentStep) {
       case 2:
-        return "Keyword Setup";
+        return "Project Details";
       case 3:
-        return "Semantic Queries";
+        return "Keyword Setup";
       case 4:
         return "Preview";
       default:
@@ -167,8 +172,8 @@ export default function CreateProjectPage() {
           )}
         </div>
 
-        {/* Header - Only show for steps 1 and 2 */}
-        {currentStep !== 3 && currentStep !== 4 && (
+        {/* Header - Only show for steps 1 and 3 */}
+        {(currentStep === 1 || currentStep === 3) && (
           <div className="flex flex-col gap-2 px-4">
             <p className="text-neutral-900 dark:text-white text-4xl font-bold tracking-tighter">
               {getStepTitle()}
@@ -189,35 +194,38 @@ export default function CreateProjectPage() {
         )}
 
         {currentStep === 2 && (
-          <KeywordSetupStep
+          <ProjectDetailsStep
             onNext={handleStep2Next}
             onBack={handleStep2Back}
-            keywords={keywords}
-            onKeywordsChange={setKeywords}
-            productDescription={projectInfo?.projectDescription || ""}
+            initialData={projectDetails || undefined}
           />
         )}
 
         {currentStep === 3 && (
-          <SemanticQueriesStep
+          <KeywordSetupStep
             onNext={handleStep3Next}
             onBack={handleStep3Back}
-            queries={semanticQueries}
-            onQueriesChange={setSemanticQueries}
-            productDescription={projectInfo?.projectDescription || ""}
+            keywords={keywords}
+            onKeywordsChange={setKeywords}
+            productDescription={projectDetails?.description || ""}
           />
         )}
 
-        {currentStep === 4 && projectInfo && (
+        {currentStep === 4 && projectInfo && projectDetails && (
           <PreviewProjectStep
             onNext={handleStep4Next}
             onBack={handleStep4Back}
             projectData={{
               projectName: projectInfo.projectName,
-              companyWebsite: projectInfo.companyWebsite,
-              projectDescription: projectInfo.projectDescription,
+              location: projectInfo.location,
+              businessType: projectInfo.businessType === "other"
+                ? projectInfo.businessTypeOther || projectInfo.businessType
+                : projectInfo.businessType,
+              websiteUrl: projectDetails.websiteUrl,
+              description: projectDetails.description,
+              targetAudience: projectDetails.targetAudience,
+              valuePropositions: projectDetails.valuePropositions,
               keywords: keywords.map((k) => k.text),
-              semanticQueries: semanticQueries.map((q) => q.text),
             }}
             isSubmitting={isSubmitting}
             error={error}
