@@ -8,7 +8,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
-// import GoogleIcon from "@/components/auth/GoogleIcon";
+import GoogleIcon from "@/components/auth/GoogleIcon";
 import { signin } from "@/lib/api/auth";
 import { checkSubscriptionAccess } from "@/lib/utils/subscription";
 
@@ -90,22 +90,12 @@ export default function LoginForm({ onSuccess }: LoginFormProps = {}) {
     }
   };
 
-  // const handleGoogleLogin = async () => {
-  //   console.log("Google login clicked");
-  //   // TODO: Implement Google OAuth
-  //   // For now, check subscription and navigate accordingly
-  //   try {
-  //     const hasAccess = await checkSubscriptionAccess();
-  //     if (hasAccess) {
-  //       navigate("/dashboard");
-  //     } else {
-  //       navigate("/auth-pricing");
-  //     }
-  //   } catch (error) {
-  //     console.error("Error checking subscription status:", error);
-  //     navigate("/auth-pricing");
-  //   }
-  // };
+  const handleGoogleLogin = () => {
+    const RIXLY_API_BASE_URL = import.meta.env.VITE_RIXLY_API_BASE_URL;
+    const redirectPath = "/dashboard";
+    // Redirect to backend Google OAuth with redirect path
+    window.location.href = `${RIXLY_API_BASE_URL}/api/auth/google?redirect=${encodeURIComponent(redirectPath)}`;
+  };
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4 mt-4">
@@ -164,13 +154,13 @@ export default function LoginForm({ onSuccess }: LoginFormProps = {}) {
         {isLoading ? "Signing In..." : "Continue with Email"}
       </Button>
 
-      {/* <div className="flex items-center gap-2 my-2">
+      <div className="flex items-center gap-2 my-2">
         <hr className="w-full border-neutral-200 dark:border-white/20" />
         <span className="text-xs text-neutral-500 dark:text-neutral-400">OR</span>
         <hr className="w-full border-neutral-200 dark:border-white/20" />
-      </div> */}
+      </div>
 
-      {/* <Button
+      <Button
         type="button"
         variant="outline"
         onClick={handleGoogleLogin}
@@ -178,7 +168,7 @@ export default function LoginForm({ onSuccess }: LoginFormProps = {}) {
       >
         <GoogleIcon className="w-5 h-5 mr-2" />
         Continue with Google
-      </Button> */}
+      </Button>
 
       <p className="text-xs text-center text-neutral-500 dark:text-neutral-400 mt-8">
         By continuing, you agree to Rixly&apos;s{" "}

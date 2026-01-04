@@ -20,11 +20,36 @@ export default function DashboardLayout() {
       setIsChecking(true)
       setIsAuthorized(false)
 
-      // Check if user is logged in
-      const user = getCurrentUser()
+      // Check if user is logged in in localStorage
+      let user = getCurrentUser()
+
+      // If no user in localStorage, try to fetch from API (cookie-based auth)
       if (!user) {
-        navigate('/login')
-        return
+        try {
+          const RIXLY_API_BASE_URL = import.meta.env.VITE_RIXLY_API_BASE_URL
+          const response = await fetch(`${RIXLY_API_BASE_URL}/api/auth/me`, {
+            method: 'GET',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            credentials: 'include',
+          })
+
+          if (response.ok) {
+            const userData = await response.json()
+            const userToStore = userData.user || userData
+            localStorage.setItem('user', JSON.stringify(userToStore))
+            user = userToStore
+          } else {
+            // No valid session, redirect to login
+            navigate('/login')
+            return
+          }
+        } catch (error) {
+          console.error('Error fetching user:', error)
+          navigate('/login')
+          return
+        }
       }
 
       // Check subscription access - ALWAYS fetch fresh data from API

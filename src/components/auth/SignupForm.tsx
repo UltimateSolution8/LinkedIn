@@ -8,7 +8,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
-//import GoogleIcon from "@/components/auth/GoogleIcon";
+import GoogleIcon from "@/components/auth/GoogleIcon";
 import { signup } from "@/lib/api/auth";
 
 const signupSchema = z.object({
@@ -80,12 +80,12 @@ export default function SignupForm({ onSuccess }: SignupFormProps = {}) {
     }
   };
 
-  // const handleGoogleSignup = () => {
-  //   console.log("Google signup clicked");
-  //   // TODO: Implement Google OAuth
-  //   // For now, navigate to auth pricing page
-  //   navigate("/auth-pricing");
-  // };
+  const handleGoogleSignup = () => {
+    const RIXLY_API_BASE_URL = import.meta.env.VITE_RIXLY_API_BASE_URL;
+    const redirectPath = "/dashboard";
+    // Redirect to backend Google OAuth with redirect path
+    window.location.href = `${RIXLY_API_BASE_URL}/api/auth/google?redirect=${encodeURIComponent(redirectPath)}`;
+  };
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4 mt-4">
@@ -187,7 +187,7 @@ export default function SignupForm({ onSuccess }: SignupFormProps = {}) {
         {isLoading ? "Creating Account..." : "Continue with Email"}
       </Button>
 
-      {/* <div className="flex items-center gap-2 my-2">
+      <div className="flex items-center gap-2 my-2">
         <hr className="w-full border-neutral-200 dark:border-white/20" />
         <span className="text-xs text-neutral-500 dark:text-neutral-400">OR</span>
         <hr className="w-full border-neutral-200 dark:border-white/20" />
@@ -201,7 +201,7 @@ export default function SignupForm({ onSuccess }: SignupFormProps = {}) {
       >
         <GoogleIcon className="w-5 h-5 mr-2" />
         Continue with Google
-      </Button> */}
+      </Button>
 
       <p className="text-xs text-center text-neutral-500 dark:text-neutral-400 mt-8">
         By continuing, you agree to Rixly&apos;s{" "}

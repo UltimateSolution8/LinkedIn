@@ -151,7 +151,7 @@ export async function signin(data: SigninRequest): Promise<SigninResponse> {
 export async function logout(): Promise<void> {
   // Call backend to clear HTTP-only cookie
   try {
-    await fetch(`${RIXLY_API_BASE_URL}/api/auth/logout`, {
+    await fetch(`${RIXLY_API_BASE_URL}/api/auth/signout`, {
       method: "POST",
       credentials: "include",
     });
