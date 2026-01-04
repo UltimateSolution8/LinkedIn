@@ -74,12 +74,6 @@ export interface ProjectDetailResponse {
  * Get detailed information for a specific project (admin only)
  */
 export async function getProjectDetail(projectId: number): Promise<ProjectDetail> {
-  const accessToken = localStorage.getItem("accessToken");
-
-  if (!accessToken) {
-    throw new Error("No access token found. Please login.");
-  }
-
   if (!RIXLY_API_BASE_URL) {
     throw new Error(
       "API base URL is not configured. Please set VITE_RIXLY_API_BASE_URL in your .env file."
@@ -91,8 +85,8 @@ export async function getProjectDetail(projectId: number): Promise<ProjectDetail
       method: "GET",
       headers: {
         "Content-Type": "application/json",
-        Authorization: `Bearer ${accessToken}`,
       },
+      credentials: "include",
     });
 
     const responseData: ProjectDetailResponse = await response.json();
@@ -125,12 +119,6 @@ export interface UpdatePaymentBypassResponse {
  * Disable: { enabled: false }
  */
 export async function updatePaymentBypass(data: UpdatePaymentBypassRequest): Promise<UpdatePaymentBypassResponse> {
-  const accessToken = localStorage.getItem("accessToken");
-
-  if (!accessToken) {
-    throw new Error("No access token found. Please login.");
-  }
-
   if (!RIXLY_API_BASE_URL) {
     throw new Error(
       "API base URL is not configured. Please set VITE_RIXLY_API_BASE_URL in your .env file."
@@ -147,8 +135,8 @@ export async function updatePaymentBypass(data: UpdatePaymentBypassRequest): Pro
       method: "PATCH",
       headers: {
         "Content-Type": "application/json",
-        Authorization: `Bearer ${accessToken}`,
       },
+      credentials: "include",
       body: JSON.stringify(body),
     });
 
@@ -169,12 +157,6 @@ export async function updatePaymentBypass(data: UpdatePaymentBypassRequest): Pro
  * Get all users with their projects (admin only)
  */
 export async function getAdminUsers(): Promise<AdminUser[]> {
-  const accessToken = localStorage.getItem("accessToken");
-
-  if (!accessToken) {
-    throw new Error("No access token found. Please login.");
-  }
-
   if (!RIXLY_API_BASE_URL) {
     throw new Error(
       "API base URL is not configured. Please set VITE_RIXLY_API_BASE_URL in your .env file."
@@ -186,8 +168,8 @@ export async function getAdminUsers(): Promise<AdminUser[]> {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
-        Authorization: `Bearer ${accessToken}`,
       },
+      credentials: "include",
     });
 
     const responseData: AdminUsersResponse = await response.json();
@@ -213,12 +195,6 @@ export async function getAdminProjectLeads(
   limit: number = 10,
   source?: string
 ): Promise<GetLeadsResponse> {
-  const accessToken = localStorage.getItem("accessToken");
-
-  if (!accessToken) {
-    throw new Error("No access token found. Please login.");
-  }
-
   if (!RIXLY_API_BASE_URL) {
     throw new Error(
       "API base URL is not configured. Please set VITE_RIXLY_API_BASE_URL in your .env file."
@@ -241,8 +217,8 @@ export async function getAdminProjectLeads(
         method: "GET",
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${accessToken}`,
         },
+        credentials: "include",
       }
     );
 

@@ -23,9 +23,9 @@ export default function UserProfileDropdown() {
     setUser(getCurrentUser());
   }, []);
 
-  const handleLogout = () => {
+  const handleLogout = async () => {
     setIsLoggingOut(true);
-    logout();
+    await logout();
     navigate("/login");
   };
 

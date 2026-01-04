@@ -74,6 +74,7 @@ export async function signup(data: SignupRequest): Promise<SignupResponse> {
     headers: {
       "Content-Type": "application/json",
     },
+    credentials: "include",
     body: JSON.stringify(data),
   });
 
@@ -116,6 +117,7 @@ export async function signin(data: SigninRequest): Promise<SigninResponse> {
     headers: {
       "Content-Type": "application/json",
     },
+    credentials: "include",
     body: JSON.stringify(data),
   });
 
@@ -146,9 +148,18 @@ export async function signin(data: SigninRequest): Promise<SigninResponse> {
   return responseData;
 }
 
-export function logout(): void {
+export async function logout(): Promise<void> {
+  // Call backend to clear HTTP-only cookie
+  try {
+    await fetch(`${RIXLY_API_BASE_URL}/api/auth/logout`, {
+      method: "POST",
+      credentials: "include",
+    });
+  } catch (error) {
+    console.error("Error during logout:", error);
+  }
+
   // Clear ALL authentication and session data from localStorage
-  localStorage.removeItem("accessToken");
   localStorage.removeItem("user");
   // Clear any cached subscription data
   localStorage.removeItem("subscriptionStatus");
@@ -187,6 +198,7 @@ export async function verifyEmail(token: string): Promise<VerifyEmailResponse> {
     headers: {
       "Content-Type": "application/json",
     },
+    credentials: "include",
   });
 
   let responseData;
@@ -220,12 +232,6 @@ export interface ResendVerificationResponse {
 }
 
 export async function resendVerificationEmail(): Promise<ResendVerificationResponse> {
-  const accessToken = localStorage.getItem("accessToken");
-
-  if (!accessToken) {
-    throw new Error("No access token found. Please login.");
-  }
-
   if (!RIXLY_API_BASE_URL) {
     throw new Error(
       "API base URL is not configured. Please set NEXT_PUBLIC_RIXLY_API_BASE_URL in your .env.local file."
@@ -236,8 +242,8 @@ export async function resendVerificationEmail(): Promise<ResendVerificationRespo
     method: "POST",
     headers: {
       "Content-Type": "application/json",
-      Authorization: `Bearer ${accessToken}`,
     },
+    credentials: "include",
   });
 
   let responseData;
@@ -276,12 +282,6 @@ export interface VerifyOtpResponse {
 }
 
 export async function verifyOtp(data: VerifyOtpRequest): Promise<VerifyOtpResponse> {
-  const accessToken = localStorage.getItem("accessToken");
-
-  if (!accessToken) {
-    throw new Error("No access token found. Please login.");
-  }
-
   if (!RIXLY_API_BASE_URL) {
     throw new Error(
       "API base URL is not configured. Please set NEXT_PUBLIC_RIXLY_API_BASE_URL in your .env.local file."
@@ -292,8 +292,8 @@ export async function verifyOtp(data: VerifyOtpRequest): Promise<VerifyOtpRespon
     method: "POST",
     headers: {
       "Content-Type": "application/json",
-      Authorization: `Bearer ${accessToken}`,
     },
+    credentials: "include",
     body: JSON.stringify(data),
   });
 

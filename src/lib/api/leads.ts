@@ -69,20 +69,14 @@ export async function getLeads(
   page: number = 1,
   limit: number = 10
 ): Promise<GetLeadsResponse> {
-  const accessToken = localStorage.getItem("accessToken");
-
-  if (!accessToken) {
-    throw new Error("No access token found. Please login.");
-  }
-
   const response = await fetch(
     `${RIXLY_API_BASE_URL}/api/projects/${projectId}/reddit-leads?page=${page}&limit=${limit}`,
     {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
-        Authorization: `Bearer ${accessToken}`,
       },
+      credentials: "include",
     }
   );
 
@@ -98,20 +92,14 @@ export async function getLeads(
 export async function getInviteMessages(
   leadId: string
 ): Promise<InviteMessagesResponse> {
-  const accessToken = localStorage.getItem("accessToken");
-
-  if (!accessToken) {
-    throw new Error("No access token found. Please login.");
-  }
-
   const response = await fetch(
     `${RIXLY_API_BASE_URL}/api/ai/invite-messages/${leadId}`,
     {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
-        Authorization: `Bearer ${accessToken}`,
       },
+      credentials: "include",
     }
   );
 
@@ -129,20 +117,14 @@ export async function generateLeadResponse(
   tone: "friendly" | "professional" | "casual" = "friendly",
   length: "short" | "medium" = "medium"
 ): Promise<GenerateResponseResponse> {
-  const accessToken = localStorage.getItem("accessToken");
-
-  if (!accessToken) {
-    throw new Error("No access token found. Please login.");
-  }
-
   const response = await fetch(
     `${RIXLY_API_BASE_URL}/api/ai/generate-invite-message`,
     {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        Authorization: `Bearer ${accessToken}`,
       },
+      credentials: "include",
       body: JSON.stringify({
         leadId,
         tone,

@@ -52,12 +52,6 @@ export interface SubscriptionDetails {
  * Get current user's subscription status
  */
 export async function getSubscriptionStatus(): Promise<SubscriptionStatus> {
-  const accessToken = localStorage.getItem("accessToken");
-
-  if (!accessToken) {
-    throw new Error("No access token found. Please login.");
-  }
-
   if (!RIXLY_API_BASE_URL) {
     throw new Error(
       "API base URL is not configured. Please set NEXT_PUBLIC_RIXLY_API_BASE_URL in your .env.local file."
@@ -69,8 +63,8 @@ export async function getSubscriptionStatus(): Promise<SubscriptionStatus> {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
-        Authorization: `Bearer ${accessToken}`,
       },
+      credentials: "include",
     });
 
     const responseData = await response.json();
@@ -90,12 +84,6 @@ export async function getSubscriptionStatus(): Promise<SubscriptionStatus> {
  * Get detailed subscription information for profile page
  */
 export async function getSubscriptionDetails(): Promise<SubscriptionDetails> {
-  const accessToken = localStorage.getItem("accessToken");
-
-  if (!accessToken) {
-    throw new Error("No access token found. Please login.");
-  }
-
   if (!RIXLY_API_BASE_URL) {
     throw new Error(
       "API base URL is not configured. Please set NEXT_PUBLIC_RIXLY_API_BASE_URL in your .env.local file."
@@ -107,8 +95,8 @@ export async function getSubscriptionDetails(): Promise<SubscriptionDetails> {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
-        Authorization: `Bearer ${accessToken}`,
       },
+      credentials: "include",
     });
 
     const responseData = await response.json();
@@ -128,12 +116,6 @@ export async function getSubscriptionDetails(): Promise<SubscriptionDetails> {
  * Cancel user's active subscription
  */
 export async function cancelSubscription(subscriptionId: string): Promise<{ message: string }> {
-  const accessToken = localStorage.getItem("accessToken");
-
-  if (!accessToken) {
-    throw new Error("No access token found. Please login.");
-  }
-
   if (!RIXLY_API_BASE_URL) {
     throw new Error(
       "API base URL is not configured. Please set NEXT_PUBLIC_RIXLY_API_BASE_URL in your .env.local file."
@@ -145,8 +127,8 @@ export async function cancelSubscription(subscriptionId: string): Promise<{ mess
       method: "PUT",
       headers: {
         "Content-Type": "application/json",
-        Authorization: `Bearer ${accessToken}`,
       },
+      credentials: "include",
     });
 
     const responseData = await response.json();

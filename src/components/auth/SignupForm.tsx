@@ -56,10 +56,7 @@ export default function SignupForm({ onSuccess }: SignupFormProps = {}) {
       // IMPORTANT: Clear any cached data from previous session first
       localStorage.clear();
 
-      // Store the access token and user data in localStorage
-      if (response.accessToken) {
-        localStorage.setItem("accessToken", response.accessToken);
-      }
+      // Store user data in localStorage (access token is now in HTTP-only cookie)
       if (response.user) {
         localStorage.setItem("user", JSON.stringify(response.user));
       }

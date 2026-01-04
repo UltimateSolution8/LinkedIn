@@ -75,8 +75,8 @@ export default function VerifyEmailPromptPage() {
     }
   };
 
-  const handleLogout = () => {
-    logout();
+  const handleLogout = async () => {
+    await logout();
     navigate("/");
   };
 

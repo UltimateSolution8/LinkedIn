@@ -1,7 +1,7 @@
 
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { Check, Zap, Loader2 } from "lucide-react";
+import { Check, Zap, Loader2, LogOut } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { getPricingPlans, createSubscription, verifySubscriptionPayment, type PricingPlan, RazorpaySubscriptionResponse } from "@/lib/api/pricing";
@@ -11,7 +11,7 @@ import RequestDemoDialog from "@/components/shared/RequestDemoDialog";
 import { detectUserCurrency } from "@/lib/utils/geolocation";
 import { getSubscriptionStatusCached } from "@/lib/utils/subscription";
 import { type SubscriptionStatus } from "@/lib/api/subscription";
-import { getCurrentUser } from "@/lib/api/auth";
+import { getCurrentUser, logout } from "@/lib/api/auth";
 
 // Declare Razorpay types for TypeScript
 declare global {
@@ -275,6 +275,11 @@ export default function AuthPricingPage() {
     }
   };
 
+  const handleLogout = async () => {
+    await logout();
+    navigate("/login");
+  };
+
   // Fallback default plans if API is not available
   const getDefaultPlans = (currency: "USD" | "INR"): PricingPlan[] => {
     if (currency === "USD") {
@@ -438,6 +443,18 @@ export default function AuthPricingPage() {
   return (
     <div className="min-h-screen bg-white py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-7xl mx-auto">
+        {/* Logout Button - Top Right */}
+        <div className="flex justify-end mb-6">
+          <Button
+            onClick={handleLogout}
+            variant="outline"
+            className="border-gray-300 text-gray-700 hover:bg-gray-50 hover:border-gray-400"
+          >
+            <LogOut className="w-4 h-4 mr-2" />
+            Logout
+          </Button>
+        </div>
+
         {/* Page Header */}
         <div className="text-center mb-12">
           <h1 className="text-4xl sm:text-5xl font-bold text-gray-900 mb-4">Pricing</h1>

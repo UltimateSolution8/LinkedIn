@@ -51,18 +51,12 @@ export interface ApiError {
 }
 
 export async function getUnreadNotifications(): Promise<UnreadNotificationInfo> {
-  const accessToken = localStorage.getItem("accessToken");
-
-  if (!accessToken) {
-    throw new Error("No access token found. Please login.");
-  }
-
   const response = await fetch(`${RIXLY_API_BASE_URL}/api/notifications/unread-count`, {
     method: "GET",
     headers: {
       "Content-Type": "application/json",
-      Authorization: `Bearer ${accessToken}`,
     },
+    credentials: "include",
   });
 
   const responseData = await response.json();
@@ -75,18 +69,12 @@ export async function getUnreadNotifications(): Promise<UnreadNotificationInfo> 
 }
 
 export async function getAllNotifications(): Promise<Notification[]> {
-  const accessToken = localStorage.getItem("accessToken");
-
-  if (!accessToken) {
-    throw new Error("No access token found. Please login.");
-  }
-
   const response = await fetch(`${RIXLY_API_BASE_URL}/api/notifications`, {
     method: "GET",
     headers: {
       "Content-Type": "application/json",
-      Authorization: `Bearer ${accessToken}`,
     },
+    credentials: "include",
   });
 
   const responseData: AllNotificationsResponse = await response.json();
@@ -99,18 +87,12 @@ export async function getAllNotifications(): Promise<Notification[]> {
 }
 
 export async function markAllAsRead(): Promise<void> {
-  const accessToken = localStorage.getItem("accessToken");
-
-  if (!accessToken) {
-    throw new Error("No access token found. Please login.");
-  }
-
   const response = await fetch(`${RIXLY_API_BASE_URL}/api/notifications/mark-all-read`, {
     method: "PUT",
     headers: {
       "Content-Type": "application/json",
-      Authorization: `Bearer ${accessToken}`,
     },
+    credentials: "include",
   });
 
   const responseData = await response.json();

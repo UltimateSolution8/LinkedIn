@@ -74,18 +74,12 @@ export interface GenerateSemanticQueriesResponse {
 }
 
 export async function getProjects(): Promise<Project[]> {
-  const accessToken = localStorage.getItem("accessToken");
-
-  if (!accessToken) {
-    throw new Error("No access token found. Please login.");
-  }
-
   const response = await fetch(`${RIXLY_API_BASE_URL}/api/projects`, {
     method: "GET",
     headers: {
       "Content-Type": "application/json",
-      Authorization: `Bearer ${accessToken}`,
     },
+    credentials: "include",
   });
 
   const responseData: GetProjectsResponse = await response.json();
@@ -106,18 +100,12 @@ export async function getProjects(): Promise<Project[]> {
 }
 
 export async function createProject(data: CreateProjectRequest): Promise<CreateProjectResponse> {
-  const accessToken = localStorage.getItem("accessToken");
-
-  if (!accessToken) {
-    throw new Error("No access token found. Please login.");
-  }
-
   const response = await fetch(`${RIXLY_API_BASE_URL}/api/projects`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
-      Authorization: `Bearer ${accessToken}`,
     },
+    credentials: "include",
     body: JSON.stringify(data),
   });
 
@@ -131,18 +119,12 @@ export async function createProject(data: CreateProjectRequest): Promise<CreateP
 }
 
 export async function generateDescription(data: GenerateDescriptionRequest): Promise<GenerateDescriptionResponse> {
-  const accessToken = localStorage.getItem("accessToken");
-
-  if (!accessToken) {
-    throw new Error("No access token found. Please login.");
-  }
-
   const response = await fetch(`${RIXLY_API_BASE_URL}/api/ai/generate-description`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
-      Authorization: `Bearer ${accessToken}`,
     },
+    credentials: "include",
     body: JSON.stringify(data),
   });
 
@@ -156,18 +138,12 @@ export async function generateDescription(data: GenerateDescriptionRequest): Pro
 }
 
 export async function generateKeywords(data: GenerateKeywordsRequest): Promise<GenerateKeywordsResponse> {
-  const accessToken = localStorage.getItem("accessToken");
-
-  if (!accessToken) {
-    throw new Error("No access token found. Please login.");
-  }
-
   const response = await fetch(`${RIXLY_API_BASE_URL}/api/ai/generate-keywords`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
-      Authorization: `Bearer ${accessToken}`,
     },
+    credentials: "include",
     body: JSON.stringify(data),
   });
 
@@ -181,18 +157,12 @@ export async function generateKeywords(data: GenerateKeywordsRequest): Promise<G
 }
 
 export async function generateSemanticQueries(data: GenerateSemanticQueriesRequest): Promise<GenerateSemanticQueriesResponse> {
-  const accessToken = localStorage.getItem("accessToken");
-
-  if (!accessToken) {
-    throw new Error("No access token found. Please login.");
-  }
-
   const response = await fetch(`${RIXLY_API_BASE_URL}/api/ai/generate-semantic-queries`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
-      Authorization: `Bearer ${accessToken}`,
     },
+    credentials: "include",
     body: JSON.stringify(data),
   });
 
@@ -218,18 +188,12 @@ export interface AdminProjectsResponse {
 }
 
 export async function getAdminProjects(): Promise<Project[]> {
-  const accessToken = localStorage.getItem("accessToken");
-
-  if (!accessToken) {
-    throw new Error("No access token found. Please login.");
-  }
-
   const response = await fetch(`${RIXLY_API_BASE_URL}/api/admin/projects`, {
     method: "GET",
     headers: {
       "Content-Type": "application/json",
-      Authorization: `Bearer ${accessToken}`,
     },
+    credentials: "include",
   });
 
   const responseData: AdminProjectsResponse = await response.json();
@@ -257,18 +221,12 @@ export interface ScrapeRedditResponse {
 }
 
 export async function scrapeReddit(projectId: string): Promise<ScrapeRedditResponse> {
-  const accessToken = localStorage.getItem("accessToken");
-
-  if (!accessToken) {
-    throw new Error("No access token found. Please login.");
-  }
-
   const response = await fetch(`${RIXLY_API_BASE_URL}/api/projects/${projectId}/scrape-reddit`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
-      Authorization: `Bearer ${accessToken}`,
     },
+    credentials: "include",
   });
 
   const responseData = await response.json();

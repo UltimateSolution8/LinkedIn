@@ -91,12 +91,6 @@ export async function getPosts(
   sortBy?: "hotness" | "comments" | "date" | "status",
   sortOrder?: "asc" | "desc"
 ): Promise<GetPostsResponse> {
-  const accessToken = localStorage.getItem("accessToken");
-
-  if (!accessToken) {
-    throw new Error("No access token found. Please login.");
-  }
-
   const params = new URLSearchParams({
     page: page.toString(),
     limit: limit.toString(),
@@ -111,8 +105,8 @@ export async function getPosts(
       method: "GET",
       headers: {
         "Content-Type": "application/json",
-        Authorization: `Bearer ${accessToken}`,
       },
+      credentials: "include",
     }
   );
 
@@ -128,20 +122,14 @@ export async function getPosts(
 export async function getGeneratedComments(
   leadId: string
 ): Promise<PostCommentsResponse> {
-  const accessToken = localStorage.getItem("accessToken");
-
-  if (!accessToken) {
-    throw new Error("No access token found. Please login.");
-  }
-
   const response = await fetch(
     `${RIXLY_API_BASE_URL}/api/ai/invite-messages/${leadId}`,
     {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
-        Authorization: `Bearer ${accessToken}`,
       },
+      credentials: "include",
     }
   );
 
@@ -159,20 +147,14 @@ export async function generatePostComment(
   tone: "friendly" | "professional" | "casual" = "friendly",
   length: "short" | "medium" = "medium"
 ): Promise<GenerateCommentResponse> {
-  const accessToken = localStorage.getItem("accessToken");
-
-  if (!accessToken) {
-    throw new Error("No access token found. Please login.");
-  }
-
   const response = await fetch(
     `${RIXLY_API_BASE_URL}/api/ai/generate-invite-message`,
     {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        Authorization: `Bearer ${accessToken}`,
       },
+      credentials: "include",
       body: JSON.stringify({
         leadId,
         messageType: "comment",
@@ -195,20 +177,14 @@ export async function updateLeadStatus(
   leadId: string,
   statusUpdate: UpdateLeadStatusRequest
 ): Promise<UpdateLeadStatusResponse> {
-  const accessToken = localStorage.getItem("accessToken");
-
-  if (!accessToken) {
-    throw new Error("No access token found. Please login.");
-  }
-
   const response = await fetch(
     `${RIXLY_API_BASE_URL}/api/leads/${leadId}/status`,
     {
       method: "PATCH",
       headers: {
         "Content-Type": "application/json",
-        Authorization: `Bearer ${accessToken}`,
       },
+      credentials: "include",
       body: JSON.stringify(statusUpdate),
     }
   );

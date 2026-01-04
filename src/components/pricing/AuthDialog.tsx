@@ -88,9 +88,7 @@ export default function AuthDialog({
       localStorage.clear();
       sessionStorage.clear();
 
-      if (response.accessToken) {
-        localStorage.setItem("accessToken", response.accessToken);
-      }
+      // Store user data in localStorage (access token is now in HTTP-only cookie)
       if (response.user) {
         localStorage.setItem("user", JSON.stringify(response.user));
       }
@@ -142,9 +140,7 @@ export default function AuthDialog({
 
       localStorage.clear();
 
-      if (response.accessToken) {
-        localStorage.setItem("accessToken", response.accessToken);
-      }
+      // Store user data in localStorage (access token is now in HTTP-only cookie)
       if (response.user) {
         localStorage.setItem("user", JSON.stringify(response.user));
       }

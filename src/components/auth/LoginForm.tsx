@@ -50,10 +50,7 @@ export default function LoginForm({ onSuccess }: LoginFormProps = {}) {
       localStorage.clear();
       sessionStorage.clear();
 
-      // Store the access token and user data in localStorage
-      if (response.accessToken) {
-        localStorage.setItem("accessToken", response.accessToken);
-      }
+      // Store user data in localStorage (access token is now in HTTP-only cookie)
       if (response.user) {
         localStorage.setItem("user", JSON.stringify(response.user));
       }

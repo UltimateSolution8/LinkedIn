@@ -86,19 +86,13 @@ export async function getPricingPlans(currency: string = "USD"): Promise<Pricing
 export async function createSubscription(
   data: CreateSubscriptionRequest
 ): Promise<RazorpaySubscriptionResponse> {
-  const accessToken = localStorage.getItem("accessToken");
-
-  if (!accessToken) {
-    throw new Error("No access token found. Please login.");
-  }
-
   try {
     const response = await fetch(`${RIXLY_API_BASE_URL}/api/subscriptions`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        Authorization: `Bearer ${accessToken}`,
       },
+      credentials: "include",
       body: JSON.stringify(data),
     });
 
@@ -121,19 +115,13 @@ export async function createSubscription(
 export async function verifySubscriptionPayment(
   data: SubscriptionPaymentVerificationRequest
 ): Promise<SubscriptionPaymentVerificationResponse> {
-  const accessToken = localStorage.getItem("accessToken");
-
-  if (!accessToken) {
-    throw new Error("No access token found. Please login.");
-  }
-
   try {
     const response = await fetch(`${RIXLY_API_BASE_URL}/api/subscriptions/verify-payment`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        Authorization: `Bearer ${accessToken}`,
       },
+      credentials: "include",
       body: JSON.stringify(data),
     });
 
