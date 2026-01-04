@@ -3,25 +3,26 @@ import { Outlet, useNavigate } from 'react-router-dom'
 import Logo from '@/components/common/Logo'
 import NotificationButton from '@/components/shared/NotificationButton'
 import UserProfileDropdown from '@/components/shared/UserProfileDropdown'
-import { getCurrentUser } from '@/lib/api/auth'
+import { useAuthGuard } from '@/hooks/useAuthGuard'
 import { checkSubscriptionAccess } from '@/lib/utils/subscription'
 
 export default function CreateProjectLayout() {
   const navigate = useNavigate()
+  const { isLoading: isAuthLoading, isAuthorized: isAuthenticated } = useAuthGuard({
+    redirectTo: '/login',
+  })
   const [isAuthorized, setIsAuthorized] = useState(false)
   const [isChecking, setIsChecking] = useState(true)
 
   useEffect(() => {
+    // Wait for auth to complete first
+    if (isAuthLoading || !isAuthenticated) {
+      return
+    }
+
     const checkAccess = async () => {
       setIsChecking(true)
       setIsAuthorized(false)
-
-      // Check if user is logged in
-      const user = getCurrentUser()
-      if (!user) {
-        navigate('/login')
-        return
-      }
 
       // Check subscription access - ALWAYS fetch fresh data from API
       try {
@@ -42,9 +43,9 @@ export default function CreateProjectLayout() {
     }
 
     checkAccess()
-  }, [navigate])
+  }, [navigate, isAuthLoading, isAuthenticated])
 
-  if (isChecking) {
+  if (isAuthLoading || isChecking) {
     return (
       <div className="flex items-center justify-center h-screen">
         <div className="text-center">
@@ -56,7 +57,7 @@ export default function CreateProjectLayout() {
     )
   }
 
-  if (!isAuthorized) {
+  if (!isAuthenticated || !isAuthorized) {
     return null
   }
 

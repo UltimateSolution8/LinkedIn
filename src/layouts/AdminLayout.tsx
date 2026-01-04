@@ -1,32 +1,13 @@
-import { useEffect, useState } from 'react'
-import { Outlet, useNavigate } from 'react-router-dom'
-import { getCurrentUser } from '@/lib/api/auth'
+import { Outlet } from 'react-router-dom'
+import { useAuthGuard } from '@/hooks/useAuthGuard'
 
 export default function AdminLayout() {
-  const navigate = useNavigate()
-  const [isAuthorized, setIsAuthorized] = useState(false)
+  const { isLoading, isAuthorized } = useAuthGuard({
+    requiredRole: 'admin',
+    redirectTo: '/login',
+  })
 
-  useEffect(() => {
-    const user = getCurrentUser()
-
-    // Check if user is logged in
-    if (!user) {
-      navigate('/login')
-      return
-    }
-
-    // Check if user has admin role
-    const isAdmin = user.role === 'admin'
-
-    if (!isAdmin) {
-      navigate('/dashboard')
-      return
-    }
-
-    setIsAuthorized(true)
-  }, [navigate])
-
-  if (!isAuthorized) {
+  if (isLoading || !isAuthorized) {
     return (
       <div className="flex items-center justify-center h-screen">
         <div className="text-center">

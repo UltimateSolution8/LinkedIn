@@ -1,23 +1,13 @@
-import { useEffect, useState } from 'react'
-import { Outlet, useNavigate } from 'react-router-dom'
+import { Outlet } from 'react-router-dom'
 import Logo from '@/components/common/Logo'
-import { getCurrentUser } from '@/lib/api/auth'
+import { useAuthGuard } from '@/hooks/useAuthGuard'
 
 export default function ProfileLayout() {
-  const navigate = useNavigate()
-  const [isChecking, setIsChecking] = useState(true)
+  const { isLoading, isAuthorized } = useAuthGuard({
+    redirectTo: '/login',
+  })
 
-  useEffect(() => {
-    // Check if user is logged in
-    const user = getCurrentUser()
-    if (!user) {
-      navigate('/login')
-      return
-    }
-    setIsChecking(false)
-  }, [navigate])
-
-  if (isChecking) {
+  if (isLoading || !isAuthorized) {
     return (
       <div className="flex items-center justify-center h-screen">
         <div className="text-center">
