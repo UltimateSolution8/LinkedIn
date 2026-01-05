@@ -19,7 +19,7 @@ export default function Logo() {
       className="flex items-center space-x-2 cursor-pointer group"
       onClick={handleClick}
     >
-      <img src="/13.svg" alt="Rixly Logo" className="w-8 h-8" />
+      <img src="/logo.png" alt="Rixly Logo" className="w-8" />
       <span className="text-xl font-bold text-gray-900 dark:text-white">RIXLY</span>
     </div>
   );
