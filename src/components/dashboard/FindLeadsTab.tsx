@@ -96,14 +96,18 @@ export default function FindLeadsTab({ projectId, onCountChange }: FindLeadsTabP
         {leads.map((lead, index) => (
           <LeadCard
             key={index}
-            leadId={lead.leadId}
-            username={lead.originalPosterId}
+            leadId={String(lead.leadId)}
+            source={lead.source}
+            username={lead.source === "comment" ? (lead.author || "Unknown") : (lead.originalPosterId || "Unknown")}
             rating={lead.relevanceRating}
             sourcePost={lead.title}
             subreddit={lead.subreddit}
-            reasonForMatch={lead.reason}
+            reasonForMatch={lead.source === "comment" ? `Lead Type: ${lead.leadType || 'N/A'}` : "Post-based lead"}
             postUrl={lead.postUrl}
             postCreatedAt={lead.postCreatedAt}
+            commentUrl={lead.commentUrl}
+            commentText={lead.commentText}
+            leadType={lead.leadType}
           />
         ))}
       </div>

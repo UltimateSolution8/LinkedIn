@@ -1,6 +1,6 @@
 
 import { useState, useRef, useEffect } from "react";
-import { ExternalLink, ThumbsUp, ThumbsDown, ArrowRight, Star, Sparkles } from "lucide-react";
+import { ExternalLink, ThumbsUp, ThumbsDown, ArrowRight, Star, Sparkles, MessageSquare, FileText } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -10,10 +10,12 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
+import { Badge } from "@/components/ui/badge";
 import GenerateMessageDialog from "./GenerateMessageDialog";
 
 interface LeadCardProps {
   leadId: string;
+  source: "comment" | "post";
   username: string;
   rating: number;
   sourcePost: string;
@@ -21,10 +23,15 @@ interface LeadCardProps {
   reasonForMatch: string;
   postUrl?: string;
   postCreatedAt: string;
+  // Comment-specific props
+  commentUrl?: string;
+  commentText?: string;
+  leadType?: string;
 }
 
 export default function LeadCard({
   leadId,
+  source,
   username,
   rating,
   sourcePost,
@@ -32,13 +39,18 @@ export default function LeadCard({
   reasonForMatch,
   postUrl = "#",
   postCreatedAt,
+  commentUrl,
+  commentText,
+  leadType,
 }: LeadCardProps) {
   const [isSourceTruncated, setIsSourceTruncated] = useState(false);
   const [isReasonTruncated, setIsReasonTruncated] = useState(false);
+  const [isCommentTruncated, setIsCommentTruncated] = useState(false);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [isMessageDialogOpen, setIsMessageDialogOpen] = useState(false);
   const sourcePostRef = useRef<HTMLParagraphElement>(null);
   const reasonRef = useRef<HTMLParagraphElement>(null);
+  const commentRef = useRef<HTMLParagraphElement>(null);
 
   const formatTimeAgo = (timestamp: string) => {
     const now = new Date();
@@ -62,16 +74,42 @@ export default function LeadCard({
     if (reasonElement) {
       setIsReasonTruncated(reasonElement.scrollHeight > reasonElement.clientHeight);
     }
-  }, [sourcePost, reasonForMatch]);
 
-  const showDialog = isSourceTruncated || isReasonTruncated;
+    const commentElement = commentRef.current;
+    if (commentElement) {
+      setIsCommentTruncated(commentElement.scrollHeight > commentElement.clientHeight);
+    }
+  }, [sourcePost, reasonForMatch, commentText]);
+
+  const showDialog = isSourceTruncated || isReasonTruncated || isCommentTruncated;
 
   return (
     <div className="flex flex-col gap-4 bg-white dark:bg-neutral-950 rounded-lg p-6 border border-neutral-200 dark:border-neutral-800 shadow-sm">
       <div className="flex flex-col">
-        {/* Header - Username and Rating */}
+        {/* Header - Username, Source Badge, and Rating */}
         <div className="flex justify-between items-start">
           <div>
+            <div className="flex items-center gap-2 mb-2">
+              <Badge
+                variant={source === "comment" ? "default" : "secondary"}
+                className={`text-xs font-semibold ${
+                  source === "comment"
+                    ? "bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-400"
+                    : "bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400"
+                }`}
+              >
+                {source === "comment" ? (
+                  <><MessageSquare className="w-3 h-3 mr-1" /> Comment</>
+                ) : (
+                  <><FileText className="w-3 h-3 mr-1" /> Post</>
+                )}
+              </Badge>
+              {leadType && source === "comment" && (
+                <Badge variant="outline" className="text-xs">
+                  {leadType}
+                </Badge>
+              )}
+            </div>
             <div className="flex items-center gap-2">
               <a
                 href={`https://reddit.com/user/${username.replace('u/', '')}`}
@@ -90,10 +128,25 @@ export default function LeadCard({
           </div>
         </div>
 
+        {/* Comment Text Section (for comment leads) */}
+        {source === "comment" && commentText && (
+          <div className="mt-4 bg-neutral-50 dark:bg-neutral-900/50 rounded-lg p-4 border border-neutral-200 dark:border-neutral-800">
+            <p className="text-neutral-500 dark:text-neutral-400 text-xs uppercase font-bold tracking-wider mb-2">
+              Comment
+            </p>
+            <p
+              ref={commentRef}
+              className="text-neutral-950 dark:text-white text-sm leading-relaxed line-clamp-3"
+            >
+              {commentText}
+            </p>
+          </div>
+        )}
+
         {/* Source Post Section */}
         <div className="mt-4">
           <p className="text-neutral-500 dark:text-neutral-400 text-xs uppercase font-bold tracking-wider">
-            Source Post
+            {source === "comment" ? "Original Post" : "Post"}
           </p>
           <p
             ref={sourcePostRef}
@@ -107,15 +160,28 @@ export default function LeadCard({
               <span>•</span>
               <span>in {subreddit}</span>
             </div>
-            <a
-              href={postUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="flex items-center gap-1.5 text-purple-600 dark:text-teal-400 text-sm font-bold hover:underline"
-            >
-              <span>View Post</span>
-               <ExternalLink className="w-4 h-4 text-neutral-500 dark:text-neutral-400 " />
-            </a>
+            <div className="flex gap-2">
+              {source === "comment" && commentUrl && (
+                <a
+                  href={commentUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center gap-1.5 text-purple-600 dark:text-teal-400 text-sm font-bold hover:underline"
+                >
+                  <span>View Comment</span>
+                  <ExternalLink className="w-4 h-4 text-neutral-500 dark:text-neutral-400 " />
+                </a>
+              )}
+              <a
+                href={postUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center gap-1.5 text-purple-600 dark:text-teal-400 text-sm font-bold hover:underline"
+              >
+                <span>{source === "comment" ? "View Post" : "View Post"}</span>
+                <ExternalLink className="w-4 h-4 text-neutral-500 dark:text-neutral-400 " />
+              </a>
+            </div>
           </div>
         </div>
 
@@ -153,10 +219,33 @@ export default function LeadCard({
                 </DialogDescription>
               </DialogHeader>
               <div className="mt-4 overflow-y-auto max-h-[70vh] space-y-4">
+                {/* Comment Text (for comment leads) */}
+                {source === "comment" && commentText && (
+                  <div>
+                    <p className="text-neutral-500 dark:text-neutral-400 text-xs uppercase font-bold tracking-wider">
+                      Comment
+                    </p>
+                    <p className="text-neutral-950 dark:text-white text-sm leading-relaxed mt-2 whitespace-pre-wrap">
+                      {commentText}
+                    </p>
+                    {commentUrl && (
+                      <a
+                        href={commentUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="flex items-center gap-1.5 text-purple-600 dark:text-teal-400 text-sm font-bold hover:underline mt-2"
+                      >
+                        <span>View Comment</span>
+                        <ArrowRight className="w-4 h-4" />
+                      </a>
+                    )}
+                  </div>
+                )}
+
                 {/* Source Post */}
                 <div>
                   <p className="text-neutral-500 dark:text-neutral-400 text-xs uppercase font-bold tracking-wider">
-                    Source Post
+                    {source === "comment" ? "Original Post" : "Post"}
                   </p>
                   <p className="text-neutral-950 dark:text-white text-base font-medium mt-2">
                     {sourcePost}

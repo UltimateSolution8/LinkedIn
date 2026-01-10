@@ -1,18 +1,29 @@
 const RIXLY_API_BASE_URL = import.meta.env.VITE_RIXLY_API_BASE_URL;
 
 export interface Lead {
-  originalPosterId: string;
-  redditId: string;
+  source: "comment" | "post";
+  leadId: number;
+  isViewed: boolean;
+  // Comment-specific fields
+  commentUrl?: string;
+  commentText?: string;
+  commentId?: number;
+  redditCommentId?: string;
+  author?: string;
+  confidenceScore?: number;
+  createdUtc?: string;
+  leadType?: string;
+  // Post-specific fields
+  originalPosterId?: string;
+  postCreatedAt: string;
+  postUrl: string;
+  redditId?: string;
+  // Common fields
   relevanceRating: number;
-  reason: string;
-  sourceCommentId: string | null;
   userVote: string | null;
-  postId: string;
+  postId: number;
   subreddit: string;
   title: string;
-  postUrl: string;
-  leadId: string;
-  postCreatedAt: string;
 }
 
 export interface LeadsPaginationInfo {
@@ -70,7 +81,7 @@ export async function getLeads(
   limit: number = 10
 ): Promise<GetLeadsResponse> {
   const response = await fetch(
-    `${RIXLY_API_BASE_URL}/api/projects/${projectId}/reddit-leads?page=${page}&limit=${limit}`,
+    `${RIXLY_API_BASE_URL}/api/projects/${projectId}/reddit-leads?source=all&page=${page}&limit=${limit}`,
     {
       method: "GET",
       headers: {
