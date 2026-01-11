@@ -4,6 +4,7 @@ export interface Lead {
   source: "comment" | "post";
   leadId: number;
   isViewed: boolean;
+  createdAt?: string; // When the lead was added to Rixly
   // Comment-specific fields
   commentUrl?: string;
   commentText?: string;

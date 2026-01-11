@@ -24,6 +24,7 @@ import ProfilePage from '@/pages/ProfilePage'
 import CreateProjectPage from '@/pages/CreateProjectPage'
 import NotificationsPage from '@/pages/NotificationsPage'
 import AdminPage from '@/pages/AdminPage'
+import AdminProjectDetailPage from '@/pages/AdminProjectDetailPage'
 import VerifyEmailPage from '@/pages/verify-email/VerifyEmailPage'
 import VerifyEmailPromptPage from '@/pages/verify-email-prompt/VerifyEmailPromptPage'
 import AuthPricingPage from '@/pages/AuthPricingPage'
@@ -85,6 +86,7 @@ export default function AppRouter() {
         {/* Admin Routes */}
         <Route element={<AdminLayout />}>
           <Route path="/admin" element={<AdminPage />} />
+          <Route path="/admin/users/:userId/projects/:projectId" element={<AdminProjectDetailPage />} />
         </Route>
 
         {/* 404 - Catch all */}

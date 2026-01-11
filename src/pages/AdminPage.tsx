@@ -1,27 +1,23 @@
 
 import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Loader2, PlayCircle, AlertCircle, FolderKanban, ExternalLink, CreditCard, Calendar } from "lucide-react";
-import { scrapeReddit } from "@/lib/api/projects";
-import { getAdminUsers, getProjectDetail, updatePaymentBypass, type AdminUser, type ProjectDetail } from "@/lib/api/admin";
-import AdminProjectLeads from "@/components/admin/AdminProjectLeads";
+import { Loader2, AlertCircle, FolderKanban, CreditCard, Calendar } from "lucide-react";
+import { getAdminUsers, updatePaymentBypass, type AdminUser } from "@/lib/api/admin";
 
 export default function AdminPage() {
+  const navigate = useNavigate();
   const [users, setUsers] = useState<AdminUser[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [selectedProject, setSelectedProject] = useState<ProjectDetail | null>(null);
-  const [isProjectDialogOpen, setIsProjectDialogOpen] = useState(false);
-  const [isLoadingProjectDetail, setIsLoadingProjectDetail] = useState(false);
   const [selectedUser, setSelectedUser] = useState<AdminUser | null>(null);
   const [isPaymentBypassDialogOpen, setIsPaymentBypassDialogOpen] = useState(false);
   const [bypassEndDate, setBypassEndDate] = useState<string>("");
-  const [selectedProjectUserId, setSelectedProjectUserId] = useState<number | null>(null);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -42,32 +38,8 @@ export default function AdminPage() {
     fetchData();
   }, []);
 
-  const handleProjectClick = async (projectId: number, userId: number) => {
-    try {
-      setIsLoadingProjectDetail(true);
-      setIsProjectDialogOpen(true);
-      setSelectedProjectUserId(userId);
-      const projectDetail = await getProjectDetail(projectId);
-      setSelectedProject(projectDetail);
-    } catch (err) {
-      console.error("Error fetching project details:", err);
-      setError(err instanceof Error ? err.message : "Failed to fetch project details");
-      setIsProjectDialogOpen(false);
-    } finally {
-      setIsLoadingProjectDetail(false);
-    }
-  };
-
-  const handleScrapeFromDetail = async () => {
-    if (!selectedProject) return;
-
-    try {
-      await scrapeReddit(String(selectedProject.projectId));
-      alert("Scraping started successfully!");
-    } catch (err) {
-      console.error("Error starting scraping:", err);
-      alert("Failed to start scraping");
-    }
+  const handleProjectClick = (projectId: number, userId: number) => {
+    navigate(`/admin/users/${userId}/projects/${projectId}`);
   };
 
   const handleOpenPaymentBypassDialog = (user: AdminUser) => {
@@ -387,173 +359,6 @@ export default function AdminPage() {
               </Button>
             </div>
           </div>
-        </DialogContent>
-      </Dialog>
-
-      {/* Project Detail Dialog */}
-      <Dialog open={isProjectDialogOpen} onOpenChange={setIsProjectDialogOpen}>
-        <DialogContent className="max-w-3xl max-h-[80vh] overflow-y-auto">
-          <DialogHeader>
-            <DialogTitle className="text-2xl text-neutral-950 dark:text-white">
-              {isLoadingProjectDetail ? "Loading..." : selectedProject?.projectName}
-            </DialogTitle>
-            <DialogDescription>
-              {!isLoadingProjectDetail && selectedProject && (
-                <a
-                  href={selectedProject.projectUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-purple-600 dark:text-purple-400 hover:underline flex items-center gap-1"
-                >
-                  {selectedProject.projectUrl}
-                  <ExternalLink className="w-3 h-3" />
-                </a>
-              )}
-            </DialogDescription>
-          </DialogHeader>
-
-          {isLoadingProjectDetail ? (
-            <div className="flex items-center justify-center py-12">
-              <Loader2 className="w-8 h-8 animate-spin text-purple-600" />
-            </div>
-          ) : selectedProject ? (
-            <div className="space-y-6">
-              {/* Status Badge */}
-              <div>
-                <Badge className={
-                  selectedProject.status === "active"
-                    ? "bg-green-600/10 dark:bg-green-600/20 text-green-600 dark:text-green-400"
-                    : "bg-neutral-600/10 dark:bg-neutral-600/20 text-neutral-600 dark:text-neutral-400"
-                }>
-                  {selectedProject.status}
-                </Badge>
-              </div>
-
-              {/* Description */}
-              <div>
-                <h3 className="text-sm font-semibold text-neutral-700 dark:text-neutral-300 mb-2">
-                  Description
-                </h3>
-                <p className="text-sm text-neutral-700 dark:text-neutral-300">
-                  {selectedProject.projectDescription}
-                </p>
-              </div>
-
-              {/* Keywords */}
-              {selectedProject.keywords && selectedProject.keywords.length > 0 && (
-                <div>
-                  <h3 className="text-sm font-semibold text-neutral-700 dark:text-neutral-300 mb-2">
-                    Keywords ({selectedProject.keywords.length})
-                  </h3>
-                  <div className="flex flex-wrap gap-2">
-                    {selectedProject.keywords.map((keyword, index) => (
-                      <Badge
-                        key={index}
-                        variant="outline"
-                        className="bg-purple-50 dark:bg-purple-900/20 text-purple-700 dark:text-purple-300 border-purple-200 dark:border-purple-800"
-                      >
-                        {keyword}
-                      </Badge>
-                    ))}
-                  </div>
-                </div>
-              )}
-
-              {/* Semantic Queries */}
-              {selectedProject.semanticQueries && selectedProject.semanticQueries.length > 0 && (
-                <div>
-                  <h3 className="text-sm font-semibold text-neutral-700 dark:text-neutral-300 mb-2">
-                    Semantic Queries ({selectedProject.semanticQueries.length})
-                  </h3>
-                  <div className="space-y-2">
-                    {selectedProject.semanticQueries.map((query, index) => (
-                      <div
-                        key={index}
-                        className="p-2 bg-neutral-50 dark:bg-neutral-800 rounded border border-neutral-200 dark:border-neutral-700 text-sm text-neutral-700 dark:text-neutral-300"
-                      >
-                        {query}
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              )}
-
-              {/* Subreddits */}
-              {selectedProject.subreddits && selectedProject.subreddits.length > 0 && (
-                <div>
-                  <h3 className="text-sm font-semibold text-neutral-700 dark:text-neutral-300 mb-2">
-                    Subreddits ({selectedProject.subreddits.length})
-                  </h3>
-                  <div className="flex flex-wrap gap-2">
-                    {selectedProject.subreddits.map((subreddit, index) => (
-                      <Badge
-                        key={index}
-                        variant="outline"
-                        className="bg-orange-50 dark:bg-orange-900/20 text-orange-700 dark:text-orange-300 border-orange-200 dark:border-orange-800"
-                      >
-                        r/{subreddit}
-                      </Badge>
-                    ))}
-                  </div>
-                </div>
-              )}
-
-              {/* Configuration */}
-              <div>
-                <h3 className="text-sm font-semibold text-neutral-700 dark:text-neutral-300 mb-2">
-                  Configuration
-                </h3>
-                <div className="grid grid-cols-3 gap-4 p-4 bg-neutral-50 dark:bg-neutral-800 rounded border border-neutral-200 dark:border-neutral-700">
-                  <div>
-                    <div className="text-xs text-neutral-500 dark:text-neutral-400 mb-1">
-                      Post Threshold
-                    </div>
-                    <div className="text-sm font-medium text-neutral-950 dark:text-white">
-                      {selectedProject.postThreshold}
-                    </div>
-                  </div>
-                  <div>
-                    <div className="text-xs text-neutral-500 dark:text-neutral-400 mb-1">
-                      Comment Threshold
-                    </div>
-                    <div className="text-sm font-medium text-neutral-950 dark:text-white">
-                      {selectedProject.commentThreshold}
-                    </div>
-                  </div>
-                  <div>
-                    <div className="text-xs text-neutral-500 dark:text-neutral-400 mb-1">
-                      Date Range (Days)
-                    </div>
-                    <div className="text-sm font-medium text-neutral-950 dark:text-white">
-                      {selectedProject.postDateRangeDays}
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              {/* Action Buttons */}
-              <div className="pt-4 border-t border-neutral-200 dark:border-neutral-800">
-                <Button
-                  onClick={handleScrapeFromDetail}
-                  className="w-full bg-purple-600 hover:bg-purple-700 text-white"
-                >
-                  <PlayCircle className="w-4 h-4 mr-2" />
-                  Scrape Posts
-                </Button>
-              </div>
-
-              {/* Reddit Leads Section */}
-              {selectedProjectUserId && (
-                <div className="pt-6 border-t border-neutral-200 dark:border-neutral-800">
-                  <AdminProjectLeads
-                    userId={selectedProjectUserId}
-                    projectId={selectedProject.projectId}
-                    projectName={selectedProject.projectName}
-                  />
-                </div>
-              )}
-            </div>
-          ) : null}
         </DialogContent>
       </Dialog>
     </div>

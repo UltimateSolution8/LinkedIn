@@ -193,7 +193,8 @@ export async function getAdminProjectLeads(
   projectId: number,
   page: number = 1,
   limit: number = 10,
-  source?: string
+  source?: string,
+  sortBy?: string
 ): Promise<GetLeadsResponse> {
   if (!RIXLY_API_BASE_URL) {
     throw new Error(
@@ -209,6 +210,10 @@ export async function getAdminProjectLeads(
 
     if (source) {
       params.append("source", source);
+    }
+
+    if (sortBy) {
+      params.append("sortBy", sortBy);
     }
 
     const response = await fetch(
