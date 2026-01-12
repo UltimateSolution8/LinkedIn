@@ -3,11 +3,11 @@ import { useParams, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { ArrowLeft, PlayCircle, Loader2, ExternalLink, ChevronDown, ChevronUp } from "lucide-react";
+import { ArrowLeft, Loader2, ExternalLink, ChevronDown, ChevronUp, Pencil } from "lucide-react";
 import { getProjectDetail, getAdminProjectLeads, type ProjectDetail } from "@/lib/api/admin";
 import { type Lead } from "@/lib/api/leads";
-import { scrapeReddit } from "@/lib/api/projects";
 import AdminLeadCardReadOnly from "@/components/admin/AdminLeadCardReadOnly";
+import EditProjectConfigModal from "@/components/admin/EditProjectConfigModal";
 import Pagination from "@/components/ui/pagination";
 import {
   Select,
@@ -26,11 +26,11 @@ export default function AdminProjectDetailPage() {
   const [isLoadingProject, setIsLoadingProject] = useState(true);
   const [isLoadingLeads, setIsLoadingLeads] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [isScraping, setIsScraping] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const [sourceFilter, setSourceFilter] = useState<string>("all");
   const [sortBy, setSortBy] = useState<string>("createdAt");
   const [isConfigExpanded, setIsConfigExpanded] = useState(false);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [pagination, setPagination] = useState({
     totalPages: 1,
     totalLeads: 0,
@@ -95,21 +95,6 @@ export default function AdminProjectDetailPage() {
     fetchLeads();
   }, [userId, projectId, currentPage, sourceFilter, sortBy]);
 
-  const handleScrape = async () => {
-    if (!projectId) return;
-
-    try {
-      setIsScraping(true);
-      await scrapeReddit(projectId);
-      alert("Scraping started successfully!");
-    } catch (err) {
-      console.error("Error starting scraping:", err);
-      alert("Failed to start scraping");
-    } finally {
-      setIsScraping(false);
-    }
-  };
-
   const handlePageChange = (page: number) => {
     setCurrentPage(page);
   };
@@ -122,6 +107,18 @@ export default function AdminProjectDetailPage() {
   const handleSortChange = (value: string) => {
     setSortBy(value);
     setCurrentPage(1); // Reset to first page when sort changes
+  };
+
+  const handleEditSuccess = async () => {
+    // Refresh project data after successful update
+    if (!projectId) return;
+
+    try {
+      const projectData = await getProjectDetail(Number(projectId));
+      setProject(projectData);
+    } catch (err) {
+      console.error("Error refreshing project data:", err);
+    }
   };
 
   if (isLoadingProject) {
@@ -219,22 +216,12 @@ export default function AdminProjectDetailPage() {
               <CardTitle className="text-lg">Project Configuration</CardTitle>
               <div className="flex items-center gap-2">
                 <Button
-                  onClick={handleScrape}
-                  disabled={isScraping}
                   size="sm"
+                  onClick={() => setIsEditModalOpen(true)}
                   className="bg-purple-600 hover:bg-purple-700 text-white"
                 >
-                  {isScraping ? (
-                    <>
-                      <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                      Scraping...
-                    </>
-                  ) : (
-                    <>
-                      <PlayCircle className="w-4 h-4 mr-2" />
-                      Start Scraping
-                    </>
-                  )}
+                  <Pencil className="w-4 h-4 mr-2" />
+                  Edit Configuration
                 </Button>
                 <Button
                   variant="ghost"
@@ -377,6 +364,16 @@ export default function AdminProjectDetailPage() {
             </>
           )}
         </div>
+
+        {/* Edit Project Config Modal */}
+        {project && (
+          <EditProjectConfigModal
+            isOpen={isEditModalOpen}
+            onOpenChange={setIsEditModalOpen}
+            project={project}
+            onSuccess={handleEditSuccess}
+          />
+        )}
       </div>
     </div>
   );

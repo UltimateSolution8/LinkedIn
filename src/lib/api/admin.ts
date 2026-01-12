@@ -51,6 +51,7 @@ export interface ProjectDetail {
   postThreshold: number;
   commentThreshold: number;
   postDateRangeDays: number;
+  emailNotificationEnabled?: boolean;
   intentMap: {
     ask: string;
     buy: string;
@@ -236,6 +237,55 @@ export async function getAdminProjectLeads(
     return responseData;
   } catch (error) {
     console.error("Error fetching admin project leads:", error);
+    throw error;
+  }
+}
+
+/**
+ * Update project configuration (admin only)
+ */
+export interface UpdateProjectConfigPayload {
+  keywords?: string[];
+  semanticQueries?: string[];
+  subreddits?: string[];
+  postThreshold?: number;
+  commentThreshold?: number;
+  postDateRangeDays?: number;
+  emailNotificationEnabled?: boolean;
+}
+
+export async function updateAdminProjectConfig(
+  projectId: number,
+  payload: UpdateProjectConfigPayload
+): Promise<ProjectDetail> {
+  if (!RIXLY_API_BASE_URL) {
+    throw new Error(
+      "API base URL is not configured. Please set VITE_RIXLY_API_BASE_URL in your .env file."
+    );
+  }
+
+  try {
+    const response = await fetch(
+      `${RIXLY_API_BASE_URL}/api/admin/projects/${projectId}`,
+      {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        credentials: "include",
+        body: JSON.stringify(payload),
+      }
+    );
+
+    const responseData = await response.json();
+
+    if (!response.ok) {
+      throw new Error(responseData.message || "Failed to update project configuration");
+    }
+
+    return responseData.data;
+  } catch (error) {
+    console.error("Error updating project configuration:", error);
     throw error;
   }
 }
