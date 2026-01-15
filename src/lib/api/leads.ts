@@ -1,3 +1,5 @@
+import { handleApiResponse } from "./api-utils";
+
 const RIXLY_API_BASE_URL = import.meta.env.VITE_RIXLY_API_BASE_URL;
 
 export interface Lead {
@@ -92,6 +94,8 @@ export async function getLeads(
     }
   );
 
+  await handleApiResponse(response);
+
   const responseData = await response.json();
 
   if (!response.ok) {
@@ -114,6 +118,8 @@ export async function getInviteMessages(
       credentials: "include",
     }
   );
+
+  await handleApiResponse(response);
 
   const responseData = await response.json();
 
@@ -144,6 +150,8 @@ export async function generateLeadResponse(
       }),
     }
   );
+
+  await handleApiResponse(response);
 
   const responseData = await response.json();
 

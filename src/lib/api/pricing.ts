@@ -1,3 +1,5 @@
+import { handleApiResponse } from "./api-utils";
+
 const RIXLY_API_BASE_URL = import.meta.env.VITE_RIXLY_API_BASE_URL;
 
 export interface PricingPlan {
@@ -96,6 +98,8 @@ export async function createSubscription(
       body: JSON.stringify(data),
     });
 
+    await handleApiResponse(response);
+
     const responseData = await response.json();
 
     if (!response.ok) {
@@ -124,6 +128,8 @@ export async function verifySubscriptionPayment(
       credentials: "include",
       body: JSON.stringify(data),
     });
+
+    await handleApiResponse(response);
 
     const responseData = await response.json();
 
