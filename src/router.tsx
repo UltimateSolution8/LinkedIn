@@ -27,6 +27,8 @@ import AdminPage from '@/pages/AdminPage'
 import AdminProjectDetailPage from '@/pages/AdminProjectDetailPage'
 import VerifyEmailPage from '@/pages/verify-email/VerifyEmailPage'
 import VerifyEmailPromptPage from '@/pages/verify-email-prompt/VerifyEmailPromptPage'
+import ForgotPasswordPage from '@/pages/forgot-password/ForgotPasswordPage'
+import ResetPasswordPage from '@/pages/reset-password/ResetPasswordPage'
 import AuthPricingPage from '@/pages/AuthPricingPage'
 
 export default function AppRouter() {
@@ -54,11 +56,15 @@ export default function AppRouter() {
         {/* Auth Routes */}
         <Route element={<AuthLayout />}>
           <Route path="/login" element={<LoginPage />} />
+          <Route path="/forgot-password" element={<ForgotPasswordPage />} />
         </Route>
 
         {/* Verify Email Routes (no layout) */}
         <Route path="/verify-email" element={<VerifyEmailPage />} />
         <Route path="/verify-email-prompt" element={<VerifyEmailPromptPage />} />
+
+        {/* Password Reset Routes (no layout) */}
+        <Route path="/reset-password" element={<ResetPasswordPage />} />
 
         {/* Auth Pricing Route */}
         <Route path="/auth-pricing" element={<AuthPricingPage />} />

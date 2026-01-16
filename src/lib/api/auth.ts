@@ -322,3 +322,155 @@ export async function verifyOtp(data: VerifyOtpRequest): Promise<VerifyOtpRespon
 
   return responseData;
 }
+
+export interface ForgotPasswordRequest {
+  email: string;
+}
+
+export interface ForgotPasswordResponse {
+  message: string;
+}
+
+export async function requestPasswordReset(data: ForgotPasswordRequest): Promise<ForgotPasswordResponse> {
+  if (!RIXLY_API_BASE_URL) {
+    throw new Error(
+      "API base URL is not configured. Please set NEXT_PUBLIC_RIXLY_API_BASE_URL in your .env.local file."
+    );
+  }
+
+  const response = await fetch(`${RIXLY_API_BASE_URL}/api/auth/forgot-password`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    credentials: "include",
+    body: JSON.stringify(data),
+  });
+
+  let responseData;
+  const contentType = response.headers.get("content-type");
+
+  try {
+    if (contentType && contentType.includes("application/json")) {
+      responseData = await response.json();
+    } else {
+      const text = await response.text();
+      throw new Error(
+        `Server returned ${response.status} ${response.statusText}. ${response.status === 404 ? "API endpoint not found. Please check if the backend server is running and NEXT_PUBLIC_RIXLY_API_BASE_URL is configured correctly." : text.substring(0, 100)}`
+      );
+    }
+  } catch (error) {
+    if (error instanceof Error && error.message.includes("Server returned")) {
+      throw error;
+    }
+    throw new Error("Failed to parse server response. The server may not be running or the API URL is incorrect.");
+  }
+
+  if (!response.ok) {
+    throw new Error(responseData.message || responseData.error || "Failed to request password reset");
+  }
+
+  return responseData;
+}
+
+export interface ResetPasswordRequest {
+  token: string;
+  password: string;
+}
+
+export interface ResetPasswordResponse {
+  message: string;
+}
+
+export async function resetPassword(data: ResetPasswordRequest): Promise<ResetPasswordResponse> {
+  if (!RIXLY_API_BASE_URL) {
+    throw new Error(
+      "API base URL is not configured. Please set NEXT_PUBLIC_RIXLY_API_BASE_URL in your .env.local file."
+    );
+  }
+
+  const response = await fetch(`${RIXLY_API_BASE_URL}/api/auth/reset-password`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    credentials: "include",
+    body: JSON.stringify(data),
+  });
+
+  let responseData;
+  const contentType = response.headers.get("content-type");
+
+  try {
+    if (contentType && contentType.includes("application/json")) {
+      responseData = await response.json();
+    } else {
+      const text = await response.text();
+      throw new Error(
+        `Server returned ${response.status} ${response.statusText}. ${response.status === 404 ? "API endpoint not found. Please check if the backend server is running and NEXT_PUBLIC_RIXLY_API_BASE_URL is configured correctly." : text.substring(0, 100)}`
+      );
+    }
+  } catch (error) {
+    if (error instanceof Error && error.message.includes("Server returned")) {
+      throw error;
+    }
+    throw new Error("Failed to parse server response. The server may not be running or the API URL is incorrect.");
+  }
+
+  if (!response.ok) {
+    throw new Error(responseData.message || responseData.error || "Failed to reset password");
+  }
+
+  return responseData;
+}
+
+export interface ChangePasswordRequest {
+  currentPassword: string;
+  newPassword: string;
+}
+
+export interface ChangePasswordResponse {
+  message: string;
+}
+
+export async function changePassword(data: ChangePasswordRequest): Promise<ChangePasswordResponse> {
+  if (!RIXLY_API_BASE_URL) {
+    throw new Error(
+      "API base URL is not configured. Please set NEXT_PUBLIC_RIXLY_API_BASE_URL in your .env.local file."
+    );
+  }
+
+  const response = await fetch(`${RIXLY_API_BASE_URL}/api/auth/change-password`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    credentials: "include",
+    body: JSON.stringify(data),
+  });
+
+  let responseData;
+  const contentType = response.headers.get("content-type");
+
+  try {
+    if (contentType && contentType.includes("application/json")) {
+      responseData = await response.json();
+    } else {
+      const text = await response.text();
+      throw new Error(
+        `Server returned ${response.status} ${response.statusText}. ${response.status === 404 ? "API endpoint not found. Please check if the backend server is running and NEXT_PUBLIC_RIXLY_API_BASE_URL is configured correctly." : text.substring(0, 100)}`
+      );
+    }
+  } catch (error) {
+    if (error instanceof Error && error.message.includes("Server returned")) {
+      throw error;
+    }
+    throw new Error("Failed to parse server response. The server may not be running or the API URL is incorrect.");
+  }
+
+  if (!response.ok) {
+    throw new Error(responseData.message || responseData.error || "Failed to change password");
+  }
+
+  return responseData;
+}

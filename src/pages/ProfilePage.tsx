@@ -17,6 +17,7 @@ import {
 import { getCurrentUser, type User } from "@/lib/api/auth";
 import { SubscriptionStatus, cancelSubscription } from "@/lib/api/subscription";
 import { getSubscriptionStatusCached } from "@/lib/utils/subscription";
+import ChangePasswordDialog from "@/components/profile/ChangePasswordDialog";
 
 export default function ProfilePage() {
   const navigate = useNavigate();
@@ -30,6 +31,7 @@ export default function ProfilePage() {
   const [isLoadingSubscription, setIsLoadingSubscription] = useState(true);
   const [isCancelling, setIsCancelling] = useState(false);
   const [showCancelDialog, setShowCancelDialog] = useState(false);
+  const [showChangePasswordDialog, setShowChangePasswordDialog] = useState(false);
 
   // Load user data and subscription details
   useEffect(() => {
@@ -99,8 +101,7 @@ export default function ProfilePage() {
   };
 
   const handleResetPassword = () => {
-    // TODO: Implement password reset
-    console.log("Reset password clicked");
+    setShowChangePasswordDialog(true);
   };
 
   const handleCancelSubscription = async () => {
@@ -399,6 +400,12 @@ export default function ProfilePage() {
           </div>
         </div>
       </div>
+
+      {/* Change Password Dialog */}
+      <ChangePasswordDialog
+        open={showChangePasswordDialog}
+        onOpenChange={setShowChangePasswordDialog}
+      />
 
       {/* Cancel Subscription Dialog */}
       <Dialog open={showCancelDialog} onOpenChange={setShowCancelDialog}>
