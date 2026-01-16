@@ -123,7 +123,7 @@ export default function RequestDemoForm({ onSuccess, onCancel, showCancelButton 
           lastError = error;
 
           // Wait a bit before retry
-          if (attempt < 2) {
+          if (attempt < 3) {
             await new Promise(resolve => setTimeout(resolve, 1000));
           }
         }
