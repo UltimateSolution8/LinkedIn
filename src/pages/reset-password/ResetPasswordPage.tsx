@@ -9,6 +9,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent } from "@/components/ui/card";
 import { resetPassword } from "@/lib/api/auth";
+import logger from "@/lib/logger";
 
 const resetPasswordSchema = z
   .object({
@@ -61,6 +62,10 @@ function ResetPasswordContent() {
         password: data.password,
       });
 
+      logger.logPasswordResetEvent('password_reset_successful', {
+        success: true
+      });
+
       setStatus("success");
       setMessage(response.message || "Your password has been successfully reset!");
 
@@ -69,12 +74,17 @@ function ResetPasswordContent() {
         navigate("/login");
       }, 3000);
     } catch (error) {
+      const errorMessage = error instanceof Error
+        ? error.message
+        : "Failed to reset password. The reset link may be invalid or expired.";
+
+      logger.logPasswordResetEvent('password_reset_failed', {
+        success: false,
+        error: errorMessage
+      });
+
       setStatus("error");
-      setMessage(
-        error instanceof Error
-          ? error.message
-          : "Failed to reset password. The reset link may be invalid or expired."
-      );
+      setMessage(errorMessage);
     }
   };
 

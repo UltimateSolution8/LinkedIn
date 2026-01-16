@@ -11,6 +11,7 @@ import { Link } from "react-router-dom";
 import GoogleIcon from "@/components/auth/GoogleIcon";
 import { signin } from "@/lib/api/auth";
 import { checkSubscriptionAccess } from "@/lib/utils/subscription";
+import logger from "@/lib/logger";
 
 const loginSchema = z.object({
   email: z.string().email("Please enter a valid email address"),
@@ -142,6 +143,7 @@ export default function LoginForm({ onSuccess }: LoginFormProps = {}) {
       <Link
         to="/forgot-password"
         className="text-sm text-purple-600 dark:text-purple-500 hover:underline self-end"
+        onClick={() => logger.logUserAction('forgot_password_clicked', { from: 'login_form' })}
       >
         Forgot Password?
       </Link>

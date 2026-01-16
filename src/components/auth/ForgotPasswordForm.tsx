@@ -8,6 +8,7 @@ import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft, Mail, CheckCircle } from "lucide-react";
 import { requestPasswordReset } from "@/lib/api/auth";
+import logger from "@/lib/logger";
 
 const forgotPasswordSchema = z.object({
   email: z.string().email("Please enter a valid email address"),
@@ -43,9 +44,22 @@ export default function ForgotPasswordForm({ onBack }: ForgotPasswordFormProps =
         email: data.email,
       });
 
+      logger.logPasswordResetEvent('request_submitted', {
+        emailDomain: data.email.split('@')[1],
+        success: true
+      });
+
       setIsSuccess(true);
     } catch (error) {
-      setApiError(error instanceof Error ? error.message : "An error occurred while requesting password reset");
+      const errorMessage = error instanceof Error ? error.message : "An error occurred while requesting password reset";
+
+      logger.logPasswordResetEvent('request_failed', {
+        emailDomain: data.email.split('@')[1],
+        error: errorMessage,
+        success: false
+      });
+
+      setApiError(errorMessage);
     } finally {
       setIsLoading(false);
     }
