@@ -1,5 +1,3 @@
-import { handleApiResponse } from "./api-utils";
-
 const RIXLY_API_BASE_URL = import.meta.env.VITE_RIXLY_API_BASE_URL;
 
 import type { GetLeadsResponse } from './leads';
@@ -92,8 +90,6 @@ export async function getProjectDetail(projectId: number): Promise<ProjectDetail
       credentials: "include",
     });
 
-    await handleApiResponse(response);
-
     const responseData: ProjectDetailResponse = await response.json();
 
     if (!response.ok) {
@@ -145,8 +141,6 @@ export async function updatePaymentBypass(data: UpdatePaymentBypassRequest): Pro
       body: JSON.stringify(body),
     });
 
-    await handleApiResponse(response);
-
     const responseData: UpdatePaymentBypassResponse = await response.json();
 
     if (!response.ok) {
@@ -178,8 +172,6 @@ export async function getAdminUsers(): Promise<AdminUser[]> {
       },
       credentials: "include",
     });
-
-    await handleApiResponse(response);
 
     const responseData: AdminUsersResponse = await response.json();
 
@@ -236,8 +228,6 @@ export async function getAdminProjectLeads(
       }
     );
 
-    await handleApiResponse(response);
-
     const responseData: GetLeadsResponse = await response.json();
 
     if (!response.ok) {
@@ -286,8 +276,6 @@ export async function updateAdminProjectConfig(
         body: JSON.stringify(payload),
       }
     );
-
-    await handleApiResponse(response);
 
     const responseData = await response.json();
 

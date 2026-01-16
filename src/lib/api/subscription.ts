@@ -1,5 +1,3 @@
-import { handleApiResponse } from "./api-utils";
-
 const RIXLY_API_BASE_URL = import.meta.env.VITE_RIXLY_API_BASE_URL;
 
 export interface SubscriptionStatus {
@@ -69,8 +67,6 @@ export async function getSubscriptionStatus(): Promise<SubscriptionStatus> {
       credentials: "include",
     });
 
-    await handleApiResponse(response);
-
     const responseData = await response.json();
 
     if (!response.ok) {
@@ -103,8 +99,6 @@ export async function getSubscriptionDetails(): Promise<SubscriptionDetails> {
       credentials: "include",
     });
 
-    await handleApiResponse(response);
-
     const responseData = await response.json();
 
     if (!response.ok) {
@@ -136,8 +130,6 @@ export async function cancelSubscription(subscriptionId: string): Promise<{ mess
       },
       credentials: "include",
     });
-
-    await handleApiResponse(response);
 
     const responseData = await response.json();
 

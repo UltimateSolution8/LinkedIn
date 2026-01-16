@@ -1,4 +1,3 @@
-import { handleApiResponse } from "./api-utils";
 import { clearCurrencyCache } from "../utils/geolocation";
 import { clearSubscriptionCache } from "../utils/subscription";
 
@@ -246,8 +245,6 @@ export async function resendVerificationEmail(): Promise<ResendVerificationRespo
     },
     credentials: "include",
   });
-
-  await handleApiResponse(response);
 
   let responseData;
   const contentType = response.headers.get("content-type");

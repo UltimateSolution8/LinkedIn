@@ -1,5 +1,3 @@
-import { handleApiResponse } from "./api-utils";
-
 const RIXLY_API_BASE_URL = import.meta.env.VITE_RIXLY_API_BASE_URL;
 
 export interface Notification {
@@ -61,8 +59,6 @@ export async function getUnreadNotifications(): Promise<UnreadNotificationInfo> 
     credentials: "include",
   });
 
-  await handleApiResponse(response);
-
   const responseData = await response.json();
 
   if (!response.ok && responseData && responseData.data) {
@@ -81,8 +77,6 @@ export async function getAllNotifications(): Promise<Notification[]> {
     credentials: "include",
   });
 
-  await handleApiResponse(response);
-
   const responseData: AllNotificationsResponse = await response.json();
 
   if (!response.ok || !responseData.success) {
@@ -100,8 +94,6 @@ export async function markAllAsRead(): Promise<void> {
     },
     credentials: "include",
   });
-
-  await handleApiResponse(response);
 
   const responseData = await response.json();
 

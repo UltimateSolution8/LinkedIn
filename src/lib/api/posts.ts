@@ -1,5 +1,3 @@
-import { handleApiResponse } from "./api-utils";
-
 const RIXLY_API_BASE_URL = import.meta.env.VITE_RIXLY_API_BASE_URL;
 
 export interface Post {
@@ -112,8 +110,6 @@ export async function getPosts(
     }
   );
 
-  await handleApiResponse(response);
-
   const responseData = await response.json();
 
   if (!response.ok) {
@@ -136,8 +132,6 @@ export async function getGeneratedComments(
       credentials: "include",
     }
   );
-
-  await handleApiResponse(response);
 
   const responseData = await response.json();
 
@@ -170,8 +164,6 @@ export async function generatePostComment(
     }
   );
 
-  await handleApiResponse(response);
-
   const responseData = await response.json();
 
   if (!response.ok) {
@@ -196,8 +188,6 @@ export async function updateLeadStatus(
       body: JSON.stringify(statusUpdate),
     }
   );
-
-  await handleApiResponse(response);
 
   const responseData = await response.json();
 

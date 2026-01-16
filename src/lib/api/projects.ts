@@ -1,5 +1,3 @@
-import { handleApiResponse } from "./api-utils";
-
 const RIXLY_API_BASE_URL = import.meta.env.VITE_RIXLY_API_BASE_URL;
 
 export interface Project {
@@ -103,8 +101,6 @@ export async function getProjects(): Promise<Project[]> {
     credentials: "include",
   });
 
-  await handleApiResponse(response);
-
   const responseData: GetProjectsResponse = await response.json();
 
   if (!response.ok) {
@@ -134,8 +130,6 @@ export async function createProject(data: CreateProjectRequest): Promise<CreateP
     body: JSON.stringify(data),
   });
 
-  await handleApiResponse(response);
-
   const responseData = await response.json();
 
   if (!response.ok) {
@@ -154,8 +148,6 @@ export async function generateDescription(data: GenerateDescriptionRequest): Pro
     credentials: "include",
     body: JSON.stringify(data),
   });
-
-  await handleApiResponse(response);
 
   const responseData = await response.json();
 
@@ -176,8 +168,6 @@ export async function generateKeywords(data: GenerateKeywordsRequest): Promise<G
     body: JSON.stringify(data),
   });
 
-  await handleApiResponse(response);
-
   const responseData = await response.json();
 
   if (!response.ok) {
@@ -197,8 +187,6 @@ export async function generateSemanticQueries(data: GenerateSemanticQueriesReque
     body: JSON.stringify(data),
   });
 
-  await handleApiResponse(response);
-
   const responseData = await response.json();
 
   if (!response.ok) {
@@ -217,8 +205,6 @@ export async function generateProductInsights(data: GenerateProductInsightsReque
     credentials: "include",
     body: JSON.stringify(data),
   });
-
-  await handleApiResponse(response);
 
   const responseData = await response.json();
 
@@ -249,8 +235,6 @@ export async function getAdminProjects(): Promise<Project[]> {
     },
     credentials: "include",
   });
-
-  await handleApiResponse(response);
 
   const responseData: AdminProjectsResponse = await response.json();
 
@@ -284,8 +268,6 @@ export async function scrapeReddit(projectId: string): Promise<ScrapeRedditRespo
     },
     credentials: "include",
   });
-
-  await handleApiResponse(response);
 
   const responseData = await response.json();
 
