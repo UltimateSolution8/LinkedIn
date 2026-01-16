@@ -54,34 +54,83 @@ export default function RequestDemoForm({ onSuccess, onCancel, showCancelButton 
   });
 
   const onSubmit = async (data: DemoFormValues) => {
+    const submitWithTimeout = async (timeoutMs: number = 15000): Promise<Response> => {
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), timeoutMs);
+
+      try {
+        // Determine the industry value - use otherIndustry if "other" was selected
+        const industryValue = data.industry === "other" && data.otherIndustry
+          ? data.otherIndustry
+          : data.industry || "";
+
+        const response = await fetch(`${RIXLY_API_BASE_URL}/api/demo/request-sheet`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            fullName: data.fullName,
+            email: data.email,
+            phone: `${data.countryCode} ${data.phone}`,
+            industry: industryValue,
+            additionalInsight: data.insights || "",
+          }),
+          signal: controller.signal,
+        });
+
+        return response;
+      } finally {
+        clearTimeout(timeoutId);
+      }
+    };
+
     try {
       setSubmitError(false);
 
-      // Determine the industry value - use otherIndustry if "other" was selected
-      const industryValue = data.industry === "other" && data.otherIndustry
-        ? data.otherIndustry
-        : data.industry || "";
+      let response: Response;
+      let lastError: Error | null = null;
 
-      // Call the Rixly backend API endpoint
-      const response = await fetch(`${RIXLY_API_BASE_URL}/api/demo/request-sheet`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          fullName: data.fullName,
-          email: data.email,
-          phone: `${data.countryCode} ${data.phone}`,
-          industry: industryValue,
-          additionalInsight: data.insights || "",
-        }),
-      });
+      // Try up to 3 times (initial + 2 retries)
+      for (let attempt = 1; attempt <= 3; attempt++) {
+        try {
+          response = await submitWithTimeout(15000);
 
-      if (!response.ok) {
-        throw new Error("Failed to submit demo request");
+          if (response.ok) {
+            onSuccess();
+            return;
+          }
+
+          // If response is not ok, try to get error details
+          const errorData = await response.json().catch(() => ({}));
+          console.error(`Demo request failed (attempt ${attempt}):`, {
+            status: response.status,
+            statusText: response.statusText,
+            error: errorData
+          });
+
+          lastError = new Error(errorData.message || `Server returned ${response.status}`);
+        } catch (err) {
+          const error = err as Error;
+          console.error(`Demo request error (attempt ${attempt}):`, error.message);
+
+          // If it's an abort error (timeout), don't retry immediately
+          if (error.name === "AbortError") {
+            lastError = new Error("Request timed out. Please check your connection and try again.");
+            break; // Don't retry on timeout
+          }
+
+          lastError = error;
+
+          // Wait a bit before retry
+          if (attempt < 2) {
+            await new Promise(resolve => setTimeout(resolve, 1000));
+          }
+        }
       }
 
-      onSuccess();
+      // If we get here, all attempts failed
+      throw lastError || new Error("Failed to submit demo request");
     } catch (error) {
       console.error("Error submitting demo request:", error);
       setSubmitError(true);
