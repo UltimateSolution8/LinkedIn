@@ -174,7 +174,14 @@ export function getCurrentUser(): User | null {
   try {
     const userStr = localStorage.getItem("user");
     if (!userStr) return null;
-    return JSON.parse(userStr) as User;
+    const userData = JSON.parse(userStr);
+
+    // Handle emailId field if it exists (map it to email)
+    if (userData.emailId && !userData.email) {
+      userData.email = userData.emailId;
+    }
+
+    return userData as User;
   } catch (error) {
     console.error("Failed to parse user data:", error);
     return null;
