@@ -16,6 +16,7 @@ export interface SyncStatusResponse {
 
 export interface NextScheduledRunResponse {
   nextRunAt: string | null;
+  lastSyncTime: string | null;
   status: 'pending' | 'running' | 'overdue' | 'no_projects' | 'no_schedules';
   projectName: string | null;
   message: string;
