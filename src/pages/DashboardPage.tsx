@@ -7,6 +7,7 @@ import { useNavigate } from "react-router-dom";
 import FindPostsTab from "@/components/dashboard/FindPostsTab";
 import FindLeadsTab from "@/components/dashboard/FindLeadsTab";
 import SettingsTab from "@/components/dashboard/SettingsTab";
+import SyncStatusTimer from "@/components/dashboard/SyncStatusTimer";
 import { useProject } from "@/contexts/ProjectContext";
 import { getCurrentUser } from "@/lib/api/auth";
 
@@ -141,6 +142,11 @@ export default function DashboardPage() {
             )}
           </div>
         )}
+
+        {/* Timer - Always visible */}
+        <div className="mb-4 flex justify-center lg:justify-start">
+          <SyncStatusTimer />
+        </div>
 
         {/* Tabs Navigation */}
         <div className="pb-6 overflow-x-auto no-scrollbar -mx-4 px-4 lg:mx-0 lg:px-0">
