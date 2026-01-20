@@ -79,10 +79,21 @@ export interface InviteMessagesResponse {
 export async function getLeads(
   projectId: string,
   page: number = 1,
-  limit: number = 10
+  limit: number = 10,
+  sortBy?: "date" | "relevance",
+  sortOrder?: "asc" | "desc"
 ): Promise<GetLeadsResponse> {
+  const params = new URLSearchParams({
+    source: 'all',
+    page: page.toString(),
+    limit: limit.toString(),
+  });
+
+  if (sortBy) params.append('sort_by', sortBy);
+  if (sortOrder) params.append('sort_order', sortOrder);
+
   const response = await fetch(
-    `${RIXLY_API_BASE_URL}/api/projects/${projectId}/reddit-leads?source=all&page=${page}&limit=${limit}`,
+    `${RIXLY_API_BASE_URL}/api/projects/${projectId}/reddit-leads?${params.toString()}`,
     {
       method: "GET",
       headers: {
