@@ -27,7 +27,7 @@ export default function VerifyEmailPromptPage() {
     }
 
     if (currentUser.isEmailVerified) {
-      navigate("/pricing");
+      navigate("/auth-pricing");
       return;
     }
 
@@ -38,7 +38,7 @@ export default function VerifyEmailPromptPage() {
     const pollInterval = setInterval(() => {
       const updatedUser = getCurrentUser();
       if (updatedUser?.isEmailVerified) {
-        navigate("/pricing");
+        navigate("/auth-pricing");
       }
     }, 3000);
 

@@ -29,8 +29,8 @@ export default function NotificationsLayout() {
       try {
         const hasAccess = await checkSubscriptionAccess()
         if (!hasAccess) {
-          // User doesn't have active subscription - redirect to pricing
-          navigate('/pricing')
+          // User doesn't have active subscription - redirect to auth pricing
+          navigate('/auth-pricing')
           return
         }
 
@@ -38,8 +38,8 @@ export default function NotificationsLayout() {
         setIsChecking(false)
       } catch (error) {
         console.error('Error checking access:', error)
-        // On error, redirect to pricing for security
-        navigate('/pricing')
+        // On error, redirect to auth pricing for security
+        navigate('/auth-pricing')
       }
     }
 

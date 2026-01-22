@@ -37,11 +37,10 @@ function VerifyEmailContent() {
 
         // Wait 2 seconds before redirecting
         setTimeout(() => {
-          // Check if user is logged in
+          // Check if user is logged in (auth uses HTTP-only cookies, so just check if user exists in localStorage)
           const updatedUser = getCurrentUser();
-          const accessToken = localStorage.getItem("accessToken");
 
-          if (updatedUser && accessToken) {
+          if (updatedUser) {
             // User is logged in, redirect to auth pricing (they'll need to subscribe)
             navigate("/auth-pricing");
           } else {
@@ -95,8 +94,7 @@ function VerifyEmailContent() {
                   <Button
                     onClick={() => {
                       const currentUser = getCurrentUser();
-                      const accessToken = localStorage.getItem("accessToken");
-                      if (currentUser && accessToken) {
+                      if (currentUser) {
                         navigate("/auth-pricing");
                       } else {
                         navigate("/login");
