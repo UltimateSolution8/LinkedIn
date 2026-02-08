@@ -30,7 +30,7 @@ export default function ContactUsPage() {
             </div>
 
             {/* Email */}
-            <div className="flex items-start gap-4">
+            <div className="flex flex-wrap items-start gap-4">
               <div className="flex-shrink-0 w-12 h-12 bg-purple-100 rounded-full flex items-center justify-center">
                 <Mail className="w-6 h-6 text-purple-600" />
               </div>
@@ -48,7 +48,7 @@ export default function ContactUsPage() {
             </div>
 
             {/* Phone */}
-            <div className="flex items-start gap-4">
+            <div className="flex flex-wrap items-start gap-4">
               <div className="flex-shrink-0 w-12 h-12 bg-purple-100 rounded-full flex items-center justify-center">
                 <Phone className="w-6 h-6 text-purple-600" />
               </div>
@@ -66,7 +66,7 @@ export default function ContactUsPage() {
             </div>
 
             {/* Registered Address */}
-            <div className="flex items-start gap-4">
+            <div className="flex flex-wrap items-start gap-4">
               <div className="flex-shrink-0 w-12 h-12 bg-purple-100 rounded-full flex items-center justify-center">
                 <MapPin className="w-6 h-6 text-purple-600" />
               </div>
@@ -85,7 +85,7 @@ export default function ContactUsPage() {
             </div>
 
             {/* Operational Address */}
-            <div className="flex items-start gap-4">
+            <div className="flex flex-wrap items-start gap-4">
               <div className="flex-shrink-0 w-12 h-12 bg-purple-100 rounded-full flex items-center justify-center">
                 <MapPin className="w-6 h-6 text-purple-600" />
               </div>
