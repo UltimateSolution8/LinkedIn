@@ -277,3 +277,29 @@ export async function scrapeReddit(projectId: string): Promise<ScrapeRedditRespo
 
   return responseData;
 }
+
+export interface NextScheduledRunResponse {
+  status: 'pending' | 'running' | 'overdue' | 'no_projects' | 'no_schedules' | 'error';
+  message: string;
+  nextRunAt: string | null;
+  lastSyncTime: string | null;
+  projectName: string | null;
+}
+
+export async function getNextScheduledRun(): Promise<NextScheduledRunResponse> {
+  const response = await fetch(`${RIXLY_API_BASE_URL}/api/projects/next-scheduled-run`, {
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    credentials: "include",
+  });
+
+  const responseData = await response.json();
+
+  if (!response.ok) {
+    throw new Error(responseData.message || "Failed to fetch next scheduled run");
+  }
+
+  return responseData;
+}
