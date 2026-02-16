@@ -177,6 +177,8 @@ export default function FindPostsTab({ projectId, onCountChange }: FindPostsTabP
             statusReason={post.statusReason}
             assignedTo={post.assignedTo}
             updatedAt={post.updatedAt}
+            mainPainpoint={post.mainPainpoint}
+            matchReason={post.matchReason}
             onStatusUpdate={(updatedPost) => {
               // Update the post in the local state
               // Note: updatedPost has 'id' field instead of 'leadId', and only contains updated status fields

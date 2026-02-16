@@ -11,6 +11,8 @@ export interface Post {
   rixlyRating: number;
   url: string;
   leadType: "SALES" | "ENGAGEMENT";
+  mainPainpoint?: string;
+  matchReason?: string;
   // Lead status fields
   status: "NEW" | "IN_PROGRESS" | "FOLLOW_UP_SCHEDULED" | "CONVERTED" | "NOT_INTERESTED" | "DUPLICATE" | "DONE";
   followUpAt?: string;

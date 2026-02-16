@@ -122,10 +122,12 @@ export default function LeadCard({
               <ExternalLink className="w-4 h-4 text-neutral-500 dark:text-neutral-400 " />
             </div>
           </div>
-          <div className="flex items-center gap-1.5 bg-teal-50 dark:bg-teal-900/20 px-2 py-1 rounded-md border border-teal-100 dark:border-teal-800/50">
-            <Star className="w-4 h-4 fill-teal-500 text-teal-500" />
-            <span className="font-bold text-teal-700 dark:text-teal-400 text-sm">{rating}/10</span>
-          </div>
+          {rating > 0 && (
+            <div className="flex items-center gap-1.5 bg-teal-50 dark:bg-teal-900/20 px-2 py-1 rounded-md border border-teal-100 dark:border-teal-800/50">
+              <Star className="w-4 h-4 fill-teal-500 text-teal-500" />
+              <span className="font-bold text-teal-700 dark:text-teal-400 text-sm">{rating}/10</span>
+            </div>
+          )}
         </div>
 
         {/* Comment Text Section (for comment leads) */}
@@ -212,10 +214,12 @@ export default function LeadCard({
                   </a>
                 </DialogTitle>
                 <DialogDescription className="text-sm text-neutral-500 dark:text-neutral-400">
-                  <div className="flex items-center gap-1.5 bg-teal-50 dark:bg-teal-900/20 px-2 py-1 rounded-md border border-teal-100 dark:border-teal-800/50 mt-2 w-fit">
-                    <Star className="w-4 h-4 fill-teal-500 text-teal-500" />
-                    <span className="font-bold text-teal-700 dark:text-teal-400 text-sm">{rating}/10</span>
-                  </div>
+                  {rating > 0 && (
+                    <div className="flex items-center gap-1.5 bg-teal-50 dark:bg-teal-900/20 px-2 py-1 rounded-md border border-teal-100 dark:border-teal-800/50 mt-2 w-fit">
+                      <Star className="w-4 h-4 fill-teal-500 text-teal-500" />
+                      <span className="font-bold text-teal-700 dark:text-teal-400 text-sm">{rating}/10</span>
+                    </div>
+                  )}
                 </DialogDescription>
               </DialogHeader>
               <div className="mt-4 overflow-y-auto max-h-[70vh] space-y-4">
