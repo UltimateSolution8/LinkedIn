@@ -1,6 +1,6 @@
-import React, { memo } from 'react';
+import { memo } from 'react';
 import { useSyncTimer } from '@/hooks/useSyncTimer';
-import { Clock, Loader2, AlertTriangle } from 'lucide-react';
+import { Clock } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 interface SyncStatusTimerProps {

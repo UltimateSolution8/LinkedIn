@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
-import { getNextScheduledRun, type NextScheduledRunResponse } from '@/lib/api/projects';
+import { getNextScheduledRun } from '@/lib/api/projects';
 
 export type SyncState = 'pending' | 'running' | 'overdue' | 'no_projects' | 'no_schedules' | 'error';
 
@@ -29,7 +29,7 @@ export function useSyncTimer(): SyncTimerData {
   });
 
   // Simple message calculation
-  const getSimpleMessage = useCallback((targetTime: Date | null, lastSyncTime: Date | null, state: SyncState): string => {
+  const getSimpleMessage = useCallback((targetTime: Date | null, lastSyncTime: Date | null, _state: SyncState): string => {
     const now = Date.now();
 
     // If no next run scheduled, show last sync time if available
@@ -93,7 +93,7 @@ export function useSyncTimer(): SyncTimerData {
   }, []);
 
   // Fetch sync status from API (simple)
-  const fetchSyncStatus = useCallback(async (isInitialLoad = false) => {
+  const fetchSyncStatus = useCallback(async (_isInitialLoad = false) => {
     try {
       const response = await getNextScheduledRun();
       const nextExecutionTime = response.nextRunAt ? new Date(response.nextRunAt) : null;

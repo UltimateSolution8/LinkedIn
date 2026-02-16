@@ -2,18 +2,20 @@
 // Structured logging for user interactions and API calls
 
 class Logger {
+  private isDevelopment: boolean;
+  private sessionId: string;
+
   constructor() {
     this.isDevelopment = import.meta.env.DEV;
-    this.apiBaseUrl = import.meta.env.VITE_RIXLY_API_BASE_URL;
     this.sessionId = this.generateSessionId();
   }
 
-  generateSessionId() {
+  generateSessionId(): string {
     return `session-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
   }
 
   // Base logging method
-  log(level, event, data = {}) {
+  log(level: string, event: string, data: Record<string, unknown> = {}): Record<string, unknown> {
     const logEntry = {
       time: new Date().toISOString(),
       level,
@@ -44,7 +46,7 @@ class Logger {
   }
 
   // User interaction events
-  logUserAction(action, details = {}) {
+  logUserAction(action: string, details: Record<string, unknown> = {}): Record<string, unknown> {
     return this.log('info', `user_${action}`, {
       ...details,
       timestamp: Date.now()
@@ -52,7 +54,7 @@ class Logger {
   }
 
   // Page navigation
-  logPageView(page, previousPage = null) {
+  logPageView(page: string, previousPage: string | null = null): Record<string, unknown> {
     return this.log('info', 'page_view', {
       page,
       previousPage,
@@ -61,7 +63,13 @@ class Logger {
   }
 
   // API calls
-  logApiCall(method, endpoint, status, duration, error = null) {
+  logApiCall(
+    method: string,
+    endpoint: string,
+    status: number,
+    duration: number,
+    error: { message: string; name: string } | null = null
+  ): Record<string, unknown> {
     const level = status >= 400 ? 'error' : 'info';
     return this.log(level, 'api_call', {
       method: method.toUpperCase(),
@@ -77,7 +85,11 @@ class Logger {
   }
 
   // Form interactions
-  logFormSubmit(formName, success = true, error = null) {
+  logFormSubmit(
+    formName: string,
+    success = true,
+    error: { message: string; field?: string } | null = null
+  ): Record<string, unknown> {
     const level = success ? 'info' : 'warn';
     return this.log(level, `form_${success ? 'submitted' : 'error'}`, {
       formName,
@@ -91,7 +103,11 @@ class Logger {
   }
 
   // Authentication events
-  logAuthEvent(event, userId = null, metadata = {}) {
+  logAuthEvent(
+    event: string,
+    userId: string | null = null,
+    metadata: Record<string, unknown> = {}
+  ): Record<string, unknown> {
     return this.log('info', `auth_${event}`, {
       userId,
       ...metadata,
@@ -100,7 +116,7 @@ class Logger {
   }
 
   // Password reset events
-  logPasswordResetEvent(event, metadata = {}) {
+  logPasswordResetEvent(event: string, metadata: Record<string, unknown> = {}): Record<string, unknown> {
     return this.log('info', `password_${event}`, {
       ...metadata,
       timestamp: Date.now()
@@ -108,7 +124,7 @@ class Logger {
   }
 
   // Error logging
-  logError(error, context = {}) {
+  logError(error: Error, context: Record<string, unknown> = {}): Record<string, unknown> {
     return this.log('error', 'client_error', {
       error: {
         message: error.message,
@@ -121,7 +137,7 @@ class Logger {
   }
 
   // Performance logging
-  logPerformance(metric, value, additionalData = {}) {
+  logPerformance(metric: string, value: number, additionalData: Record<string, unknown> = {}): Record<string, unknown> {
     return this.log('info', 'performance_metric', {
       metric,
       value,
