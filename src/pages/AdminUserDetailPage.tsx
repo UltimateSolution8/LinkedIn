@@ -1,13 +1,13 @@
 
 import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Loader2, AlertCircle, FolderKanban, CreditCard, Calendar, Ban, CheckCircle } from "lucide-react";
+import { Loader2, AlertCircle, FolderKanban, CreditCard, Calendar, Ban, CheckCircle, ArrowLeft } from "lucide-react";
 import {
   getAdminUsers,
   updatePaymentBypass,
@@ -18,7 +18,8 @@ import {
   type AdminUser
 } from "@/lib/api/admin";
 
-export default function AdminPage() {
+export default function AdminUserDetailPage() {
+  const { userId } = useParams<{ userId: string }>();
   const navigate = useNavigate();
   const [users, setUsers] = useState<AdminUser[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -206,27 +207,48 @@ export default function AdminPage() {
     );
   }
 
+  // Filter for specific user if userId is provided
+  const displayUsers = userId
+    ? users.filter(user => user.userId === parseInt(userId))
+    : users;
+
+  const currentUser = displayUsers.length > 0 ? displayUsers[0] : null;
+
   return (
     <div className="container mx-auto p-8">
+      {/* Back Button */}
+      <Button
+        variant="ghost"
+        onClick={() => navigate("/admin/users")}
+        className="mb-4"
+      >
+        <ArrowLeft className="w-4 h-4 mr-2" />
+        Back to Users List
+      </Button>
+
       <div className="mb-8">
         <h1 className="text-3xl font-bold text-neutral-950 dark:text-white mb-2">
-          Admin Dashboard
+          {userId && currentUser
+            ? `${currentUser.firstName} ${currentUser.lastName}`
+            : "User Management"}
         </h1>
         <p className="text-neutral-600 dark:text-neutral-400">
-          Manage users and their subscriptions
+          {userId && currentUser
+            ? currentUser.email
+            : "Manage users and their subscriptions"}
         </p>
       </div>
 
       {/* Users List */}
-      {!users || users.length === 0 ? (
+      {!displayUsers || displayUsers.length === 0 ? (
         <div className="text-center py-12">
           <p className="text-lg text-neutral-600 dark:text-neutral-400">
-            No users found
+            {userId ? "User not found" : "No users found"}
           </p>
         </div>
       ) : (
             <div className="grid gap-6">
-              {users.map((user) => (
+              {displayUsers.map((user) => (
                 <Card key={user.userId} className="border-neutral-200 dark:border-neutral-800">
                   <CardHeader>
                     <div className="flex items-start justify-between">

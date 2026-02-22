@@ -72,6 +72,141 @@ export interface ProjectDetailResponse {
 }
 
 /**
+ * Dashboard Stats
+ */
+export interface AdminDashboardStats {
+  projectsBeingScraped: number;
+  totalUsers: number;
+  jobsRunningNow: number;
+  lastUpdated: string;
+}
+
+export interface AdminDashboardStatsResponse {
+  success: boolean;
+  data: AdminDashboardStats;
+  message?: string;
+}
+
+/**
+ * Today's Leads by Project
+ */
+export interface TodaysLeadsByProject {
+  projectId: number;
+  projectName: string;
+  userId: number;
+  userName: string;
+  saleLeads: number;
+  engagementLeads: number;
+  commentSourceLeads: number;
+  totalLeadsToday: number;
+}
+
+export interface TodaysLeadsByProjectResponse {
+  success: boolean;
+  data: TodaysLeadsByProject[];
+  message?: string;
+}
+
+/**
+ * Job Run
+ */
+export interface JobRun {
+  jobRunId: number;
+  jobType: string; // e.g., 'reddit_scraping', 'processing', 'notification', 'quickrun'
+  projectId: number;
+  projectName: string;
+  userId: number;
+  userName: string;
+  status: 'pending' | 'running' | 'completed' | 'failed';
+  startedAt: string;
+  completedAt: string | null;
+  duration: number | null;
+  leadsFound: number | null;
+  errorMessage: string | null;
+  nextScheduledAt: string | null; // When job will run next (for repeatable jobs)
+}
+
+export interface JobHistoryResponse {
+  success: boolean;
+  data: JobRun[];
+  pagination: {
+    currentPage: number;
+    pageSize: number;
+    totalJobs: number;
+    totalPages: number;
+    hasNextPage: boolean;
+    hasPrevPage: boolean;
+  };
+  message?: string;
+}
+
+/**
+ * Scheduled Job
+ */
+export interface ScheduledJob {
+  projectId: number;
+  projectName: string;
+  userId: number;
+  userName: string;
+  nextRunAt: string;
+  lastRunAt: string | null;
+  isEnabled: boolean;
+}
+
+export interface ScheduledJobsResponse {
+  success: boolean;
+  data: ScheduledJob[];
+  message?: string;
+}
+
+/**
+ * Active Job
+ */
+export interface ActiveJob {
+  jobRunId: number;
+  jobType: string;
+  projectId: number;
+  projectName: string;
+  userId: number;
+  userName: string;
+  startedAt: string;
+  status: 'running';
+}
+
+export interface ActiveJobsResponse {
+  success: boolean;
+  data: ActiveJob[];
+  message?: string;
+}
+
+/**
+ * User List Item
+ */
+export interface UserListItem {
+  userId: number;
+  firstName: string;
+  lastName: string;
+  email: string;
+  projectCount: number;
+  activeProjectCount: number;
+  disabledProjectCount: number;
+  subscriptionStatus: string;
+  subscriptionPlan: string | null;
+}
+
+export interface UsersListResponse {
+  success: boolean;
+  data: UserListItem[];
+  pagination: {
+    currentPage: number;
+    pageSize: number;
+    totalUsers: number;
+    totalPages: number;
+  };
+  message?: string;
+}
+
+/**
  * Get detailed information for a specific project (admin only)
  */
 export async function getProjectDetail(projectId: number): Promise<ProjectDetail> {
@@ -452,6 +587,237 @@ export async function enableAllUserProjects(userId: number): Promise<BulkProject
     return responseData;
   } catch (error) {
     console.error("Error enabling all user projects:", error);
+    throw error;
+  }
+}
+
+/**
+ * Get admin dashboard stats
+ */
+export async function getAdminDashboardStats(): Promise<AdminDashboardStats> {
+  if (!RIXLY_API_BASE_URL) {
+    throw new Error(
+      "API base URL is not configured. Please set VITE_RIXLY_API_BASE_URL in your .env file."
+    );
+  }
+
+  try {
+    const response = await fetch(`${RIXLY_API_BASE_URL}/api/admin/stats/dashboard`, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      credentials: "include",
+    });
+
+    const responseData: AdminDashboardStatsResponse = await response.json();
+
+    if (!response.ok) {
+      throw new Error(responseData.message || "Failed to fetch dashboard stats");
+    }
+
+    return responseData.data;
+  } catch (error) {
+    console.error("Error fetching dashboard stats:", error);
+    throw error;
+  }
+}
+
+/**
+ * Get today's leads breakdown by project
+ */
+export async function getTodaysLeadsByProject(): Promise<TodaysLeadsByProject[]> {
+  if (!RIXLY_API_BASE_URL) {
+    throw new Error(
+      "API base URL is not configured. Please set VITE_RIXLY_API_BASE_URL in your .env file."
+    );
+  }
+
+  try {
+    const response = await fetch(`${RIXLY_API_BASE_URL}/api/admin/leads/today-by-project`, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      credentials: "include",
+    });
+
+    const responseData: TodaysLeadsByProjectResponse = await response.json();
+
+    if (!response.ok) {
+      throw new Error(responseData.message || "Failed to fetch today's leads");
+    }
+
+    return responseData.data;
+  } catch (error) {
+    console.error("Error fetching today's leads:", error);
+    throw error;
+  }
+}
+
+/**
+ * Get active jobs
+ */
+export async function getActiveJobs(): Promise<ActiveJob[]> {
+  if (!RIXLY_API_BASE_URL) {
+    throw new Error(
+      "API base URL is not configured. Please set VITE_RIXLY_API_BASE_URL in your .env file."
+    );
+  }
+
+  try {
+    const response = await fetch(`${RIXLY_API_BASE_URL}/api/admin/jobs/active`, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      credentials: "include",
+    });
+
+    const responseData: ActiveJobsResponse = await response.json();
+
+    if (!response.ok) {
+      throw new Error(responseData.message || "Failed to fetch active jobs");
+    }
+
+    return responseData.data;
+  } catch (error) {
+    console.error("Error fetching active jobs:", error);
+    throw error;
+  }
+}
+
+/**
+ * Get scheduled jobs
+ */
+export async function getScheduledJobs(): Promise<ScheduledJob[]> {
+  if (!RIXLY_API_BASE_URL) {
+    throw new Error(
+      "API base URL is not configured. Please set VITE_RIXLY_API_BASE_URL in your .env file."
+    );
+  }
+
+  try {
+    const response = await fetch(`${RIXLY_API_BASE_URL}/api/admin/jobs/scheduled`, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      credentials: "include",
+    });
+
+    const responseData: ScheduledJobsResponse = await response.json();
+
+    if (!response.ok) {
+      throw new Error(responseData.message || "Failed to fetch scheduled jobs");
+    }
+
+    return responseData.data;
+  } catch (error) {
+    console.error("Error fetching scheduled jobs:", error);
+    throw error;
+  }
+}
+
+/**
+ * Get job history with pagination and optional filters
+ */
+export async function getJobHistory(
+  page: number = 1,
+  limit: number = 20,
+  filters?: {
+    status?: 'pending' | 'running' | 'completed' | 'failed';
+    jobType?: string; // e.g., 'reddit_scraping', 'processing', 'notification', 'quickrun'
+    projectId?: number;
+  }
+): Promise<JobHistoryResponse> {
+  if (!RIXLY_API_BASE_URL) {
+    throw new Error(
+      "API base URL is not configured. Please set VITE_RIXLY_API_BASE_URL in your .env file."
+    );
+  }
+
+  try {
+    const params = new URLSearchParams({
+      page: page.toString(),
+      limit: limit.toString(),
+    });
+
+    if (filters?.status) {
+      params.append("status", filters.status);
+    }
+
+    if (filters?.jobType) {
+      params.append("jobType", filters.jobType);
+    }
+
+    if (filters?.projectId) {
+      params.append("projectId", filters.projectId.toString());
+    }
+
+    const response = await fetch(
+      `${RIXLY_API_BASE_URL}/api/admin/jobs/history?${params}`,
+      {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        credentials: "include",
+      }
+    );
+
+    const responseData: JobHistoryResponse = await response.json();
+
+    if (!response.ok) {
+      throw new Error(responseData.message || "Failed to fetch job history");
+    }
+
+    return responseData;
+  } catch (error) {
+    console.error("Error fetching job history:", error);
+    throw error;
+  }
+}
+
+/**
+ * Get users list with pagination
+ */
+export async function getUsersList(
+  page: number = 1,
+  limit: number = 50
+): Promise<UsersListResponse> {
+  if (!RIXLY_API_BASE_URL) {
+    throw new Error(
+      "API base URL is not configured. Please set VITE_RIXLY_API_BASE_URL in your .env file."
+    );
+  }
+
+  try {
+    const params = new URLSearchParams({
+      page: page.toString(),
+      limit: limit.toString(),
+    });
+
+    const response = await fetch(
+      `${RIXLY_API_BASE_URL}/api/admin/users/list?${params}`,
+      {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        credentials: "include",
+      }
+    );
+
+    const responseData: UsersListResponse = await response.json();
+
+    if (!response.ok) {
+      throw new Error(responseData.message || "Failed to fetch users list");
+    }
+
+    return responseData;
+  } catch (error) {
+    console.error("Error fetching users list:", error);
     throw error;
   }
 }
