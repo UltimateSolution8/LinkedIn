@@ -821,3 +821,50 @@ export async function getUsersList(
     throw error;
   }
 }
+
+/**
+ * Stop Job Response
+ */
+export interface StopJobResponse {
+  success: boolean;
+  message: string;
+  data: {
+    jobRunId: number;
+    status: string;
+  };
+}
+
+/**
+ * Stop a running job (admin only)
+ */
+export async function stopJob(jobRunId: number): Promise<StopJobResponse> {
+  if (!RIXLY_API_BASE_URL) {
+    throw new Error(
+      "API base URL is not configured. Please set VITE_RIXLY_API_BASE_URL in your .env file."
+    );
+  }
+
+  try {
+    const response = await fetch(
+      `${RIXLY_API_BASE_URL}/api/admin/jobs/${jobRunId}/stop`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        credentials: "include",
+      }
+    );
+
+    const responseData: StopJobResponse = await response.json();
+
+    if (!response.ok) {
+      throw new Error(responseData.message || "Failed to stop job");
+    }
+
+    return responseData;
+  } catch (error) {
+    console.error("Error stopping job:", error);
+    throw error;
+  }
+}

@@ -2,13 +2,15 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Loader2, Users, FolderKanban, Play, RefreshCw, ChevronDown, ChevronUp } from "lucide-react";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Loader2, Users, FolderKanban, Play, RefreshCw, ChevronDown, ChevronUp, StopCircle } from "lucide-react";
 import {
   getAdminDashboardStats,
   getTodaysLeadsByProject,
   getActiveJobs,
   getScheduledJobs,
   getJobHistory,
+  stopJob,
   type AdminDashboardStats,
   type TodaysLeadsByProject,
   type ActiveJob,
@@ -35,6 +37,12 @@ export default function AdminDashboardPage() {
   const [isLoadingJobs, setIsLoadingJobs] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [isLeadsExpanded, setIsLeadsExpanded] = useState(true);
+
+  // Stop job state
+  const [selectedJobToStop, setSelectedJobToStop] = useState<ActiveJob | null>(null);
+  const [isStopDialogOpen, setIsStopDialogOpen] = useState(false);
+  const [isStoppingJob, setIsStoppingJob] = useState(false);
+  const [stopError, setStopError] = useState<string | null>(null);
 
   // Fetch all data
   const fetchDashboardData = async () => {
@@ -111,6 +119,29 @@ export default function AdminDashboardPage() {
 
   const handleRefresh = () => {
     fetchDashboardData();
+  };
+
+  const handleStopJob = async () => {
+    if (!selectedJobToStop) return;
+
+    setIsStoppingJob(true);
+    setStopError(null);
+
+    try {
+      await stopJob(selectedJobToStop.jobRunId);
+      setIsStopDialogOpen(false);
+      setSelectedJobToStop(null);
+
+      // Refresh all dashboard data
+      await fetchDashboardData();
+
+      alert("Job stopped successfully!");
+    } catch (err) {
+      setStopError(err instanceof Error ? err.message : "Failed to stop job");
+      // Keep dialog open to show error
+    } finally {
+      setIsStoppingJob(false);
+    }
   };
 
   const formatStartTime = (dateString: string) => {
@@ -270,7 +301,21 @@ export default function AdminDashboardPage() {
                         {job.jobType.replace('_', ' ')} • Started {formatStartTime(job.startedAt)}
                       </div>
                     </div>
-                    <Loader2 className="w-4 h-4 animate-spin text-blue-600" />
+                    <div className="flex items-center gap-2">
+                      <Loader2 className="w-4 h-4 animate-spin text-blue-600" />
+                      <Button
+                        size="sm"
+                        variant="ghost"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setSelectedJobToStop(job);
+                          setIsStopDialogOpen(true);
+                        }}
+                        className="text-red-600 hover:text-red-700 hover:bg-red-50 dark:hover:bg-red-900/20 h-8 w-8 p-0"
+                      >
+                        <StopCircle className="w-4 h-4" />
+                      </Button>
+                    </div>
                   </div>
                 ))}
               </div>
@@ -336,6 +381,68 @@ export default function AdminDashboardPage() {
           </div>
         </Button>
       </div>
+
+      {/* Stop Job Confirmation Dialog */}
+      <Dialog open={isStopDialogOpen} onOpenChange={setIsStopDialogOpen}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle className="text-xl text-neutral-950 dark:text-white">
+              Stop Running Job?
+            </DialogTitle>
+            <DialogDescription>
+              Are you sure you want to stop this job? This action cannot be undone.
+            </DialogDescription>
+          </DialogHeader>
+
+          {selectedJobToStop && (
+            <div className="p-4 bg-neutral-50 dark:bg-neutral-900 rounded-lg border border-neutral-200 dark:border-neutral-700">
+              <div className="font-medium text-neutral-950 dark:text-white mb-1">
+                {selectedJobToStop.projectName}
+              </div>
+              <div className="text-sm text-neutral-500 dark:text-neutral-400">
+                {selectedJobToStop.jobType.replace('_', ' ')} • Job #{selectedJobToStop.jobRunId}
+              </div>
+            </div>
+          )}
+
+          {stopError && (
+            <div className="p-3 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-md">
+              <p className="text-sm text-red-700 dark:text-red-300">{stopError}</p>
+            </div>
+          )}
+
+          <div className="flex gap-3 pt-4">
+            <Button
+              onClick={() => {
+                setIsStopDialogOpen(false);
+                setStopError(null);
+              }}
+              variant="outline"
+              className="flex-1"
+              disabled={isStoppingJob}
+            >
+              Cancel
+            </Button>
+            <Button
+              onClick={handleStopJob}
+              className="flex-1 bg-red-600 hover:bg-red-700 text-white"
+              disabled={isStoppingJob}
+            >
+              {isStoppingJob ? (
+                <>
+                  <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                  Stopping...
+                </>
+              ) : (
+                <>
+                  <StopCircle className="w-4 h-4 mr-2" />
+                  Stop Job
+                </>
+              )}
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
