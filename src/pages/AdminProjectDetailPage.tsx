@@ -196,16 +196,31 @@ export default function AdminProjectDetailPage() {
               )}
             </div>
             <Badge
-              variant={project.status === "active" ? "default" : "secondary"}
-              className="text-sm"
+              className={
+                project.status === "disabled"
+                  ? "bg-red-600/10 dark:bg-red-600/20 text-red-600 dark:text-red-400 text-sm px-3 py-1"
+                  : project.status === "active"
+                  ? "bg-green-600/10 dark:bg-green-600/20 text-green-600 dark:text-green-400 text-sm px-3 py-1"
+                  : "text-sm px-3 py-1"
+              }
             >
-              {project.status}
+              {project.status === "disabled" ? "Disabled" : project.status.charAt(0).toUpperCase() + project.status.slice(1)}
             </Badge>
           </div>
           {project.projectDescription && (
             <p className="text-sm text-neutral-600 dark:text-neutral-400 leading-relaxed">
               {project.projectDescription}
             </p>
+          )}
+
+          {/* Disabled Project Warning */}
+          {project.status === "disabled" && (
+            <div className="mt-4 p-4 bg-red-50 dark:bg-red-900/20 rounded-lg border border-red-200 dark:border-red-800">
+              <p className="text-sm text-red-700 dark:text-red-300">
+                This project is currently disabled. Lead generation, notifications, and sync processes are paused.
+                Return to the admin dashboard to re-enable this project.
+              </p>
+            </div>
           )}
         </div>
 

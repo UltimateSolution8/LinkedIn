@@ -7,8 +7,16 @@ import { Badge } from "@/components/ui/badge";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Loader2, AlertCircle, FolderKanban, CreditCard, Calendar } from "lucide-react";
-import { getAdminUsers, updatePaymentBypass, type AdminUser } from "@/lib/api/admin";
+import { Loader2, AlertCircle, FolderKanban, CreditCard, Calendar, Ban, CheckCircle } from "lucide-react";
+import {
+  getAdminUsers,
+  updatePaymentBypass,
+  disableProject,
+  enableProject,
+  disableAllUserProjects,
+  enableAllUserProjects,
+  type AdminUser
+} from "@/lib/api/admin";
 
 export default function AdminPage() {
   const navigate = useNavigate();
@@ -90,6 +98,70 @@ export default function AdminPage() {
     } catch (err) {
       console.error("Error disabling payment bypass:", err);
       alert("Failed to disable payment bypass");
+    }
+  };
+
+  const handleDisableProject = async (projectId: number, projectName: string) => {
+    if (!confirm(`Are you sure you want to disable the project "${projectName}"?`)) {
+      return;
+    }
+
+    try {
+      await disableProject(projectId);
+
+      // Refresh users data
+      const userData = await getAdminUsers();
+      setUsers(userData);
+      alert("Project disabled successfully!");
+    } catch (err) {
+      console.error("Error disabling project:", err);
+      alert("Failed to disable project");
+    }
+  };
+
+  const handleEnableProject = async (projectId: number) => {
+    try {
+      await enableProject(projectId);
+
+      // Refresh users data
+      const userData = await getAdminUsers();
+      setUsers(userData);
+      alert("Project enabled successfully!");
+    } catch (err) {
+      console.error("Error enabling project:", err);
+      alert("Failed to enable project");
+    }
+  };
+
+  const handleDisableAllUserProjects = async (userId: number, userName: string) => {
+    if (!confirm(`Are you sure you want to disable ALL projects for ${userName}? This will disable all their projects.`)) {
+      return;
+    }
+
+    try {
+      await disableAllUserProjects(userId);
+
+      // Refresh users data
+      const userData = await getAdminUsers();
+      setUsers(userData);
+      alert("All user projects disabled successfully!");
+    } catch (err) {
+      console.error("Error disabling all user projects:", err);
+      alert("Failed to disable all user projects");
+    }
+  };
+
+  const handleEnableAllUserProjects = async (userId: number) => {
+    try {
+      await enableAllUserProjects(userId);
+
+      // Refresh users data
+      const userData = await getAdminUsers();
+      setUsers(userData);
+      alert("All user projects enabled successfully!");
+    } catch (err) {
+      console.error("Error enabling all user projects:", err);
+      alert("Failed to enable all user projects");
     }
   };
 
@@ -255,6 +327,33 @@ export default function AdminPage() {
                       )}
                     </div>
 
+                    {/* Bulk Project Management */}
+                    {user.projects && user.projects.length > 0 && (
+                      <div className="mb-4">
+                        {user.projects.some(p => p.status !== "disabled") ? (
+                          <Button
+                            onClick={() => handleDisableAllUserProjects(user.userId, `${user.firstName} ${user.lastName}`)}
+                            variant="outline"
+                            size="sm"
+                            className="w-full border-red-300 dark:border-red-700 text-red-700 dark:text-red-300 hover:bg-red-50 dark:hover:bg-red-900/20"
+                          >
+                            <Ban className="w-4 h-4 mr-2" />
+                            Disable All Projects
+                          </Button>
+                        ) : (
+                          <Button
+                            onClick={() => handleEnableAllUserProjects(user.userId)}
+                            variant="outline"
+                            size="sm"
+                            className="w-full border-green-300 dark:border-green-700 text-green-700 dark:text-green-300 hover:bg-green-50 dark:hover:bg-green-900/20"
+                          >
+                            <CheckCircle className="w-4 h-4 mr-2" />
+                            Enable All Projects
+                          </Button>
+                        )}
+                      </div>
+                    )}
+
                     {/* Projects Section */}
                     {!user.projects || user.projects.length === 0 ? (
                       <p className="text-sm text-neutral-500 dark:text-neutral-400 italic">
@@ -267,39 +366,83 @@ export default function AdminPage() {
                           Projects ({user.projects.length})
                         </h4>
                         <div className="grid gap-3">
-                          {user.projects.map((project) => (
-                            <div
-                              key={project.projectId}
-                              className="p-4 bg-neutral-50 dark:bg-neutral-800 rounded-lg border border-neutral-200 dark:border-neutral-700"
-                            >
-                              <div className="flex items-start justify-between mb-2">
-                                <div className="flex-1">
-                                  <h5 className="font-semibold text-neutral-950 dark:text-white mb-1">
-                                    {project.projectName}
-                                  </h5>
-                                  <a
-                                    href={project.projectUrl}
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                    className="text-sm text-purple-600 dark:text-purple-400 hover:underline mb-2 block"
-                                  >
-                                    {project.projectUrl}
-                                  </a>
+                          {user.projects.map((project) => {
+                            const isDisabled = project.status === "disabled";
+                            return (
+                              <div
+                                key={project.projectId}
+                                className={`p-4 rounded-lg border ${
+                                  isDisabled
+                                    ? "bg-neutral-100 dark:bg-neutral-900 border-neutral-300 dark:border-neutral-700"
+                                    : "bg-neutral-50 dark:bg-neutral-800 border-neutral-200 dark:border-neutral-700"
+                                }`}
+                              >
+                                <div className="flex items-start justify-between mb-2">
+                                  <div className="flex-1">
+                                    <div className="flex items-center gap-2 mb-1">
+                                      <h5 className="font-semibold text-neutral-950 dark:text-white">
+                                        {project.projectName}
+                                      </h5>
+                                      {isDisabled && (
+                                        <Badge className="bg-red-600/10 dark:bg-red-600/20 text-red-600 dark:text-red-400 text-xs">
+                                          Disabled
+                                        </Badge>
+                                      )}
+                                    </div>
+                                    <a
+                                      href={project.projectUrl}
+                                      target="_blank"
+                                      rel="noopener noreferrer"
+                                      className={`text-sm hover:underline mb-2 block ${
+                                        isDisabled
+                                          ? "text-neutral-500 dark:text-neutral-500"
+                                          : "text-purple-600 dark:text-purple-400"
+                                      }`}
+                                    >
+                                      {project.projectUrl}
+                                    </a>
+                                  </div>
+                                  <div className="flex gap-2 ml-2">
+                                    <Button
+                                      size="sm"
+                                      variant="outline"
+                                      onClick={() => handleProjectClick(project.projectId, user.userId)}
+                                    >
+                                      View Details
+                                    </Button>
+                                  </div>
                                 </div>
-                                <Button
-                                  size="sm"
-                                  variant="outline"
-                                  onClick={() => handleProjectClick(project.projectId, user.userId)}
-                                  className="ml-2"
-                                >
-                                  View Details
-                                </Button>
+                                <p className={`text-sm mb-3 ${
+                                  isDisabled
+                                    ? "text-neutral-500 dark:text-neutral-500"
+                                    : "text-neutral-700 dark:text-neutral-300"
+                                }`}>
+                                  {project.projectDescription}
+                                </p>
+                                {isDisabled ? (
+                                  <Button
+                                    size="sm"
+                                    variant="outline"
+                                    onClick={() => handleEnableProject(project.projectId)}
+                                    className="w-full border-green-300 dark:border-green-700 text-green-700 dark:text-green-300 hover:bg-green-50 dark:hover:bg-green-900/20"
+                                  >
+                                    <CheckCircle className="w-3 h-3 mr-2" />
+                                    Enable Project
+                                  </Button>
+                                ) : (
+                                  <Button
+                                    size="sm"
+                                    variant="outline"
+                                    onClick={() => handleDisableProject(project.projectId, project.projectName)}
+                                    className="w-full border-red-300 dark:border-red-700 text-red-700 dark:text-red-300 hover:bg-red-50 dark:hover:bg-red-900/20"
+                                  >
+                                    <Ban className="w-3 h-3 mr-2" />
+                                    Disable Project
+                                  </Button>
+                                )}
                               </div>
-                              <p className="text-sm text-neutral-700 dark:text-neutral-300">
-                                {project.projectDescription}
-                              </p>
-                            </div>
-                          ))}
+                            );
+                          })}
                         </div>
                       </div>
                     )}

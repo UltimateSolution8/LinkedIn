@@ -289,3 +289,169 @@ export async function updateAdminProjectConfig(
     throw error;
   }
 }
+
+/**
+ * Response type for project disable/enable operations
+ */
+export interface ProjectStatusResponse {
+  success: boolean;
+  message: string;
+  data: {
+    projectId: number;
+    status: string;
+  };
+}
+
+/**
+ * Response type for bulk user projects disable/enable operations
+ */
+export interface BulkProjectStatusResponse {
+  success: boolean;
+  message: string;
+  data: {
+    userId: number;
+    disabledProjectCount?: number;
+    enabledProjectCount?: number;
+    projectIds: number[];
+  };
+}
+
+/**
+ * Disable a single project (admin only)
+ */
+export async function disableProject(projectId: number): Promise<ProjectStatusResponse> {
+  if (!RIXLY_API_BASE_URL) {
+    throw new Error(
+      "API base URL is not configured. Please set VITE_RIXLY_API_BASE_URL in your .env file."
+    );
+  }
+
+  try {
+    const response = await fetch(
+      `${RIXLY_API_BASE_URL}/api/projects/${projectId}/disable`,
+      {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        credentials: "include",
+      }
+    );
+
+    const responseData: ProjectStatusResponse = await response.json();
+
+    if (!response.ok) {
+      throw new Error(responseData.message || "Failed to disable project");
+    }
+
+    return responseData;
+  } catch (error) {
+    console.error("Error disabling project:", error);
+    throw error;
+  }
+}
+
+/**
+ * Enable a single project (admin only)
+ */
+export async function enableProject(projectId: number): Promise<ProjectStatusResponse> {
+  if (!RIXLY_API_BASE_URL) {
+    throw new Error(
+      "API base URL is not configured. Please set VITE_RIXLY_API_BASE_URL in your .env file."
+    );
+  }
+
+  try {
+    const response = await fetch(
+      `${RIXLY_API_BASE_URL}/api/projects/${projectId}/enable`,
+      {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        credentials: "include",
+      }
+    );
+
+    const responseData: ProjectStatusResponse = await response.json();
+
+    if (!response.ok) {
+      throw new Error(responseData.message || "Failed to enable project");
+    }
+
+    return responseData;
+  } catch (error) {
+    console.error("Error enabling project:", error);
+    throw error;
+  }
+}
+
+/**
+ * Disable all projects for a user (admin only)
+ */
+export async function disableAllUserProjects(userId: number): Promise<BulkProjectStatusResponse> {
+  if (!RIXLY_API_BASE_URL) {
+    throw new Error(
+      "API base URL is not configured. Please set VITE_RIXLY_API_BASE_URL in your .env file."
+    );
+  }
+
+  try {
+    const response = await fetch(
+      `${RIXLY_API_BASE_URL}/api/projects/users/${userId}/disable-all`,
+      {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        credentials: "include",
+      }
+    );
+
+    const responseData: BulkProjectStatusResponse = await response.json();
+
+    if (!response.ok) {
+      throw new Error(responseData.message || "Failed to disable all user projects");
+    }
+
+    return responseData;
+  } catch (error) {
+    console.error("Error disabling all user projects:", error);
+    throw error;
+  }
+}
+
+/**
+ * Enable all projects for a user (admin only)
+ */
+export async function enableAllUserProjects(userId: number): Promise<BulkProjectStatusResponse> {
+  if (!RIXLY_API_BASE_URL) {
+    throw new Error(
+      "API base URL is not configured. Please set VITE_RIXLY_API_BASE_URL in your .env file."
+    );
+  }
+
+  try {
+    const response = await fetch(
+      `${RIXLY_API_BASE_URL}/api/projects/users/${userId}/enable-all`,
+      {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        credentials: "include",
+      }
+    );
+
+    const responseData: BulkProjectStatusResponse = await response.json();
+
+    if (!response.ok) {
+      throw new Error(responseData.message || "Failed to enable all user projects");
+    }
+
+    return responseData;
+  } catch (error) {
+    console.error("Error enabling all user projects:", error);
+    throw error;
+  }
+}
