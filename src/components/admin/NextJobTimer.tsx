@@ -4,10 +4,13 @@ import { useEffect, useState } from "react";
 interface NextJobTimerProps {
   nextRunAt: string | null;
   projectName?: string;
+  projectId?: number;
+  jobRunId?: number;
+  jobType?: string;
   className?: string;
 }
 
-export default function NextJobTimer({ nextRunAt, projectName, className }: NextJobTimerProps) {
+export default function NextJobTimer({ nextRunAt, projectName, projectId, jobRunId, jobType, className }: NextJobTimerProps) {
   const [countdown, setCountdown] = useState<string>("");
 
   useEffect(() => {
@@ -88,6 +91,15 @@ export default function NextJobTimer({ nextRunAt, projectName, className }: Next
         {projectName && (
           <div className="text-xs text-neutral-500 dark:text-neutral-400 mt-0.5">
             {projectName}
+          </div>
+        )}
+        {(projectId || jobRunId || jobType) && (
+          <div className="text-xs text-neutral-400 dark:text-neutral-500 mt-0.5">
+            {jobRunId && `Job #${jobRunId}`}
+            {jobRunId && projectId && ' • '}
+            {projectId && `Project #${projectId}`}
+            {(jobRunId || projectId) && jobType && ' • '}
+            {jobType && jobType.replace('_', ' ')}
           </div>
         )}
       </div>

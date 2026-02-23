@@ -267,6 +267,9 @@ export default function AdminDashboardPage() {
               <NextJobTimer
                 nextRunAt={nextScheduledJob?.nextRunAt ?? null}
                 projectName={nextScheduledJob?.projectName}
+                projectId={nextScheduledJob?.projectId}
+                jobRunId={nextScheduledJob?.jobRunId}
+                jobType={nextScheduledJob?.jobType}
               />
             )}
           </CardContent>

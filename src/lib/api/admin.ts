@@ -144,6 +144,8 @@ export interface JobHistoryResponse {
  * Scheduled Job
  */
 export interface ScheduledJob {
+  jobRunId: number;
+  jobType: string;
   projectId: number;
   projectName: string;
   userId: number;
@@ -151,6 +153,7 @@ export interface ScheduledJob {
   nextRunAt: string;
   lastRunAt: string | null;
   isEnabled: boolean;
+  isReadyNow: boolean;
 }
 
 export interface ScheduledJobsResponse {
