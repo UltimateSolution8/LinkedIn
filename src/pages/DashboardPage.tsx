@@ -8,6 +8,7 @@ import FindPostsTab from "@/components/dashboard/FindPostsTab";
 import FindLeadsTab from "@/components/dashboard/FindLeadsTab";
 import SettingsTab from "@/components/dashboard/SettingsTab";
 import SyncStatusTimer from "@/components/dashboard/SyncStatusTimer";
+import EmptyProjectState from "@/components/dashboard/EmptyProjectState";
 import { useProject } from "@/contexts/ProjectContext";
 import { getCurrentUser } from "@/lib/api/auth";
 
@@ -36,6 +37,17 @@ export default function DashboardPage() {
       navigate("/create-project");
     }
   };
+
+  // Show empty state if no projects exist
+  if (!isLoading && projects.length === 0) {
+    return (
+      <div className="flex flex-1 h-full overflow-x-hidden">
+        <div className="flex-1 w-full h-full overflow-y-auto">
+          <EmptyProjectState />
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="flex flex-1 h-full overflow-x-hidden">

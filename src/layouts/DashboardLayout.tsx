@@ -2,9 +2,32 @@ import { useEffect, useState } from 'react'
 import { Outlet, useNavigate } from 'react-router-dom'
 import Sidebar from '@/components/dashboard/Sidebar'
 import DashboardHeader from '@/components/dashboard/DashboardHeader'
-import { ProjectProvider } from '@/contexts/ProjectContext'
+import { ProjectProvider, useProject } from '@/contexts/ProjectContext'
 import { useAuthGuard } from '@/hooks/useAuthGuard'
 import { checkSubscriptionAccess } from '@/lib/utils/subscription'
+
+function DashboardLayoutContent() {
+  const { projects, isLoading } = useProject()
+  const hasProjects = !isLoading && projects.length > 0
+
+  return (
+    <div className="flex flex-col h-screen w-full overflow-hidden">
+      <DashboardHeader />
+      <div className="flex flex-1 overflow-hidden">
+        {/* Hide sidebar on mobile (md and below), show on desktop (lg and above) */}
+        {/* Also hide sidebar when there are no projects */}
+        {hasProjects && (
+          <div className="hidden lg:block">
+            <Sidebar />
+          </div>
+        )}
+        <main className="flex-1 w-full h-full">
+          <Outlet />
+        </main>
+      </div>
+    </div>
+  )
+}
 
 export default function DashboardLayout() {
   const navigate = useNavigate()
@@ -76,18 +99,7 @@ export default function DashboardLayout() {
 
   return (
     <ProjectProvider>
-      <div className="flex flex-col h-screen w-full overflow-hidden">
-        <DashboardHeader />
-        <div className="flex flex-1 overflow-hidden">
-          {/* Hide sidebar on mobile (md and below), show on desktop (lg and above) */}
-          <div className="hidden lg:block">
-            <Sidebar />
-          </div>
-          <main className="flex-1 w-full h-full">
-            <Outlet />
-          </main>
-        </div>
-      </div>
+      <DashboardLayoutContent />
     </ProjectProvider>
   )
 }
