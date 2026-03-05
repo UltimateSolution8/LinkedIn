@@ -160,6 +160,8 @@ export default function FindLeadsTab({ projectId, onCountChange }: FindLeadsTabP
             commentUrl={lead.commentUrl}
             commentText={lead.commentText}
             leadType={lead.leadType}
+            mainPainpoint={lead.mainPainpoint}
+            matchReason={lead.matchReason}
           />
         ))}
       </div>

@@ -28,6 +28,7 @@ import AdminUsersListPage from '@/pages/AdminUsersListPage'
 import AdminUserDetailPage from '@/pages/AdminUserDetailPage'
 import AdminJobHistoryPage from '@/pages/AdminJobHistoryPage'
 import AdminProjectDetailPage from '@/pages/AdminProjectDetailPage'
+import ProjectsBreakdownPage from '@/pages/ProjectsBreakdownPage'
 import VerifyEmailPage from '@/pages/verify-email/VerifyEmailPage'
 import VerifyEmailPromptPage from '@/pages/verify-email-prompt/VerifyEmailPromptPage'
 import ForgotPasswordPage from '@/pages/forgot-password/ForgotPasswordPage'
@@ -99,6 +100,7 @@ export default function AppRouter() {
           <Route path="/admin/users/:userId" element={<AdminUserDetailPage />} />
           <Route path="/admin/users/:userId/projects/:projectId" element={<AdminProjectDetailPage />} />
           <Route path="/admin/jobs" element={<AdminJobHistoryPage />} />
+          <Route path="/admin/projects-breakdown" element={<ProjectsBreakdownPage />} />
         </Route>
 
         {/* 404 - Catch all */}

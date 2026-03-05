@@ -25,6 +25,9 @@ export interface Lead {
   postId: number;
   subreddit: string;
   title: string;
+  // AI-generated fields
+  mainPainpoint?: string;
+  matchReason?: string;
 }
 
 export interface LeadsPaginationInfo {

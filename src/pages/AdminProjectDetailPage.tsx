@@ -4,9 +4,11 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { ArrowLeft, Loader2, ExternalLink, ChevronDown, ChevronUp, Pencil } from "lucide-react";
-import { getProjectDetail, getAdminProjectLeads, type ProjectDetail } from "@/lib/api/admin";
+import { getProjectDetail, getAdminProjectLeads, getAdminProjectPosts, type ProjectDetail } from "@/lib/api/admin";
 import { type Lead } from "@/lib/api/leads";
+import { type Post } from "@/lib/api/posts";
 import AdminLeadCardReadOnly from "@/components/admin/AdminLeadCardReadOnly";
+import AdminPostCard from "@/components/admin/AdminPostCard";
 import EditProjectConfigModal from "@/components/admin/EditProjectConfigModal";
 import Pagination from "@/components/ui/pagination";
 import {
@@ -16,6 +18,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 export default function AdminProjectDetailPage() {
   const { userId, projectId } = useParams<{ userId: string; projectId: string }>();
@@ -23,17 +26,27 @@ export default function AdminProjectDetailPage() {
 
   const [project, setProject] = useState<ProjectDetail | null>(null);
   const [leads, setLeads] = useState<Lead[]>([]);
+  const [posts, setPosts] = useState<Post[]>([]);
   const [isLoadingProject, setIsLoadingProject] = useState(true);
   const [isLoadingLeads, setIsLoadingLeads] = useState(true);
+  const [isLoadingPosts, setIsLoadingPosts] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [activeTab, setActiveTab] = useState<"all" | "leads" | "posts">("all");
   const [currentPage, setCurrentPage] = useState(1);
   const [sourceFilter, setSourceFilter] = useState<string>("all");
   const [sortBy, setSortBy] = useState<string>("createdAt");
   const [isConfigExpanded, setIsConfigExpanded] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
-  const [pagination, setPagination] = useState({
+  const [leadsPagination, setLeadsPagination] = useState({
     totalPages: 1,
     totalLeads: 0,
+    hasNextPage: false,
+    hasPrevPage: false,
+    pageSize: 10,
+  });
+  const [postsPagination, setPostsPagination] = useState({
+    totalPages: 1,
+    totalPosts: 0,
     hasNextPage: false,
     hasPrevPage: false,
     pageSize: 10,
@@ -64,6 +77,7 @@ export default function AdminProjectDetailPage() {
   useEffect(() => {
     const fetchLeads = async () => {
       if (!userId || !projectId) return;
+      if (activeTab === "posts") return; // Skip if only viewing posts
 
       try {
         setIsLoadingLeads(true);
@@ -77,7 +91,7 @@ export default function AdminProjectDetailPage() {
           sortBy
         );
         setLeads(response.data);
-        setPagination({
+        setLeadsPagination({
           totalPages: response.pagination.totalPages,
           totalLeads: response.pagination.totalLeads,
           hasNextPage: response.pagination.hasNextPage,
@@ -93,7 +107,42 @@ export default function AdminProjectDetailPage() {
     };
 
     fetchLeads();
-  }, [userId, projectId, currentPage, sourceFilter, sortBy]);
+  }, [userId, projectId, currentPage, sourceFilter, sortBy, activeTab]);
+
+  // Fetch posts
+  useEffect(() => {
+    const fetchPosts = async () => {
+      if (!userId || !projectId) return;
+      if (activeTab === "leads") return; // Skip if only viewing leads
+
+      try {
+        setIsLoadingPosts(true);
+        setError(null);
+        const response = await getAdminProjectPosts(
+          Number(userId),
+          Number(projectId),
+          currentPage,
+          10,
+          sortBy
+        );
+        setPosts(response.data);
+        setPostsPagination({
+          totalPages: response.pagination.totalPages,
+          totalPosts: response.pagination.totalPosts,
+          hasNextPage: response.pagination.hasNextPage,
+          hasPrevPage: response.pagination.hasPrevPage,
+          pageSize: response.pagination.pageSize,
+        });
+      } catch (err) {
+        setError(err instanceof Error ? err.message : "Failed to fetch posts");
+        console.error("Error fetching posts:", err);
+      } finally {
+        setIsLoadingPosts(false);
+      }
+    };
+
+    fetchPosts();
+  }, [userId, projectId, currentPage, sortBy, activeTab]);
 
   const handlePageChange = (page: number) => {
     setCurrentPage(page);
@@ -304,80 +353,208 @@ export default function AdminProjectDetailPage() {
           )}
         </Card>
 
-        {/* Leads Section */}
+        {/* Leads and Posts Section with Tabs */}
         <div className="mb-6">
-          <div className="flex items-center justify-between mb-4">
-            <h2 className="text-2xl font-bold text-neutral-950 dark:text-white">
-              Leads ({pagination.totalLeads})
-            </h2>
-            <div className="flex gap-3">
-              <Select value={sourceFilter} onValueChange={handleSourceFilterChange}>
-                <SelectTrigger className="w-[180px]">
-                  <SelectValue placeholder="Filter by source" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">All Sources</SelectItem>
-                  <SelectItem value="comment">Comments</SelectItem>
-                  <SelectItem value="post">Posts</SelectItem>
-                </SelectContent>
-              </Select>
-              <Select value={sortBy} onValueChange={handleSortChange}>
-                <SelectTrigger className="w-[220px]">
-                  <SelectValue placeholder="Sort by" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="createdAt">Added to Rixly (Newest)</SelectItem>
-                  <SelectItem value="createdAt_asc">Added to Rixly (Oldest)</SelectItem>
-                  <SelectItem value="postCreatedAt">Post Date (Newest)</SelectItem>
-                  <SelectItem value="postCreatedAt_asc">Post Date (Oldest)</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-          </div>
-
-          {isLoadingLeads ? (
-            <div className="flex flex-col items-center justify-center py-20">
-              <Loader2 className="w-8 h-8 animate-spin text-purple-600" />
-              <p className="text-neutral-500 dark:text-neutral-400 text-lg mt-4">Loading leads...</p>
-            </div>
-          ) : leads.length === 0 ? (
-            <div className="flex flex-col items-center justify-center py-20">
-              <p className="text-neutral-500 dark:text-neutral-400 text-lg">
-                No leads found for this project.
-              </p>
-            </div>
-          ) : (
-            <>
-              <div className="flex flex-col gap-4 mb-6">
-                {leads.map((lead) => (
-                  <AdminLeadCardReadOnly
-                    key={lead.leadId}
-                    leadId={String(lead.leadId)}
-                    source={lead.source}
-                    username={lead.source === "comment" ? (lead.author || "Unknown") : (lead.originalPosterId || "Unknown")}
-                    rating={lead.relevanceRating}
-                    sourcePost={lead.title}
-                    subreddit={lead.subreddit}
-                    postUrl={lead.postUrl}
-                    postCreatedAt={lead.postCreatedAt}
-                    commentUrl={lead.commentUrl}
-                    commentText={lead.commentText}
-                    leadType={lead.leadType}
-                  />
-                ))}
+          <Tabs value={activeTab} onValueChange={(value: string) => {
+            setActiveTab(value as "all" | "leads" | "posts");
+            setCurrentPage(1); // Reset to first page when switching tabs
+          }}>
+            <div className="flex items-center justify-between mb-4">
+              <div className="flex items-center gap-4">
+                <h2 className="text-2xl font-bold text-neutral-950 dark:text-white">
+                  Content
+                </h2>
+                <TabsList>
+                  <TabsTrigger value="all">All ({leadsPagination.totalLeads + postsPagination.totalPosts})</TabsTrigger>
+                  <TabsTrigger value="leads">Leads ({leadsPagination.totalLeads})</TabsTrigger>
+                  <TabsTrigger value="posts">Posts ({postsPagination.totalPosts})</TabsTrigger>
+                </TabsList>
               </div>
+              <div className="flex gap-3">
+                {activeTab !== "posts" && (
+                  <Select value={sourceFilter} onValueChange={handleSourceFilterChange}>
+                    <SelectTrigger className="w-[180px]">
+                      <SelectValue placeholder="Filter by source" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="all">All Sources</SelectItem>
+                      <SelectItem value="comment">Comments</SelectItem>
+                      <SelectItem value="post">Posts</SelectItem>
+                    </SelectContent>
+                  </Select>
+                )}
+                <Select value={sortBy} onValueChange={handleSortChange}>
+                  <SelectTrigger className="w-[220px]">
+                    <SelectValue placeholder="Sort by" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="createdAt">Added to Rixly (Newest)</SelectItem>
+                    <SelectItem value="createdAt_asc">Added to Rixly (Oldest)</SelectItem>
+                    <SelectItem value="postCreatedAt">Post Date (Newest)</SelectItem>
+                    <SelectItem value="postCreatedAt_asc">Post Date (Oldest)</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
 
-              {pagination.totalPages > 1 && (
-                <Pagination
-                  currentPage={currentPage}
-                  totalPages={pagination.totalPages}
-                  hasNextPage={pagination.hasNextPage}
-                  hasPrevPage={pagination.hasPrevPage}
-                  onPageChange={handlePageChange}
-                />
+            {/* All Tab - Show both leads and posts */}
+            <TabsContent value="all">
+              {(isLoadingLeads || isLoadingPosts) ? (
+                <div className="flex flex-col items-center justify-center py-20">
+                  <Loader2 className="w-8 h-8 animate-spin text-purple-600" />
+                  <p className="text-neutral-500 dark:text-neutral-400 text-lg mt-4">Loading content...</p>
+                </div>
+              ) : leads.length === 0 && posts.length === 0 ? (
+                <div className="flex flex-col items-center justify-center py-20">
+                  <p className="text-neutral-500 dark:text-neutral-400 text-lg">
+                    No content found for this project.
+                  </p>
+                </div>
+              ) : (
+                <div className="flex flex-col gap-4 mb-6">
+                  {/* Combine and sort leads and posts by date */}
+                  {[...leads.map(lead => ({ type: 'lead' as const, data: lead, date: new Date(lead.createdAt || lead.postCreatedAt) })),
+                    ...posts.map(post => ({ type: 'post' as const, data: post, date: new Date(post.timeCreated) }))]
+                    .sort((a, b) => b.date.getTime() - a.date.getTime())
+                    .map((item) =>
+                      item.type === 'lead' ? (
+                        <AdminLeadCardReadOnly
+                          key={`lead-${item.data.leadId}`}
+                          leadId={String(item.data.leadId)}
+                          source={item.data.source}
+                          username={item.data.source === "comment" ? (item.data.author || "Unknown") : (item.data.originalPosterId || "Unknown")}
+                          rating={item.data.relevanceRating}
+                          sourcePost={item.data.title}
+                          subreddit={item.data.subreddit}
+                          postUrl={item.data.postUrl}
+                          postCreatedAt={item.data.postCreatedAt}
+                          commentUrl={item.data.commentUrl}
+                          commentText={item.data.commentText}
+                          leadType={item.data.leadType}
+                          mainPainpoint={item.data.mainPainpoint}
+                          matchReason={item.data.matchReason}
+                        />
+                      ) : (
+                        <AdminPostCard
+                          key={`post-${item.data.postId}`}
+                          postId={item.data.postId}
+                          leadId={item.data.leadId}
+                          title={item.data.title}
+                          description={item.data.description}
+                          timeCreated={item.data.timeCreated}
+                          subreddit={item.data.subreddit}
+                          originalPosterId={item.data.originalPosterId}
+                          rixlyRating={item.data.rixlyRating}
+                          url={item.data.url}
+                          leadType={item.data.leadType}
+                          mainPainpoint={item.data.mainPainpoint}
+                          matchReason={item.data.matchReason}
+                          status={item.data.status}
+                        />
+                      )
+                    )}
+                </div>
               )}
-            </>
-          )}
+            </TabsContent>
+
+            {/* Leads Tab */}
+            <TabsContent value="leads">
+              {isLoadingLeads ? (
+                <div className="flex flex-col items-center justify-center py-20">
+                  <Loader2 className="w-8 h-8 animate-spin text-purple-600" />
+                  <p className="text-neutral-500 dark:text-neutral-400 text-lg mt-4">Loading leads...</p>
+                </div>
+              ) : leads.length === 0 ? (
+                <div className="flex flex-col items-center justify-center py-20">
+                  <p className="text-neutral-500 dark:text-neutral-400 text-lg">
+                    No leads found for this project.
+                  </p>
+                </div>
+              ) : (
+                <>
+                  <div className="flex flex-col gap-4 mb-6">
+                    {leads.map((lead) => (
+                      <AdminLeadCardReadOnly
+                        key={lead.leadId}
+                        leadId={String(lead.leadId)}
+                        source={lead.source}
+                        username={lead.source === "comment" ? (lead.author || "Unknown") : (lead.originalPosterId || "Unknown")}
+                        rating={lead.relevanceRating}
+                        sourcePost={lead.title}
+                        subreddit={lead.subreddit}
+                        postUrl={lead.postUrl}
+                        postCreatedAt={lead.postCreatedAt}
+                        commentUrl={lead.commentUrl}
+                        commentText={lead.commentText}
+                        leadType={lead.leadType}
+                        mainPainpoint={lead.mainPainpoint}
+                        matchReason={lead.matchReason}
+                      />
+                    ))}
+                  </div>
+
+                  {leadsPagination.totalPages > 1 && (
+                    <Pagination
+                      currentPage={currentPage}
+                      totalPages={leadsPagination.totalPages}
+                      hasNextPage={leadsPagination.hasNextPage}
+                      hasPrevPage={leadsPagination.hasPrevPage}
+                      onPageChange={handlePageChange}
+                    />
+                  )}
+                </>
+              )}
+            </TabsContent>
+
+            {/* Posts Tab */}
+            <TabsContent value="posts">
+              {isLoadingPosts ? (
+                <div className="flex flex-col items-center justify-center py-20">
+                  <Loader2 className="w-8 h-8 animate-spin text-purple-600" />
+                  <p className="text-neutral-500 dark:text-neutral-400 text-lg mt-4">Loading posts...</p>
+                </div>
+              ) : posts.length === 0 ? (
+                <div className="flex flex-col items-center justify-center py-20">
+                  <p className="text-neutral-500 dark:text-neutral-400 text-lg">
+                    No posts found for this project.
+                  </p>
+                </div>
+              ) : (
+                <>
+                  <div className="flex flex-col gap-4 mb-6">
+                    {posts.map((post) => (
+                      <AdminPostCard
+                        key={post.postId}
+                        postId={post.postId}
+                        leadId={post.leadId}
+                        title={post.title}
+                        description={post.description}
+                        timeCreated={post.timeCreated}
+                        subreddit={post.subreddit}
+                        originalPosterId={post.originalPosterId}
+                        rixlyRating={post.rixlyRating}
+                        url={post.url}
+                        leadType={post.leadType}
+                        mainPainpoint={post.mainPainpoint}
+                        matchReason={post.matchReason}
+                        status={post.status}
+                      />
+                    ))}
+                  </div>
+
+                  {postsPagination.totalPages > 1 && (
+                    <Pagination
+                      currentPage={currentPage}
+                      totalPages={postsPagination.totalPages}
+                      hasNextPage={postsPagination.hasNextPage}
+                      hasPrevPage={postsPagination.hasPrevPage}
+                      onPageChange={handlePageChange}
+                    />
+                  )}
+                </>
+              )}
+            </TabsContent>
+          </Tabs>
         </div>
 
         {/* Edit Project Config Modal */}

@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from "react";
-import { ExternalLink, ArrowRight, Star, MessageSquare, FileText } from "lucide-react";
+import { ExternalLink, ArrowRight, Star, FileText } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -11,43 +11,40 @@ import {
 } from "@/components/ui/dialog";
 import { Badge } from "@/components/ui/badge";
 
-interface AdminLeadCardReadOnlyProps {
+interface AdminPostCardProps {
+  postId: string;
   leadId: string;
-  source: "comment" | "post";
-  username: string;
-  rating: number;
-  sourcePost: string;
+  title: string;
+  description?: string;
+  timeCreated: string;
   subreddit: string;
-  postUrl?: string;
-  postCreatedAt: string;
-  // Comment-specific props
-  commentUrl?: string;
-  commentText?: string;
-  leadType?: string;
-  // AI-generated insights
+  originalPosterId: string;
+  rixlyRating: number;
+  url: string;
+  leadType: "SALES" | "ENGAGEMENT";
   mainPainpoint?: string;
   matchReason?: string;
+  status: "NEW" | "IN_PROGRESS" | "FOLLOW_UP_SCHEDULED" | "CONVERTED" | "NOT_INTERESTED" | "DUPLICATE" | "DONE";
 }
 
-export default function AdminLeadCardReadOnly({
-  source,
-  username,
-  rating,
-  sourcePost,
+export default function AdminPostCard({
+  title,
+  description,
+  timeCreated,
   subreddit,
-  postUrl = "#",
-  postCreatedAt,
-  commentUrl,
-  commentText,
+  originalPosterId,
+  rixlyRating,
+  url,
   leadType,
   mainPainpoint,
   matchReason,
-}: AdminLeadCardReadOnlyProps) {
-  const [isSourceTruncated, setIsSourceTruncated] = useState(false);
-  const [isCommentTruncated, setIsCommentTruncated] = useState(false);
+  status,
+}: AdminPostCardProps) {
+  const [isTitleTruncated, setIsTitleTruncated] = useState(false);
+  const [isDescriptionTruncated, setIsDescriptionTruncated] = useState(false);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
-  const sourcePostRef = useRef<HTMLParagraphElement>(null);
-  const commentRef = useRef<HTMLParagraphElement>(null);
+  const titleRef = useRef<HTMLParagraphElement>(null);
+  const descriptionRef = useRef<HTMLParagraphElement>(null);
 
   const formatTimeAgo = (timestamp: string) => {
     const now = new Date();
@@ -60,20 +57,41 @@ export default function AdminLeadCardReadOnly({
     return `${Math.floor(diffInSeconds / 86400)}d ago`;
   };
 
+  const getStatusColor = (status: string) => {
+    switch (status) {
+      case "NEW":
+        return "bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400";
+      case "IN_PROGRESS":
+        return "bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-400";
+      case "FOLLOW_UP_SCHEDULED":
+        return "bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-400";
+      case "CONVERTED":
+        return "bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400";
+      case "NOT_INTERESTED":
+        return "bg-gray-100 text-gray-700 dark:bg-gray-900/30 dark:text-gray-400";
+      case "DUPLICATE":
+        return "bg-orange-100 text-orange-700 dark:bg-orange-900/30 dark:text-orange-400";
+      case "DONE":
+        return "bg-teal-100 text-teal-700 dark:bg-teal-900/30 dark:text-teal-400";
+      default:
+        return "bg-neutral-100 text-neutral-700 dark:bg-neutral-900/30 dark:text-neutral-400";
+    }
+  };
+
   // Check if content is truncated
   useEffect(() => {
-    const sourceElement = sourcePostRef.current;
-    if (sourceElement) {
-      setIsSourceTruncated(sourceElement.scrollHeight > sourceElement.clientHeight);
+    const titleElement = titleRef.current;
+    if (titleElement) {
+      setIsTitleTruncated(titleElement.scrollHeight > titleElement.clientHeight);
     }
 
-    const commentElement = commentRef.current;
-    if (commentElement) {
-      setIsCommentTruncated(commentElement.scrollHeight > commentElement.clientHeight);
+    const descElement = descriptionRef.current;
+    if (descElement) {
+      setIsDescriptionTruncated(descElement.scrollHeight > descElement.clientHeight);
     }
-  }, [sourcePost, commentText]);
+  }, [title, description]);
 
-  const showDialog = isSourceTruncated || isCommentTruncated;
+  const showDialog = isTitleTruncated || isDescriptionTruncated;
 
   return (
     <div className="flex flex-col gap-4 bg-white dark:bg-neutral-950 rounded-lg p-6 border border-neutral-200 dark:border-neutral-800 shadow-sm">
@@ -83,40 +101,33 @@ export default function AdminLeadCardReadOnly({
           <div>
             <div className="flex items-center gap-2 mb-2">
               <Badge
-                variant={source === "comment" ? "default" : "secondary"}
-                className={`text-xs font-semibold ${
-                  source === "comment"
-                    ? "bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-400"
-                    : "bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400"
-                }`}
+                variant="secondary"
+                className="bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400 text-xs font-semibold"
               >
-                {source === "comment" ? (
-                  <><MessageSquare className="w-3 h-3 mr-1" /> Comment</>
-                ) : (
-                  <><FileText className="w-3 h-3 mr-1" /> Post</>
-                )}
+                <FileText className="w-3 h-3 mr-1" /> Post
               </Badge>
-              {leadType && source === "comment" && (
-                <Badge variant="outline" className="text-xs">
-                  {leadType}
-                </Badge>
-              )}
+              <Badge variant="outline" className={`text-xs ${getStatusColor(status)}`}>
+                {status.replace(/_/g, " ")}
+              </Badge>
+              <Badge variant="outline" className="text-xs">
+                {leadType}
+              </Badge>
             </div>
             <div className="flex items-center gap-2">
               <a
-                href={`https://reddit.com/user/${username.replace('u/', '')}`}
+                href={`https://reddit.com/user/${originalPosterId.replace('u/', '')}`}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="text-neutral-950 dark:text-white text-lg font-semibold leading-normal hover:underline"
               >
-                {username}
+                {originalPosterId}
               </a>
               <ExternalLink className="w-4 h-4 text-neutral-500 dark:text-neutral-400 " />
             </div>
           </div>
           <div className="flex items-center gap-1.5 bg-teal-50 dark:bg-teal-900/20 px-2 py-1 rounded-md border border-teal-100 dark:border-teal-800/50">
             <Star className="w-4 h-4 fill-teal-500 text-teal-500" />
-            <span className="font-bold text-teal-700 dark:text-teal-400 text-sm">{rating}/10</span>
+            <span className="font-bold text-teal-700 dark:text-teal-400 text-sm">{rixlyRating}/10</span>
           </div>
         </div>
 
@@ -146,61 +157,50 @@ export default function AdminLeadCardReadOnly({
           </div>
         )}
 
-        {/* Comment Text Section (for comment leads) */}
-        {source === "comment" && commentText && (
-          <div className="mt-4 bg-neutral-50 dark:bg-neutral-900/50 rounded-lg p-4 border border-neutral-200 dark:border-neutral-800">
+        {/* Post Title */}
+        <div className="mt-4">
+          <p className="text-neutral-500 dark:text-neutral-400 text-xs uppercase font-bold tracking-wider">
+            Post Title
+          </p>
+          <p
+            ref={titleRef}
+            className="text-neutral-950 dark:text-white text-base font-medium mt-2 line-clamp-2"
+          >
+            {title}
+          </p>
+        </div>
+
+        {/* Post Description (if available) */}
+        {description && (
+          <div className="mt-3 bg-neutral-50 dark:bg-neutral-900/50 rounded-lg p-4 border border-neutral-200 dark:border-neutral-800">
             <p className="text-neutral-500 dark:text-neutral-400 text-xs uppercase font-bold tracking-wider mb-2">
-              Comment
+              Description
             </p>
             <p
-              ref={commentRef}
+              ref={descriptionRef}
               className="text-neutral-950 dark:text-white text-sm leading-relaxed line-clamp-3"
             >
-              {commentText}
+              {description}
             </p>
           </div>
         )}
 
-        {/* Source Post Section */}
-        <div className="mt-4">
-          <p className="text-neutral-500 dark:text-neutral-400 text-xs uppercase font-bold tracking-wider">
-            {source === "comment" ? "Original Post" : "Post"}
-          </p>
-          <p
-            ref={sourcePostRef}
-            className="text-neutral-950 dark:text-white text-base font-medium mt-2 line-clamp-2"
-          >
-            {sourcePost}
-          </p>
-          <div className="flex justify-between items-center mt-2">
-            <div className="flex items-center gap-2 text-neutral-500 dark:text-neutral-400 text-sm">
-              <span>{formatTimeAgo(postCreatedAt)}</span>
-              <span>•</span>
-              <span>in {subreddit}</span>
-            </div>
-            <div className="flex gap-2">
-              {source === "comment" && commentUrl && (
-                <a
-                  href={commentUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="flex items-center gap-1.5 text-purple-600 dark:text-teal-400 text-sm font-bold hover:underline"
-                >
-                  <span>View Comment</span>
-                  <ExternalLink className="w-4 h-4 text-neutral-500 dark:text-neutral-400 " />
-                </a>
-              )}
-              <a
-                href={postUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="flex items-center gap-1.5 text-purple-600 dark:text-teal-400 text-sm font-bold hover:underline"
-              >
-                <span>{source === "comment" ? "View Post" : "View Post"}</span>
-                <ExternalLink className="w-4 h-4 text-neutral-500 dark:text-neutral-400 " />
-              </a>
-            </div>
+        {/* Footer - Metadata and Actions */}
+        <div className="flex justify-between items-center mt-4">
+          <div className="flex items-center gap-2 text-neutral-500 dark:text-neutral-400 text-sm">
+            <span>{formatTimeAgo(timeCreated)}</span>
+            <span>•</span>
+            <span>in {subreddit}</span>
           </div>
+          <a
+            href={url}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex items-center gap-1.5 text-purple-600 dark:text-teal-400 text-sm font-bold hover:underline"
+          >
+            <span>View Post</span>
+            <ExternalLink className="w-4 h-4 text-neutral-500 dark:text-neutral-400 " />
+          </a>
         </div>
 
         {/* Show More Button */}
@@ -217,9 +217,9 @@ export default function AdminLeadCardReadOnly({
             <DialogContent className="max-w-4xl max-h-[90vh]">
               <DialogHeader>
                 <DialogTitle className="text-xl font-semibold flex items-center gap-2">
-                  <span>{username}</span>
+                  <span>{originalPosterId}</span>
                   <a
-                    href={`https://reddit.com/user/${username.replace('u/', '')}`}
+                    href={`https://reddit.com/user/${originalPosterId.replace('u/', '')}`}
                     target="_blank"
                     rel="noopener noreferrer"
                   >
@@ -229,7 +229,7 @@ export default function AdminLeadCardReadOnly({
                 <DialogDescription className="text-sm text-neutral-500 dark:text-neutral-400">
                   <div className="flex items-center gap-1.5 bg-teal-50 dark:bg-teal-900/20 px-2 py-1 rounded-md border border-teal-100 dark:border-teal-800/50 mt-2 w-fit">
                     <Star className="w-4 h-4 fill-teal-500 text-teal-500" />
-                    <span className="font-bold text-teal-700 dark:text-teal-400 text-sm">{rating}/10</span>
+                    <span className="font-bold text-teal-700 dark:text-teal-400 text-sm">{rixlyRating}/10</span>
                   </div>
                 </DialogDescription>
               </DialogHeader>
@@ -260,53 +260,44 @@ export default function AdminLeadCardReadOnly({
                   </div>
                 )}
 
-                {/* Comment Text (for comment leads) */}
-                {source === "comment" && commentText && (
+                {/* Post Title */}
+                <div>
+                  <p className="text-neutral-500 dark:text-neutral-400 text-xs uppercase font-bold tracking-wider">
+                    Post Title
+                  </p>
+                  <p className="text-neutral-950 dark:text-white text-base font-medium mt-2">
+                    {title}
+                  </p>
+                </div>
+
+                {/* Post Description */}
+                {description && (
                   <div>
                     <p className="text-neutral-500 dark:text-neutral-400 text-xs uppercase font-bold tracking-wider">
-                      Comment
+                      Description
                     </p>
                     <p className="text-neutral-950 dark:text-white text-sm leading-relaxed mt-2 whitespace-pre-wrap">
-                      {commentText}
+                      {description}
                     </p>
-                    {commentUrl && (
-                      <a
-                        href={commentUrl}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="flex items-center gap-1.5 text-purple-600 dark:text-teal-400 text-sm font-bold hover:underline mt-2"
-                      >
-                        <span>View Comment</span>
-                        <ArrowRight className="w-4 h-4" />
-                      </a>
-                    )}
                   </div>
                 )}
 
-                {/* Source Post */}
-                <div>
-                  <p className="text-neutral-500 dark:text-neutral-400 text-xs uppercase font-bold tracking-wider">
-                    {source === "comment" ? "Original Post" : "Post"}
-                  </p>
-                  <p className="text-neutral-950 dark:text-white text-base font-medium mt-2">
-                    {sourcePost}
-                  </p>
-                  <div className="flex justify-between items-center mt-2">
-                    <div className="flex items-center gap-2 text-neutral-500 dark:text-neutral-400 text-sm">
-                      <span>{formatTimeAgo(postCreatedAt)}</span>
-                      <span>•</span>
-                      <span>in {subreddit}</span>
-                    </div>
-                    <a
-                      href={postUrl}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="flex items-center gap-1.5 text-purple-600 dark:text-teal-400 text-sm font-bold hover:underline"
-                    >
-                      <span>View Post</span>
-                      <ArrowRight className="w-4 h-4" />
-                    </a>
+                {/* Footer */}
+                <div className="flex justify-between items-center">
+                  <div className="flex items-center gap-2 text-neutral-500 dark:text-neutral-400 text-sm">
+                    <span>{formatTimeAgo(timeCreated)}</span>
+                    <span>•</span>
+                    <span>in {subreddit}</span>
                   </div>
+                  <a
+                    href={url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-center gap-1.5 text-purple-600 dark:text-teal-400 text-sm font-bold hover:underline"
+                  >
+                    <span>View Post</span>
+                    <ArrowRight className="w-4 h-4" />
+                  </a>
                 </div>
               </div>
             </DialogContent>

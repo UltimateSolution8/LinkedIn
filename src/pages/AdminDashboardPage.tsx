@@ -194,13 +194,15 @@ export default function AdminDashboardPage() {
 
       {/* Stats Cards */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
-        <StatCard
-          title="Projects Being Scraped"
-          value={stats?.projectsBeingScraped ?? 0}
-          icon={FolderKanban}
-          isLoading={isLoadingStats}
-          description="Active scraping schedules"
-        />
+        <div onClick={() => navigate("/admin/projects-breakdown")} className="cursor-pointer">
+          <StatCard
+            title="Projects Being Scraped"
+            value={stats?.projectsBeingScraped ?? 0}
+            icon={FolderKanban}
+            isLoading={isLoadingStats}
+            description="Active scraping schedules"
+          />
+        </div>
         <StatCard
           title="Total Users"
           value={stats?.totalUsers ?? 0}

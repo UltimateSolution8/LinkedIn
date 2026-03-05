@@ -27,6 +27,9 @@ interface LeadCardProps {
   commentUrl?: string;
   commentText?: string;
   leadType?: string;
+  // AI-generated fields
+  mainPainpoint?: string;
+  matchReason?: string;
 }
 
 export default function LeadCard({
@@ -42,6 +45,8 @@ export default function LeadCard({
   commentUrl,
   commentText,
   leadType,
+  mainPainpoint,
+  matchReason,
 }: LeadCardProps) {
   const [isSourceTruncated, setIsSourceTruncated] = useState(false);
   const [isReasonTruncated, setIsReasonTruncated] = useState(false);
@@ -187,8 +192,31 @@ export default function LeadCard({
           </div>
         </div>
 
-        {/* Reason for Match */}
-        
+        {/* Main Painpoint & Match Reason */}
+        {(mainPainpoint || matchReason) && (
+          <div className="mt-4 space-y-3">
+            {mainPainpoint && (
+              <div className="p-4 rounded-lg bg-orange-50 dark:bg-orange-900/10 border border-orange-200 dark:border-orange-800/30">
+                <p className="text-xs font-semibold text-orange-700 dark:text-orange-400 uppercase tracking-wider mb-2">
+                  Pain Point
+                </p>
+                <p className="text-neutral-950 dark:text-white text-sm leading-relaxed">
+                  {mainPainpoint}
+                </p>
+              </div>
+            )}
+            {matchReason && (
+              <div className="p-4 rounded-lg bg-purple-50 dark:bg-purple-900/10 border border-purple-200 dark:border-purple-800/30">
+                <p className="text-xs font-semibold text-purple-700 dark:text-purple-400 uppercase tracking-wider mb-2">
+                  How It Fits
+                </p>
+                <p className="text-neutral-950 dark:text-white text-sm leading-relaxed">
+                  {matchReason}
+                </p>
+              </div>
+            )}
+          </div>
+        )}
 
         {/* Show More Button */}
         {showDialog && (
@@ -272,15 +300,40 @@ export default function LeadCard({
                   </div>
                 </div>
 
-                {/* Reason for Match */}
-                <div className="p-4 rounded-lg bg-purple-600/5 dark:bg-neutral-900">
-                  <p className="text-sm font-semibold text-neutral-950 dark:text-white">
-                    Reason for Match
-                  </p>
-                  <p className="text-neutral-500 dark:text-neutral-400 text-sm font-normal leading-normal mt-1 whitespace-pre-wrap">
-                    {reasonForMatch}
-                  </p>
-                </div>
+                {/* Main Painpoint & Match Reason */}
+                {mainPainpoint && (
+                  <div className="p-4 rounded-lg bg-orange-50 dark:bg-orange-900/10 border border-orange-200 dark:border-orange-800/30">
+                    <p className="text-sm font-semibold text-orange-700 dark:text-orange-400">
+                      Main Pain Point
+                    </p>
+                    <p className="text-neutral-950 dark:text-white text-sm font-normal leading-normal mt-1 whitespace-pre-wrap">
+                      {mainPainpoint}
+                    </p>
+                  </div>
+                )}
+
+                {matchReason && (
+                  <div className="p-4 rounded-lg bg-purple-50 dark:bg-purple-900/10 border border-purple-200 dark:border-purple-800/30">
+                    <p className="text-sm font-semibold text-purple-700 dark:text-purple-400">
+                      How It Fits
+                    </p>
+                    <p className="text-neutral-950 dark:text-white text-sm font-normal leading-normal mt-1 whitespace-pre-wrap">
+                      {matchReason}
+                    </p>
+                  </div>
+                )}
+
+                {/* Reason for Match (fallback) */}
+                {!mainPainpoint && !matchReason && (
+                  <div className="p-4 rounded-lg bg-purple-600/5 dark:bg-neutral-900">
+                    <p className="text-sm font-semibold text-neutral-950 dark:text-white">
+                      Reason for Match
+                    </p>
+                    <p className="text-neutral-500 dark:text-neutral-400 text-sm font-normal leading-normal mt-1 whitespace-pre-wrap">
+                      {reasonForMatch}
+                    </p>
+                  </div>
+                )}
               </div>
             </DialogContent>
           </Dialog>

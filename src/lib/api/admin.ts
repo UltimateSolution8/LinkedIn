@@ -1,6 +1,7 @@
 const RIXLY_API_BASE_URL = import.meta.env.VITE_RIXLY_API_BASE_URL;
 
 import type { GetLeadsResponse } from './leads';
+import type { GetPostsResponse } from './posts';
 
 export interface UserProject {
   projectId: number;
@@ -375,6 +376,56 @@ export async function getAdminProjectLeads(
     return responseData;
   } catch (error) {
     console.error("Error fetching admin project leads:", error);
+    throw error;
+  }
+}
+
+/**
+ * Get Reddit posts for a specific project (admin only)
+ */
+export async function getAdminProjectPosts(
+  userId: number,
+  projectId: number,
+  page: number = 1,
+  limit: number = 10,
+  sortBy?: string
+): Promise<GetPostsResponse> {
+  if (!RIXLY_API_BASE_URL) {
+    throw new Error(
+      "API base URL is not configured. Please set VITE_RIXLY_API_BASE_URL in your .env file."
+    );
+  }
+
+  try {
+    const params = new URLSearchParams({
+      page: page.toString(),
+      limit: limit.toString(),
+    });
+
+    if (sortBy) {
+      params.append("sortBy", sortBy);
+    }
+
+    const response = await fetch(
+      `${RIXLY_API_BASE_URL}/api/admin/users/${userId}/projects/${projectId}/reddit-posts?${params}`,
+      {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        credentials: "include",
+      }
+    );
+
+    const responseData: GetPostsResponse = await response.json();
+
+    if (!response.ok) {
+      throw new Error(responseData.message || "Failed to fetch project posts");
+    }
+
+    return responseData;
+  } catch (error) {
+    console.error("Error fetching admin project posts:", error);
     throw error;
   }
 }
@@ -826,6 +877,40 @@ export async function getUsersList(
 }
 
 /**
+ * Projects Breakdown - Compact Version
+ */
+export interface ProjectJob {
+  jobId: number;
+  jobType: string;
+  status: 'queued' | 'processing' | 'completed' | 'failed';
+  postsAnalyzed: number;
+  createdAt: string;
+  lastRunAt: string | null;
+  nextScheduledAt: string | null;
+}
+
+export interface ProjectBreakdownItem {
+  projectId: number;
+  projectName: string;
+  owner: {
+    userId: number;
+    name: string;
+    email: string;
+  };
+  totalLeads: number;
+  salesLeads: number;
+  engagementLeads: number;
+  commentSources: number;
+  subredditsMonitored: number;
+  jobs: ProjectJob[];
+}
+
+export interface ProjectsBreakdownResponse {
+  success: boolean;
+  data: ProjectBreakdownItem[];
+}
+
+/**
  * Stop Job Response
  */
 export interface StopJobResponse {
@@ -835,6 +920,41 @@ export interface StopJobResponse {
     jobRunId: number;
     status: string;
   };
+}
+
+/**
+ * Get projects breakdown with job details (admin only)
+ */
+export async function getProjectsBreakdown(): Promise<ProjectBreakdownItem[]> {
+  if (!RIXLY_API_BASE_URL) {
+    throw new Error(
+      "API base URL is not configured. Please set VITE_RIXLY_API_BASE_URL in your .env file."
+    );
+  }
+
+  try {
+    const response = await fetch(
+      `${RIXLY_API_BASE_URL}/api/admin/stats/projects-breakdown`,
+      {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        credentials: "include",
+      }
+    );
+
+    const responseData: ProjectsBreakdownResponse = await response.json();
+
+    if (!response.ok) {
+      throw new Error("Failed to fetch projects breakdown");
+    }
+
+    return responseData.data;
+  } catch (error) {
+    console.error("Error fetching projects breakdown:", error);
+    throw error;
+  }
 }
 
 /**
