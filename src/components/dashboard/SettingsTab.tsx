@@ -1,15 +1,18 @@
-
+import { useState } from "react";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { useProject } from "@/contexts/ProjectContext";
-import { Loader2 } from "lucide-react";
+import { Pencil, Loader2 } from "lucide-react";
+import EditProjectSettingsModal from "./EditProjectSettingsModal";
 
 interface SettingsTabProps {
   projectId: string;
 }
 
 export default function SettingsTab({ projectId }: SettingsTabProps) {
-  const { getProjectById } = useProject();
+  const { getProjectById, refreshProjects } = useProject();
   const project = getProjectById(projectId);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
 
   if (!project) {
     return (
@@ -24,8 +27,29 @@ export default function SettingsTab({ projectId }: SettingsTabProps) {
 
   const { keywords = [], targetAudience = [], valuePropositions = [] } = project;
 
+  const handleEditSuccess = () => {
+    refreshProjects();
+  };
+
   return (
     <div className="flex flex-col pt-6 gap-8 max-w-5xl">
+      {/* Header with Edit Button */}
+      <div className="flex justify-between items-center">
+        <div>
+          <h1 className="text-2xl font-bold text-neutral-950 dark:text-white">Project Settings</h1>
+          <p className="text-sm text-neutral-500 dark:text-neutral-400 mt-1">
+            Manage your project configuration and preferences
+          </p>
+        </div>
+        <Button
+          onClick={() => setIsEditModalOpen(true)}
+          className="bg-purple-600 hover:bg-purple-700 text-white"
+        >
+          <Pencil className="w-4 h-4 mr-2" />
+          Edit Settings
+        </Button>
+      </div>
+
       {/* Target Audience Section */}
       <div className="space-y-4">
         <div>
@@ -110,6 +134,31 @@ export default function SettingsTab({ projectId }: SettingsTabProps) {
         )}
       </div>
 
+      {/* Email Notifications Section */}
+      <div className="space-y-4">
+        <div>
+          <h2 className="text-xl font-bold text-neutral-950 dark:text-white">Email Notifications</h2>
+          <p className="text-sm text-neutral-500 dark:text-neutral-400 mt-1">
+            Receive alerts when new leads are discovered
+          </p>
+        </div>
+        <div className="bg-neutral-50 dark:bg-neutral-800/50 border border-neutral-200 dark:border-neutral-700 rounded-lg p-6">
+          <div className="flex items-center gap-3">
+            <div className={`w-3 h-3 rounded-full ${project.emailNotifyEnabled ? 'bg-green-500' : 'bg-neutral-400 dark:bg-neutral-600'}`} />
+            <p className="text-sm font-medium text-neutral-700 dark:text-neutral-300">
+              Email notifications are {project.emailNotifyEnabled ? 'enabled' : 'disabled'}
+            </p>
+          </div>
+        </div>
+      </div>
+
+      {/* Edit Settings Modal */}
+      <EditProjectSettingsModal
+        isOpen={isEditModalOpen}
+        onOpenChange={setIsEditModalOpen}
+        project={project}
+        onSuccess={handleEditSuccess}
+      />
     </div>
   );
 }

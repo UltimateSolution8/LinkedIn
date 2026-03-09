@@ -9,6 +9,7 @@ export interface Project {
   semanticQueries: string[];
   targetAudience?: string[];
   valuePropositions?: string[];
+  emailNotifyEnabled?: boolean;
 }
 
 export interface GetProjectsResponse {
@@ -37,6 +38,13 @@ export interface CreateProjectRequest {
 export interface CreateProjectResponse {
   message: string;
   project: Project;
+}
+
+export interface UpdateProjectSettingsPayload {
+  keywords?: string[];
+  targetAudience?: string[];
+  valuePropositions?: string[];
+  emailNotifyEnabled?: boolean;
 }
 
 export interface GenerateDescriptionRequest {
@@ -117,6 +125,7 @@ export async function getProjects(): Promise<Project[]> {
     semanticQueries: project.semanticQueries || [],
     targetAudience: project.targetAudience || [],
     valuePropositions: project.valuePropositions || [],
+    emailNotifyEnabled: project.emailNotifyEnabled ?? false,
   }));
 }
 
@@ -302,4 +311,24 @@ export async function getNextScheduledRun(): Promise<NextScheduledRunResponse> {
   }
 
   return responseData;
+}
+
+export async function updateProjectSettings(
+  projectId: string,
+  payload: UpdateProjectSettingsPayload
+): Promise<void> {
+  const response = await fetch(`${RIXLY_API_BASE_URL}/api/projects/${projectId}`, {
+    method: "PUT",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    credentials: "include",
+    body: JSON.stringify(payload),
+  });
+
+  const responseData = await response.json();
+
+  if (!response.ok) {
+    throw new Error(responseData.message || "Failed to update project settings");
+  }
 }
