@@ -7,6 +7,7 @@ import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { Globe, Sparkles, X, Loader2 } from "lucide-react";
 import { generateDescription, generateProductInsights } from "@/lib/api/projects";
+import ProductDescriptionWarningDialog from "./ProductDescriptionWarningDialog";
 
 const projectDetailsSchema = z.object({
   websiteUrl: z.string().url("Please enter a valid URL"),
@@ -23,6 +24,9 @@ interface ProjectDetailsStepProps {
   initialData?: Partial<ProjectDetailsData>;
 }
 
+// Minimum description length for quality AI generation
+const MINIMUM_DESCRIPTION_LENGTH = 100;
+
 export default function ProjectDetailsStep({
   onNext,
   onBack,
@@ -34,6 +38,7 @@ export default function ProjectDetailsStep({
   const [descriptionError, setDescriptionError] = useState<string | null>(null);
   const [isGeneratingInsights, setIsGeneratingInsights] = useState(false);
   const [insightsError, setInsightsError] = useState<string | null>(null);
+  const [showDescriptionWarning, setShowDescriptionWarning] = useState(false);
 
   const {
     register,
@@ -107,12 +112,20 @@ export default function ProjectDetailsStep({
     }
   };
 
-  const handleGenerateInsights = async () => {
-    if (!description || description.trim().length < 10) {
-      setInsightsError("Please enter a product description first (minimum 10 characters)");
+  // Show warning dialog when user clicks AI Generate
+  const handleGenerateInsights = () => {
+    if (!description || description.trim().length < 20) {
+      setInsightsError("Please enter a product description first (minimum 20 characters)");
       return;
     }
 
+    // Show the warning dialog
+    setInsightsError(null);
+    setShowDescriptionWarning(true);
+  };
+
+  // Actually generate insights after user confirms in the dialog
+  const proceedWithInsightsGeneration = async () => {
     setIsGeneratingInsights(true);
     setInsightsError(null);
 
@@ -408,6 +421,15 @@ export default function ProjectDetailsStep({
           </div>
         </form>
       </div>
+
+      {/* Product Description Warning Dialog */}
+      <ProductDescriptionWarningDialog
+        isOpen={showDescriptionWarning}
+        onOpenChange={setShowDescriptionWarning}
+        onContinue={proceedWithInsightsGeneration}
+        descriptionLength={description?.trim().length || 0}
+        minLength={MINIMUM_DESCRIPTION_LENGTH}
+      />
     </div>
   );
 }
