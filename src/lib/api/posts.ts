@@ -199,3 +199,28 @@ export async function updateLeadStatus(
 
   return responseData;
 }
+
+export async function rateMatch(
+  leadId: string,
+  rating: number
+): Promise<{ success: boolean; message: string }> {
+  const response = await fetch(
+    `${RIXLY_API_BASE_URL}/api/leads/${leadId}/rating`,
+    {
+      method: "PATCH",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      credentials: "include",
+      body: JSON.stringify({ rating }),
+    }
+  );
+
+  const responseData = await response.json();
+
+  if (!response.ok) {
+    throw new Error(responseData.message || "Failed to submit rating");
+  }
+
+  return responseData;
+}

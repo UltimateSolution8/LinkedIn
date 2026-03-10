@@ -19,6 +19,8 @@ import {
 import GenerateCommentDialog from "./GenerateCommentDialog";
 import GenerateMessageDialog from "./GenerateMessageDialog";
 import UpdateLeadStatusDialog from "./UpdateLeadStatusDialog";
+import StarRating from "./StarRating";
+import { rateMatch } from "@/lib/api/posts";
 
 interface PostCardProps {
   postId: string;
@@ -41,6 +43,7 @@ interface PostCardProps {
   mainPainpoint?: string;
   matchReason?: string;
   onStatusUpdate?: (updatedPost: any) => void;
+  userRating?: number;
 }
 
 export default function PostCard({
@@ -63,6 +66,7 @@ export default function PostCard({
   mainPainpoint,
   matchReason,
   onStatusUpdate,
+  userRating = 0,
 }: PostCardProps) {
   const [isTruncated, setIsTruncated] = useState(false);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
@@ -70,6 +74,10 @@ export default function PostCard({
   const [isMessageDialogOpen, setIsMessageDialogOpen] = useState(false);
   const [isStatusDialogOpen, setIsStatusDialogOpen] = useState(false);
   const excerptRef = useRef<HTMLParagraphElement>(null);
+
+  const handleRating = async (leadId: string, userRating: number) => {
+    await rateMatch(leadId, userRating);
+  };
 
   // Lead type configuration
   const leadTypeConfig = {
@@ -381,6 +389,20 @@ export default function PostCard({
           </Button>
         </div>
       )}
+
+      {/* User Rating Section */}
+      <div className="border-t border-neutral-200 dark:border-neutral-800 pt-4">
+        <div className="flex items-center justify-between">
+          <span className="text-xs font-semibold text-neutral-500 dark:text-neutral-400 uppercase tracking-wide">
+            Rate this match
+          </span>
+          <StarRating
+            leadId={leadId}
+            initialRating={userRating}
+            onRate={handleRating}
+          />
+        </div>
+      </div>
 
       {/* Generate Comment Dialog */}
       <GenerateCommentDialog

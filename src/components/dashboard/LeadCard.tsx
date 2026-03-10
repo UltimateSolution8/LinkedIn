@@ -12,6 +12,8 @@ import {
 } from "@/components/ui/dialog";
 import { Badge } from "@/components/ui/badge";
 import GenerateMessageDialog from "./GenerateMessageDialog";
+import StarRating from "./StarRating";
+import { rateMatch } from "@/lib/api/leads";
 
 interface LeadCardProps {
   leadId: string;
@@ -30,6 +32,7 @@ interface LeadCardProps {
   // AI-generated fields
   mainPainpoint?: string;
   matchReason?: string;
+  userRating?: number;
 }
 
 export default function LeadCard({
@@ -47,6 +50,7 @@ export default function LeadCard({
   leadType,
   mainPainpoint,
   matchReason,
+  userRating = 0,
 }: LeadCardProps) {
   const [isSourceTruncated, setIsSourceTruncated] = useState(false);
   const [isReasonTruncated, setIsReasonTruncated] = useState(false);
@@ -56,6 +60,10 @@ export default function LeadCard({
   const sourcePostRef = useRef<HTMLParagraphElement>(null);
   const reasonRef = useRef<HTMLParagraphElement>(null);
   const commentRef = useRef<HTMLParagraphElement>(null);
+
+  const handleRating = async (leadId: string, userRating: number) => {
+    await rateMatch(leadId, userRating);
+  };
 
   const formatTimeAgo = (timestamp: string) => {
     const now = new Date();
@@ -365,6 +373,20 @@ export default function LeadCard({
             >
               <ThumbsDown className="w-5 h-5" />
             </Button>
+          </div>
+        </div>
+
+        {/* User Rating Section */}
+        <div className="border-t border-neutral-200 dark:border-neutral-800 mt-4 pt-4">
+          <div className="flex items-center justify-between">
+            <span className="text-xs font-semibold text-neutral-500 dark:text-neutral-400 uppercase tracking-wide">
+              Rate this match
+            </span>
+            <StarRating
+              leadId={leadId}
+              initialRating={userRating}
+              onRate={handleRating}
+            />
           </div>
         </div>
 
