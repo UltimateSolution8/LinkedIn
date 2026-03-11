@@ -183,16 +183,16 @@ export default function PricingPage() {
     // [PROD-CODE] In production, delete the entire block below to enable real Razorpay.
 
     // [PROD-REMOVE] LOCAL DEVELOPMENT BYPASS. 
-    if (orderData.subscription.vendorSubscriptionId.startsWith('sub_MOCK_')) {
-      console.log('[PricingPage] Detected MOCK subscription, bypassing Razorpay modal...');
-      setPaymentModal({
-        isOpen: true,
-        status: "success",
-        title: "Trial Started!",
-        message: "Your mock trial has been activated for local testing."
-      });
-      return;
-    }
+    // if (orderData.subscription.vendorSubscriptionId.startsWith('sub_MOCK_')) {
+    //   console.log('[PricingPage] Detected MOCK subscription, bypassing Razorpay modal...');
+    //   setPaymentModal({
+    //     isOpen: true,
+    //     status: "success",
+    //     title: "Trial Started!",
+    //     message: "Your mock trial has been activated for local testing."
+    //   });
+    //   return;
+    // }
 
     // Load Razorpay script dynamically
     const script = document.createElement("script");
