@@ -31,6 +31,8 @@ export default function PricingPage() {
   const [authDialogOpen, setAuthDialogOpen] = useState(false);
   const [requestDemoDialogOpen, setRequestDemoDialogOpen] = useState(false);
   const [selectedPlan, _setSelectedPlan] = useState<PricingPlan | null>(null);
+  // [PROD-KEEP] Tracks if the user chose Trial or Pay Now to survive the login process
+  const [selectedIsTrial, setSelectedIsTrial] = useState<boolean>(false);
   const [paymentModal, setPaymentModal] = useState<{
     isOpen: boolean;
     status: "success" | "error" | "loading";
@@ -90,19 +92,22 @@ export default function PricingPage() {
     initializePricing();
   }, []); // Run once on mount
 
-  const handleChoosePlan = async (_plan: PricingPlan) => {
-    try {
-      setRequestDemoDialogOpen(true);
-    } catch (error) {
-      console.error("Error initiating payment:", error);
-      setPaymentModal({
-        isOpen: true,
-        status: "error",
-        title: "Payment Error",
-        message: error instanceof Error ? error.message : "Failed to initiate payment. Please try again.",
-      });
-      setProcessing(false);
+  const handleChoosePlan = async (plan: PricingPlan, isTrial: boolean = false) => {
+    _setSelectedPlan(plan);
+    setSelectedIsTrial(isTrial);
+
+    // [PROD-KEEP] Skip auth popup if user is already logged in for a smoother experience
+    const currentUser = getCurrentUser();
+    if (currentUser) {
+      console.log("[PricingPage] User already logged in, proceeding directly to payment logic...");
+      // Wrap in a temporary "selectedPlan" check or similar mechanism
+      // or just call handleAuthSuccess directly as if they just logged in
+      handleAuthSuccess();
+      return;
     }
+
+    // Force login/signup if not logged in
+    setAuthDialogOpen(true);
   };
 
   const handleAuthSuccess = async () => {
@@ -114,20 +119,33 @@ export default function PricingPage() {
       try {
         setProcessing(true);
 
-        // Check if email is verified
+        // [PROD-KEEP] Check if they already have a trial/sub before proceeding to avoid double billing
+        const status = await getSubscriptionStatusCached(true);
+        if (status.hasActiveSubscription) {
+          showPaymentModal(
+            "error",
+            "Subscription Active",
+            `You already have an active ${status.isTrial ? 'trial' : 'subscription'}. You can't start another one.`
+          );
+          setProcessing(false);
+          return;
+        }
+
+        // [PROD-KEEP] Ensure the email is verified after login before allowing payment
         const currentUser = getCurrentUser();
         if (currentUser && !currentUser.isEmailVerified) {
           navigate("/verify-email-prompt");
           return;
         }
 
-        // Create subscription
+        // [PROD-KEEP] Create subscription, honoring the trial selection made before login
         const subscriptionData = await createSubscription({
-          planId: selectedPlan.id
+          planId: selectedPlan.id,
+          isTrial: selectedIsTrial
         });
 
         // Initialize Razorpay checkout
-        await initializeRazorpayPayment(subscriptionData, selectedPlan);
+        await initializeRazorpayPayment(subscriptionData, selectedPlan, selectedIsTrial);
       } catch (error) {
         console.error("Error initiating payment:", error);
         setPaymentModal({
@@ -159,7 +177,23 @@ export default function PricingPage() {
     navigate("/dashboard");
   };
 
-  const initializeRazorpayPayment = async (orderData: RazorpaySubscriptionResponse, plan: PricingPlan) => {
+  const initializeRazorpayPayment = async (orderData: RazorpaySubscriptionResponse, plan: PricingPlan, isTrial: boolean = false) => {
+    console.log(`[PricingPage] Initializing ${isTrial ? 'trial' : 'standard'} payment for plan: ${plan.id}`);
+
+    // [PROD-CODE] In production, delete the entire block below to enable real Razorpay.
+
+    // [PROD-REMOVE] LOCAL DEVELOPMENT BYPASS. 
+    if (orderData.subscription.vendorSubscriptionId.startsWith('sub_MOCK_')) {
+      console.log('[PricingPage] Detected MOCK subscription, bypassing Razorpay modal...');
+      setPaymentModal({
+        isOpen: true,
+        status: "success",
+        title: "Trial Started!",
+        message: "Your mock trial has been activated for local testing."
+      });
+      return;
+    }
+
     // Load Razorpay script dynamically
     const script = document.createElement("script");
     script.src = "https://checkout.razorpay.com/v1/checkout.js";
@@ -250,7 +284,7 @@ export default function PricingPage() {
       setSubscriptionStatus(status);
 
       // If subscription is now active, redirect to dashboard
-      if (status.hasAccess) {
+      if (status.hasActiveSubscription) {
         navigate("/dashboard");
       }
     } catch (error) {
@@ -443,7 +477,7 @@ export default function PricingPage() {
                 <PricingCard
                   key={plan.id}
                   plan={plan}
-                  onChoosePlan={() => handleChoosePlan(plan)}
+                  onChoosePlan={(isTrial) => handleChoosePlan(plan, isTrial)}
                   processing={processing}
                 />
               ))}
@@ -485,7 +519,7 @@ export default function PricingPage() {
 
 interface PricingCardProps {
   plan: PricingPlan;
-  onChoosePlan: () => void;
+  onChoosePlan: (isTrial: boolean) => void;
   processing?: boolean;
 }
 
@@ -561,9 +595,30 @@ function PricingCard({ plan, onChoosePlan, processing = false }: PricingCardProp
           })}
         </ul>
 
-        {/* CTA Button */}
+        {/* Trial Button */}
         <Button
-          onClick={onChoosePlan}
+          onClick={() => onChoosePlan(true)}
+          disabled={processing}
+          variant="outline"
+          className="w-full border-purple-600 text-purple-600 hover:bg-purple-50 py-4 sm:py-6 rounded-xl text-sm sm:text-base font-semibold disabled:opacity-50 disabled:cursor-not-allowed mb-3"
+        >
+          {processing ? (
+            <>
+              <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+              Processing...
+            </>
+          ) : (
+            "Start 3-Day Free Trial"
+          )}
+        </Button>
+
+        <p className="text-xs text-center text-gray-500 mb-4">
+          No charge for 3 days. Cancel anytime.
+        </p>
+
+        {/* Pay Now Button */}
+        <Button
+          onClick={() => onChoosePlan(false)}
           disabled={processing}
           className="w-full bg-gradient-to-r from-purple-600 to-purple-700 hover:from-purple-700 hover:to-purple-800 text-white py-4 sm:py-6 rounded-xl text-sm sm:text-base font-semibold disabled:opacity-50 disabled:cursor-not-allowed"
         >
@@ -573,7 +628,7 @@ function PricingCard({ plan, onChoosePlan, processing = false }: PricingCardProp
               Processing...
             </>
           ) : (
-            plan.buttonText || "Choose Plan"
+            "Pay Now"
           )}
         </Button>
       </CardContent>

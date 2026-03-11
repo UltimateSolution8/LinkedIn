@@ -81,7 +81,12 @@ export async function getSubscriptionStatusCached(forceRefresh: boolean = false)
 export async function checkSubscriptionAccess(): Promise<boolean> {
   try {
     const status = await getSubscriptionStatusCached();
-    return status.subscription?.status === "active" || status.canBypass;
+    // [PROD-KEEP] 'authenticated' is Razorpay's status for a trial that hasn't charged yet.
+    // It must be recognized as active access, otherwise users are locked out during their trial.
+    return status.hasActiveSubscription ||
+      status.subscription?.status === "active" ||
+      status.subscription?.status === "authenticated" ||
+      status.canBypass;
   } catch (error) {
     console.error("Error checking subscription access:", error);
     // On error, deny access for safety

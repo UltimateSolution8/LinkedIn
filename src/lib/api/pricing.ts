@@ -21,6 +21,7 @@ export interface PricingResponse {
 
 export interface CreateSubscriptionRequest {
   planId: string;
+  isTrial?: boolean;
 }
 
 export interface RazorpaySubscriptionResponse {

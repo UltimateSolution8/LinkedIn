@@ -1,9 +1,9 @@
 
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { Check, Zap, Loader2, LogOut } from "lucide-react";
+import { Loader2, LogOut } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { getPricingPlans, createSubscription, verifySubscriptionPayment, type PricingPlan, RazorpaySubscriptionResponse } from "@/lib/api/pricing";
 import PaymentStatusModal from "@/components/pricing/PaymentStatusModal";
 import AuthDialog from "@/components/pricing/AuthDialog";
@@ -12,6 +12,7 @@ import { detectUserCurrency } from "@/lib/utils/geolocation";
 import { getSubscriptionStatusCached } from "@/lib/utils/subscription";
 import { type SubscriptionStatus } from "@/lib/api/subscription";
 import { getCurrentUser, logout } from "@/lib/api/auth";
+import PricingCard from "@/components/pricing/PricingCard";
 
 // Declare Razorpay types for TypeScript
 declare global {
@@ -59,6 +60,11 @@ export default function AuthPricingPage() {
           // Then check subscription status
           const status = await getSubscriptionStatusCached();
           setSubscriptionStatus(status);
+
+          // [PROD-KEEP] Automatic redirect if user already has access (Avoids double-subscribing)
+          if (status.hasActiveSubscription) {
+            navigate("/dashboard");
+          }
         }
       } catch (error) {
         console.error("Error checking user access:", error);
@@ -90,7 +96,7 @@ export default function AuthPricingPage() {
     initializePricing();
   }, []); // Run once on mount
 
-  const handleChoosePlan = async (plan: PricingPlan) => {
+  const handleChoosePlan = async (plan: PricingPlan, isTrial: boolean = false) => {
     try {
       setProcessing(true);
 
@@ -101,19 +107,20 @@ export default function AuthPricingPage() {
         return;
       }
 
-      // Create subscription
+      // Create subscription (with trial flag if applicable)
       const subscriptionData = await createSubscription({
-        planId: plan.id
+        planId: plan.id,
+        isTrial
       });
 
       // Initialize Razorpay checkout
-      await initializeRazorpayPayment(subscriptionData, plan);
+      await initializeRazorpayPayment(subscriptionData, plan, isTrial);
     } catch (error) {
       console.error("Error initiating payment:", error);
       setPaymentModal({
         isOpen: true,
         status: "error",
-        title: "Payment Error",
+        title: isTrial ? "Trial Error" : "Payment Error",
         message: error instanceof Error ? error.message : "Failed to initiate payment. Please try again.",
       });
       setProcessing(false);
@@ -142,7 +149,7 @@ export default function AuthPricingPage() {
         });
 
         // Initialize Razorpay checkout
-        await initializeRazorpayPayment(subscriptionData, selectedPlan);
+        await initializeRazorpayPayment(subscriptionData, selectedPlan, false);
       } catch (error) {
         console.error("Error initiating payment:", error);
         setPaymentModal({
@@ -174,7 +181,22 @@ export default function AuthPricingPage() {
     navigate("/dashboard");
   };
 
-  const initializeRazorpayPayment = async (subscriptionData: RazorpaySubscriptionResponse, plan: PricingPlan) => {
+  const initializeRazorpayPayment = async (subscriptionData: RazorpaySubscriptionResponse, plan: PricingPlan, isTrial: boolean = false) => {
+    console.log(`[AuthPricingPage] Initializing ${isTrial ? 'trial' : 'standard'} payment for plan: ${plan.id}`);
+
+    // [PROD-CODE] In production, delete the entire block below to enable real Razorpay.
+
+    // [PROD-REMOVE] LOCAL DEVELOPMENT BYPASS. 
+    if (subscriptionData.subscription.vendorSubscriptionId.startsWith('sub_MOCK_')) {
+      console.log('[AuthPricingPage] Detected MOCK subscription, bypassing Razorpay modal...');
+      showPaymentModal(
+        "success",
+        "Trial Started!",
+        "Your mock trial has been activated for local testing."
+      );
+      return;
+    }
+
     // Load Razorpay script dynamically
     const script = document.createElement("script");
     script.src = "https://checkout.razorpay.com/v1/checkout.js";
@@ -265,7 +287,7 @@ export default function AuthPricingPage() {
       setSubscriptionStatus(status);
 
       // If subscription is now active, redirect to dashboard
-      if (status.hasAccess) {
+      if (status.hasActiveSubscription) {
         navigate("/dashboard");
       }
     } catch (error) {
@@ -475,7 +497,7 @@ export default function AuthPricingPage() {
                 <PricingCard
                   key={plan.id}
                   plan={plan}
-                  onChoosePlan={() => handleChoosePlan(plan)}
+                  onChoosePlan={(isTrial) => handleChoosePlan(plan, isTrial)}
                   processing={processing}
                 />
               ))}
@@ -512,103 +534,5 @@ export default function AuthPricingPage() {
         />
       </div>
     </div>
-  );
-}
-
-interface PricingCardProps {
-  plan: PricingPlan;
-  onChoosePlan: () => void;
-  processing?: boolean;
-}
-
-function PricingCard({ plan, onChoosePlan, processing = false }: PricingCardProps) {
-  // Hardcoded features that override plan.features
-  const hardcodedFeatures = [
-    "UNLIMITED *100* Posts to view",
-    "UNLIMITED *50* keyword matches",
-    "UNLIMITED *15* keywords monitored",
-    "UNLIMITED *100* relevancy checks",
-    "2 projects",
-    "Daily email notifications",
-    "Chat & email support",
-    "Detailed Basic reports",
-  ];
-
-  return (
-    <Card className="relative w-full max-w-md bg-white border-0 shadow-lg rounded-2xl overflow-hidden hover:shadow-xl transition-shadow duration-300">
-      {/* Purple Accent Header */}
-      <div className="h-2 bg-gradient-to-r from-purple-600 to-purple-700"></div>
-
-      <CardHeader className="p-4 sm:p-6 pb-0">
-        <h3 className="text-xl sm:text-2xl font-bold text-gray-900 mb-6">{plan.name}</h3>
-
-        {/* Pricing Section */}
-        <div className="mb-3">
-          <div className="flex items-baseline gap-3 mb-2">
-            <span className="text-4xl sm:text-5xl font-bold text-gray-900">
-              {plan.currencySymbol}
-              {plan.currency === "USD" ? "16.99" : "1,500"}
-            </span>
-            <span className="text-2xl text-gray-400 line-through">
-              {plan.currencySymbol} {plan.currency === "USD" ? "50" : "4,500"}
-            </span>
-          </div>
-
-          {/* Subtitle - Offer Info */}
-          <div className="space-y-0.5">
-            <p className="text-xs font-medium text-purple-600 uppercase tracking-wide">Introductory Offer for Limited Period</p>
-            <p className="text-sm font-bold text-orange-600">Flat 67% off</p>
-          </div>
-        </div>
-
-        {/* Highlight Feature */}
-        {plan.highlightNumber && (
-          <div className="flex items-center gap-2 text-gray-600 mt-4">
-            <Zap className="w-5 h-5 text-purple-600" />
-            <span className="font-semibold">{plan.highlightNumber}</span>
-            <span className="text-sm">{plan.highlightLabel}</span>
-          </div>
-        )}
-      </CardHeader>
-
-      <CardContent className="p-4 sm:p-6 pt-6">
-        {/* Features List */}
-        <ul className="space-y-3 mb-6">
-          {hardcodedFeatures.map((feature, index) => {
-            // Parse feature text and convert *text* to strikethrough
-            const parts = feature.split(/(\*[^*]+\*)/g);
-            return (
-              <li key={index} className="flex items-start gap-3">
-                <Check className="w-5 h-5 text-green-600 mt-0.5 flex-shrink-0" />
-                <span className="text-gray-700 text-sm leading-relaxed">
-                  {parts.map((part, i) => {
-                    if (part.startsWith('*') && part.endsWith('*')) {
-                      return <span key={i} className="line-through">{part.slice(1, -1)}</span>;
-                    }
-                    return part;
-                  })}
-                </span>
-              </li>
-            );
-          })}
-        </ul>
-
-        {/* CTA Button */}
-        <Button
-          onClick={onChoosePlan}
-          disabled={processing}
-          className="w-full bg-gradient-to-r from-purple-600 to-purple-700 hover:from-purple-700 hover:to-purple-800 text-white py-4 sm:py-6 rounded-xl text-sm sm:text-base font-semibold disabled:opacity-50 disabled:cursor-not-allowed"
-        >
-          {processing ? (
-            <>
-              <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-              Processing...
-            </>
-          ) : (
-            plan.buttonText || "Choose Plan"
-          )}
-        </Button>
-      </CardContent>
-    </Card>
   );
 }

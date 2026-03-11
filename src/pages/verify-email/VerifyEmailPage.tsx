@@ -41,8 +41,8 @@ function VerifyEmailContent() {
           const updatedUser = getCurrentUser();
 
           if (updatedUser) {
-            // User is logged in, redirect to auth pricing (they'll need to subscribe)
-            navigate("/auth-pricing");
+            // User is logged in, redirect to dashboard (Smart onboarding handles routing)
+            navigate("/dashboard");
           } else {
             // User is not logged in, redirect to login
             navigate("/login");
@@ -95,7 +95,7 @@ function VerifyEmailContent() {
                     onClick={() => {
                       const currentUser = getCurrentUser();
                       if (currentUser) {
-                        navigate("/auth-pricing");
+                        navigate("/dashboard");
                       } else {
                         navigate("/login");
                       }

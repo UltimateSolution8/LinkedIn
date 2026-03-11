@@ -1,0 +1,128 @@
+
+import { Check, Zap, Loader2 } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader } from "@/components/ui/card";
+import { type PricingPlan } from "@/lib/api/pricing";
+
+interface PricingCardProps {
+    plan: PricingPlan;
+    onChoosePlan: (isTrial: boolean) => void;
+    processing?: boolean;
+}
+
+export default function PricingCard({ plan, onChoosePlan, processing = false }: PricingCardProps) {
+    // Hardcoded features that override plan.features
+    const hardcodedFeatures = [
+        "UNLIMITED *100* Posts to view",
+        "UNLIMITED *50* keyword matches",
+        "UNLIMITED *15* keywords monitored",
+        "UNLIMITED *100* relevancy checks",
+        "2 projects",
+        "Daily email notifications",
+        "Chat & email support",
+        "Detailed Basic reports",
+    ];
+
+    return (
+        <Card className="relative w-full max-w-md bg-white border-0 shadow-lg rounded-2xl overflow-hidden hover:shadow-xl transition-shadow duration-300">
+            {/* Purple Accent Header */}
+            <div className="h-2 bg-gradient-to-r from-purple-600 to-purple-700"></div>
+
+            <CardHeader className="p-4 sm:p-6 pb-0">
+                <h3 className="text-xl sm:text-2xl font-bold text-gray-900 mb-6">{plan.name}</h3>
+
+                {/* Pricing Section */}
+                <div className="mb-3">
+                    <div className="flex items-baseline gap-3 mb-2">
+                        <span className="text-4xl sm:text-5xl font-bold text-gray-900">
+                            {plan.currencySymbol}
+                            {plan.currency === "USD" ? "16.99" : "1,500"}
+                        </span>
+                        <span className="text-2xl text-gray-400 line-through">
+                            {plan.currencySymbol} {plan.currency === "USD" ? "50" : "4,500"}
+                        </span>
+                    </div>
+
+                    {/* Subtitle - Offer Info */}
+                    <div className="space-y-0.5">
+                        <p className="text-xs font-medium text-purple-600 uppercase tracking-wide">Introductory Offer for Limited Period</p>
+                        <p className="text-sm font-bold text-orange-600">Flat 67% off</p>
+                    </div>
+                </div>
+
+                {/* Highlight Feature */}
+                {plan.highlightNumber && (
+                    <div className="flex items-center gap-2 text-gray-600 mt-4">
+                        <Zap className="w-5 h-5 text-purple-600" />
+                        <span className="font-semibold">{plan.highlightNumber}</span>
+                        <span className="text-sm">{plan.highlightLabel}</span>
+                    </div>
+                )}
+            </CardHeader>
+
+            <CardContent className="p-4 sm:p-6 pt-6">
+                {/* Features List */}
+                <ul className="space-y-3 mb-6">
+                    {hardcodedFeatures.map((feature, index) => {
+                        // Parse feature text and convert *text* to strikethrough
+                        const parts = feature.split(/(\*[^*]+\*)/g);
+                        return (
+                            <li key={index} className="flex items-start gap-3">
+                                <Check className="w-5 h-5 text-green-600 mt-0.5 flex-shrink-0" />
+                                <span className="text-gray-700 text-sm leading-relaxed">
+                                    {parts.map((part, i) => {
+                                        if (part.startsWith("*") && part.endsWith("*")) {
+                                            return (
+                                                <span key={i} className="line-through">
+                                                    {part.slice(1, -1)}
+                                                </span>
+                                            );
+                                        }
+                                        return part;
+                                    })}
+                                </span>
+                            </li>
+                        );
+                    })}
+                </ul>
+
+                {/* Trial Button */}
+                <Button
+                    onClick={() => onChoosePlan(true)}
+                    disabled={processing}
+                    variant="outline"
+                    className="w-full border-purple-600 text-purple-600 hover:bg-purple-50 py-4 sm:py-6 rounded-xl text-sm sm:text-base font-semibold disabled:opacity-50 disabled:cursor-not-allowed mb-3"
+                >
+                    {processing ? (
+                        <>
+                            <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                            Processing...
+                        </>
+                    ) : (
+                        "Start 3-Day Free Trial"
+                    )}
+                </Button>
+
+                <p className="text-xs text-center text-gray-500 mb-4">
+                    No charge for 3 days. Cancel anytime.
+                </p>
+
+                {/* Pay Now Button (existing flow) */}
+                <Button
+                    onClick={() => onChoosePlan(false)}
+                    disabled={processing}
+                    className="w-full bg-gradient-to-r from-purple-600 to-purple-700 hover:from-purple-700 hover:to-purple-800 text-white py-4 sm:py-6 rounded-xl text-sm sm:text-base font-semibold disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                    {processing ? (
+                        <>
+                            <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                            Processing...
+                        </>
+                    ) : (
+                        "Pay Now"
+                    )}
+                </Button>
+            </CardContent>
+        </Card>
+    );
+}

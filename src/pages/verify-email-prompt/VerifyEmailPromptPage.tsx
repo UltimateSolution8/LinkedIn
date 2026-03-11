@@ -27,7 +27,7 @@ export default function VerifyEmailPromptPage() {
     }
 
     if (currentUser.isEmailVerified) {
-      navigate("/auth-pricing");
+      navigate("/dashboard");
       return;
     }
 
@@ -38,7 +38,7 @@ export default function VerifyEmailPromptPage() {
     const pollInterval = setInterval(() => {
       const updatedUser = getCurrentUser();
       if (updatedUser?.isEmailVerified) {
-        navigate("/auth-pricing");
+        navigate("/dashboard");
       }
     }, 3000);
 
@@ -154,11 +154,10 @@ export default function VerifyEmailPromptPage() {
                 {/* Resend Message */}
                 {resendMessage && (
                   <div
-                    className={`w-full p-4 rounded-lg ${
-                      resendMessage.type === "success"
-                        ? "bg-green-50 border border-green-200 text-green-800"
-                        : "bg-red-50 border border-red-200 text-red-800"
-                    }`}
+                    className={`w-full p-4 rounded-lg ${resendMessage.type === "success"
+                      ? "bg-green-50 border border-green-200 text-green-800"
+                      : "bg-red-50 border border-red-200 text-red-800"
+                      }`}
                   >
                     {resendMessage.text}
                   </div>

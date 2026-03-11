@@ -4,7 +4,6 @@ import Logo from '@/components/common/Logo'
 import NotificationButton from '@/components/shared/NotificationButton'
 import UserProfileDropdown from '@/components/shared/UserProfileDropdown'
 import { useAuthGuard } from '@/hooks/useAuthGuard'
-import { checkSubscriptionAccess } from '@/lib/utils/subscription'
 
 export default function CreateProjectLayout() {
   const navigate = useNavigate()
@@ -20,26 +19,9 @@ export default function CreateProjectLayout() {
       return
     }
 
-    const checkAccess = async () => {
-      setIsChecking(true)
-      setIsAuthorized(false)
-
-      // Check subscription access - ALWAYS fetch fresh data from API
-      try {
-        const hasAccess = await checkSubscriptionAccess()
-        if (!hasAccess) {
-          // User doesn't have active subscription - redirect to auth pricing
-          navigate('/auth-pricing')
-          return
-        }
-
-        setIsAuthorized(true)
-        setIsChecking(false)
-      } catch (error) {
-        console.error('Error checking access:', error)
-        // On error, redirect to auth pricing for security
-        navigate('/auth-pricing')
-      }
+    const checkAccess = () => {
+      setIsAuthorized(true)
+      setIsChecking(false)
     }
 
     checkAccess()

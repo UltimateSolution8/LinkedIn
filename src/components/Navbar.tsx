@@ -52,7 +52,7 @@ const Navbar = () => {
             {user ? (
               <UserProfileDropdown />
             ) : (
-              <Link to={`/request-demo`}>
+              <Link to={`/login`}>
                 <Button className="bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 text-white">
                   Get Started
                 </Button>
@@ -88,7 +88,7 @@ const Navbar = () => {
                   <UserProfileDropdown />
                 </div>
               ) : (
-                <Link to={`/request-demo`} onClick={closeMenu}>
+                <Link to={`/login`} onClick={closeMenu}>
                   <Button className="w-full mt-2 bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 text-white">
                     Get Started
                   </Button>

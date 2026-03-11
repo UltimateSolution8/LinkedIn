@@ -11,6 +11,12 @@ import SyncStatusTimer from "@/components/dashboard/SyncStatusTimer";
 import EmptyProjectState from "@/components/dashboard/EmptyProjectState";
 import { useProject } from "@/contexts/ProjectContext";
 import { getCurrentUser } from "@/lib/api/auth";
+import BlurredLeads from "@/components/dashboard/BlurredLeads";
+import { getPricingPlans, createSubscription, verifySubscriptionPayment, type PricingPlan, RazorpaySubscriptionResponse } from "@/lib/api/pricing";
+import { detectUserCurrency } from "@/lib/utils/geolocation";
+import { getSubscriptionStatusCached } from "@/lib/utils/subscription";
+import PaymentStatusModal from "@/components/pricing/PaymentStatusModal";
+import { useEffect } from "react";
 
 const MAX_PROJECTS = 2;
 
@@ -20,6 +26,20 @@ export default function DashboardPage() {
   const { selectedProjectId, setSelectedProjectId, getProjectById, projects, isLoading } = useProject();
   const [postsCount, setPostsCount] = useState(0);
   const [leadsCount, setLeadsCount] = useState(0);
+
+  // Subscription state
+  const [hasAccess, setHasAccess] = useState<boolean | null>(null);
+  const [plans, setPlans] = useState<PricingPlan[]>([]);
+  const [isProcessing, setIsProcessing] = useState(false);
+  const [paymentModal, setPaymentModal] = useState<{
+    isOpen: boolean;
+    status: "success" | "error" | "loading";
+    title?: string;
+    message?: string;
+  }>({
+    isOpen: false,
+    status: "loading",
+  });
 
   // Check if user is admin
   const currentUser = getCurrentUser();
@@ -38,197 +58,291 @@ export default function DashboardPage() {
     }
   };
 
-  // Show empty state if no projects exist
-  if (!isLoading && projects.length === 0) {
-    return (
-      <div className="flex flex-1 h-full overflow-x-hidden">
-        <div className="flex-1 w-full h-full overflow-y-auto">
-          <EmptyProjectState />
-        </div>
-      </div>
-    );
-  }
+  // Check subscription status and fetch plans if needed
+  useEffect(() => {
+    const checkAccess = async () => {
+      try {
+        const status = await getSubscriptionStatusCached();
+        setHasAccess(status.hasActiveSubscription);
+
+        if (!status.hasActiveSubscription) {
+          const currency = await detectUserCurrency();
+          const fetchedPlans = await getPricingPlans(currency);
+          setPlans(fetchedPlans);
+        }
+      } catch (err) {
+        console.error("Error checking access in Dashboard:", err);
+        setHasAccess(false);
+      }
+    };
+
+    checkAccess();
+  }, []);
+
+  const handleChoosePlan = async (plan: PricingPlan, isTrial: boolean) => {
+    try {
+      setIsProcessing(true);
+
+      const subResponse = await createSubscription({
+        planId: plan.id,
+        isTrial
+      });
+
+      await initializeRazorpay(subResponse, plan, isTrial);
+    } catch (error) {
+      console.error("Error initiating payment:", error);
+      setPaymentModal({
+        isOpen: true,
+        status: "error",
+        title: isTrial ? "Trial Error" : "Payment Error",
+        message: error instanceof Error ? error.message : "Failed to initiate payment.",
+      });
+      setIsProcessing(false);
+    }
+  };
+
+  const initializeRazorpay = async (subscriptionData: RazorpaySubscriptionResponse, plan: PricingPlan, isTrial: boolean) => {
+    console.log(`[DashboardPage] Initializing ${isTrial ? 'trial' : 'standard'} payment`);
+    // Load script
+    const script = document.createElement("script");
+    script.src = "https://checkout.razorpay.com/v1/checkout.js";
+    script.async = true;
+    document.body.appendChild(script);
+
+    script.onload = () => {
+      const options = {
+        key: subscriptionData.keyId,
+        name: "Rixly",
+        description: `Payment for ${plan.name} plan`,
+        subscription_id: subscriptionData.subscription.vendorSubscriptionId,
+        handler: async (response: any) => {
+          try {
+            setPaymentModal({ isOpen: true, status: "loading", title: "Verifying", message: "Verifying payment..." });
+            const verification = await verifySubscriptionPayment({
+              razorpaySubscriptionId: response.razorpay_subscription_id,
+              razorpayPaymentId: response.razorpay_payment_id,
+              razorpaySignature: response.razorpay_signature,
+            });
+
+            if (verification.success) {
+              setPaymentModal({
+                isOpen: true,
+                status: "success",
+                title: "Payment Successful!",
+                message: "Your subscription is now active."
+              });
+              // Refresh access locally
+              setHasAccess(true);
+              getSubscriptionStatusCached(true); // Background refresh
+            } else {
+              setPaymentModal({ isOpen: true, status: "error", title: "Verification Failed", message: "Could not verify payment." });
+            }
+          } catch (error) {
+            setPaymentModal({ isOpen: true, status: "error", title: "Verification Failed", message: "An error occurred." });
+          } finally {
+            setIsProcessing(false);
+          }
+        },
+        theme: { color: "#9333ea" },
+        modal: {
+          ondismiss: () => {
+            setIsProcessing(false);
+            setPaymentModal({ isOpen: false, status: "error" });
+          },
+        },
+      };
+      const rzp = new (window as any).Razorpay(options);
+      rzp.open();
+    };
+  };
 
   return (
     <div className="flex flex-1 h-full overflow-x-hidden">
       <div className="flex-1 w-full h-full overflow-y-auto">
         <div className="p-4 lg:p-8">
-        {/* Mobile Project Selector - Only visible on mobile */}
-        <div className="lg:hidden mb-4 -mx-4 px-4 bg-white dark:bg-neutral-950 border-b border-neutral-100 dark:border-neutral-800 pb-4">
-          <div className="flex items-center justify-between mb-3">
-            <h2 className="text-xs font-semibold text-neutral-500 dark:text-neutral-400 uppercase tracking-wider">
-              Your Projects
-            </h2>
-          </div>
-          <div className="flex gap-3 overflow-x-auto no-scrollbar pb-1 -mx-4 px-4">
-            {isLoading ? (
-              <div className="flex-shrink-0 px-4 py-2 text-sm text-neutral-500 dark:text-neutral-400">
-                Loading projects...
-              </div>
-            ) : projects.length === 0 ? (
-              <div className="flex-shrink-0 px-4 py-2 text-sm text-neutral-500 dark:text-neutral-400">
-                No projects yet
-              </div>
-            ) : (
-              <>
-                {projects.map((proj) => {
-                  const isActive = proj._id === selectedProjectId;
-                  return (
-                    <button
-                      key={proj._id}
-                      onClick={() => setSelectedProjectId(proj._id)}
-                      className={`flex-shrink-0 flex items-center gap-2 px-4 py-2 rounded-full transition-all ${
-                        isActive
+          {/* Mobile Project Selector - Only visible on mobile */}
+          <div className="lg:hidden mb-4 -mx-4 px-4 bg-white dark:bg-neutral-950 border-b border-neutral-100 dark:border-neutral-800 pb-4">
+            <div className="flex items-center justify-between mb-3">
+              <h2 className="text-xs font-semibold text-neutral-500 dark:text-neutral-400 uppercase tracking-wider">
+                Your Projects
+              </h2>
+            </div>
+            <div className="flex gap-3 overflow-x-auto no-scrollbar pb-1 -mx-4 px-4">
+              {isLoading ? (
+                <div className="flex-shrink-0 px-4 py-2 text-sm text-neutral-500 dark:text-neutral-400">
+                  Loading projects...
+                </div>
+              ) : projects.length === 0 ? (
+                <div className="flex-shrink-0 px-4 py-2 text-sm text-neutral-500 dark:text-neutral-400">
+                  No projects yet
+                </div>
+              ) : (
+                <>
+                  {projects.map((proj) => {
+                    const isActive = proj._id === selectedProjectId;
+                    return (
+                      <button
+                        key={proj._id}
+                        onClick={() => setSelectedProjectId(proj._id)}
+                        className={`flex-shrink-0 flex items-center gap-2 px-4 py-2 rounded-full transition-all ${isActive
                           ? "bg-purple-100 dark:bg-neutral-800 border border-purple-600/20 dark:border-purple-600/40"
                           : "bg-neutral-50 dark:bg-neutral-800 border border-transparent opacity-60 hover:opacity-100"
-                      }`}
-                    >
-                      <Avatar className="h-6 w-6 flex-shrink-0">
-                        <AvatarFallback
-                          className={`text-xs font-bold ${
-                            isActive
+                          }`}
+                      >
+                        <Avatar className="h-6 w-6 flex-shrink-0">
+                          <AvatarFallback
+                            className={`text-xs font-bold ${isActive
                               ? "bg-purple-600 text-white"
                               : "bg-neutral-200 dark:bg-neutral-600 text-neutral-500 dark:text-neutral-300"
-                          }`}
-                        >
-                          {getProjectInitial(proj.projectName)}
-                        </AvatarFallback>
-                      </Avatar>
-                      <span
-                        className={`text-sm font-medium whitespace-nowrap ${
-                          isActive
+                              }`}
+                          >
+                            {getProjectInitial(proj.projectName)}
+                          </AvatarFallback>
+                        </Avatar>
+                        <span
+                          className={`text-sm font-medium whitespace-nowrap ${isActive
                             ? "text-purple-600 dark:text-purple-400"
                             : "text-neutral-950 dark:text-neutral-300"
-                        }`}
-                      >
-                        {proj.projectName}
-                      </span>
-                    </button>
-                  );
-                })}
-                <button
-                  onClick={handleCreateProject}
-                  disabled={isCreateButtonDisabled}
-                  className={`flex-shrink-0 w-10 h-10 flex items-center justify-center rounded-full transition-colors ${
-                    isCreateButtonDisabled
+                            }`}
+                        >
+                          {proj.projectName}
+                        </span>
+                      </button>
+                    );
+                  })}
+                  <button
+                    onClick={handleCreateProject}
+                    disabled={isCreateButtonDisabled}
+                    className={`flex-shrink-0 w-10 h-10 flex items-center justify-center rounded-full transition-colors ${isCreateButtonDisabled
                       ? "bg-neutral-100 dark:bg-neutral-800 text-neutral-400 cursor-not-allowed"
                       : "bg-neutral-100 dark:bg-neutral-800 text-purple-600 hover:bg-neutral-200 dark:hover:bg-neutral-700"
-                  }`}
-                  title={
-                    isAdmin
-                      ? "Create new project (Admin - Unlimited)"
-                      : isCreateButtonDisabled
-                        ? `Max ${MAX_PROJECTS} projects`
-                        : "Create new project"
-                  }
-                >
-                  <Plus className="w-5 h-5" />
-                </button>
-              </>
-            )}
-          </div>
-        </div>
-
-        {/* Project Header - Hidden on mobile, shown on desktop */}
-        {project && (
-          <div className="hidden lg:block mb-8 space-y-3">
-            <div className="flex items-center gap-3">
-              <h1 className="text-3xl font-bold text-neutral-950 dark:text-white">
-                {project.projectName}
-              </h1>
-              {project.websiteUrl && (
-                <a
-                  href={project.websiteUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-purple-600 hover:text-purple-700 dark:text-purple-400 dark:hover:text-purple-300 transition-colors"
-                >
-                  <ExternalLink className="w-5 h-5" />
-                </a>
+                      }`}
+                    title={
+                      isAdmin
+                        ? "Create new project (Admin - Unlimited)"
+                        : isCreateButtonDisabled
+                          ? `Max ${MAX_PROJECTS} projects`
+                          : "Create new project"
+                    }
+                  >
+                    <Plus className="w-5 h-5" />
+                  </button>
+                </>
               )}
             </div>
-            {project.description && (
-              <p className="text-sm text-neutral-600 dark:text-neutral-400 leading-relaxed">
-                {project.description}
-              </p>
-            )}
           </div>
-        )}
 
-        {/* Timer - Always visible */}
-        <div className="mb-4 flex justify-center lg:justify-start">
-          <SyncStatusTimer />
-        </div>
+          {/* Project Header - Hidden on mobile, shown on desktop */}
+          {project && (
+            <div className="hidden lg:block mb-8 space-y-3">
+              <div className="flex items-center gap-3">
+                <h1 className="text-3xl font-bold text-neutral-950 dark:text-white">
+                  {project.projectName}
+                </h1>
+                {project.websiteUrl && (
+                  <a
+                    href={project.websiteUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-purple-600 hover:text-purple-700 dark:text-purple-400 dark:hover:text-purple-300 transition-colors"
+                  >
+                    <ExternalLink className="w-5 h-5" />
+                  </a>
+                )}
+              </div>
+              {project.description && (
+                <p className="text-sm text-neutral-600 dark:text-neutral-400 leading-relaxed">
+                  {project.description}
+                </p>
+              )}
+            </div>
+          )}
 
-        {/* Tabs Navigation */}
-        <div className="pb-6 overflow-x-auto no-scrollbar -mx-4 px-4 lg:mx-0 lg:px-0">
-          <div className="flex gap-1 lg:gap-3 p-1 lg:p-2 bg-neutral-100 dark:bg-neutral-800 rounded-full lg:rounded-xl min-w-full lg:w-fit">
-            <button
-              onClick={() => setActiveTab("posts")}
-              className={`flex-1 lg:flex-initial flex items-center justify-center gap-1 lg:gap-2 px-3 lg:px-6 py-2 lg:py-3 rounded-full lg:rounded-lg transition-all duration-300 ease-in-out ${
-                activeTab === "posts"
+          {/* Timer - Always visible */}
+          <div className="mb-4 flex justify-center lg:justify-start">
+            <SyncStatusTimer />
+          </div>
+
+          {/* Tabs Navigation */}
+          <div className="pb-6 overflow-x-auto no-scrollbar -mx-4 px-4 lg:mx-0 lg:px-0">
+            <div className="flex gap-1 lg:gap-3 p-1 lg:p-2 bg-neutral-100 dark:bg-neutral-800 rounded-full lg:rounded-xl min-w-full lg:w-fit">
+              <button
+                onClick={() => setActiveTab("posts")}
+                className={`flex-1 lg:flex-initial flex items-center justify-center gap-1 lg:gap-2 px-3 lg:px-6 py-2 lg:py-3 rounded-full lg:rounded-lg transition-all duration-300 ease-in-out ${activeTab === "posts"
                   ? "bg-white dark:bg-neutral-900 text-purple-600 shadow-sm"
                   : "bg-transparent text-neutral-600 dark:text-neutral-400 hover:bg-neutral-200 dark:hover:bg-neutral-700"
-              }`}
-            >
-              <p className="text-xs lg:text-sm font-bold lg:font-semibold leading-normal tracking-[0.015em]">Find Posts</p>
-              {postsCount > 0 && (
-                <Badge className={`text-[10px] lg:text-xs px-1.5 lg:px-2 h-5 ${
-                  activeTab === "posts"
+                  }`}
+              >
+                <p className="text-xs lg:text-sm font-bold lg:font-semibold leading-normal tracking-[0.015em]">Find Posts</p>
+                {postsCount > 0 && (
+                  <Badge className={`text-[10px] lg:text-xs px-1.5 lg:px-2 h-5 ${activeTab === "posts"
                     ? "bg-purple-600 text-white hover:bg-purple-600"
                     : "bg-purple-600/10 dark:bg-purple-600/20 text-purple-600 dark:text-purple-400 hover:bg-purple-600/10"
-                }`}>
-                  {postsCount}
-                </Badge>
-              )}
-            </button>
-            <button
-              onClick={() => setActiveTab("leads")}
-              className={`flex-1 lg:flex-initial flex items-center justify-center gap-1 lg:gap-2 px-3 lg:px-6 py-2 lg:py-3 rounded-full lg:rounded-lg transition-all duration-300 ease-in-out ${
-                activeTab === "leads"
+                    }`}>
+                    {postsCount}
+                  </Badge>
+                )}
+              </button>
+              <button
+                onClick={() => setActiveTab("leads")}
+                className={`flex-1 lg:flex-initial flex items-center justify-center gap-1 lg:gap-2 px-3 lg:px-6 py-2 lg:py-3 rounded-full lg:rounded-lg transition-all duration-300 ease-in-out ${activeTab === "leads"
                   ? "bg-white dark:bg-neutral-900 text-purple-600 shadow-sm"
                   : "bg-transparent text-neutral-600 dark:text-neutral-400 hover:bg-neutral-200 dark:hover:bg-neutral-700"
-              }`}
-            >
-              <p className="text-xs lg:text-sm font-bold lg:font-semibold leading-normal tracking-[0.015em]">Find Leads</p>
-              {leadsCount > 0 && (
-                <Badge className={`text-[10px] lg:text-xs px-1.5 lg:px-2 h-5 ${
-                  activeTab === "leads"
+                  }`}
+              >
+                <p className="text-xs lg:text-sm font-bold lg:font-semibold leading-normal tracking-[0.015em]">Find Leads</p>
+                {leadsCount > 0 && (
+                  <Badge className={`text-[10px] lg:text-xs px-1.5 lg:px-2 h-5 ${activeTab === "leads"
                     ? "bg-purple-600 text-white hover:bg-purple-600"
                     : "bg-purple-600/10 dark:bg-purple-600/20 text-purple-600 dark:text-purple-400 hover:bg-purple-600/10"
-                }`}>
-                  {leadsCount}
-                </Badge>
-              )}
-            </button>
-            <button
-              onClick={() => setActiveTab("settings")}
-              className={`flex-1 lg:flex-initial flex items-center justify-center gap-1 lg:gap-2 px-3 lg:px-6 py-2 lg:py-3 rounded-full lg:rounded-lg transition-all duration-300 ease-in-out ${
-                activeTab === "settings"
+                    }`}>
+                    {leadsCount}
+                  </Badge>
+                )}
+              </button>
+              <button
+                onClick={() => setActiveTab("settings")}
+                className={`flex-1 lg:flex-initial flex items-center justify-center gap-1 lg:gap-2 px-3 lg:px-6 py-2 lg:py-3 rounded-full lg:rounded-lg transition-all duration-300 ease-in-out ${activeTab === "settings"
                   ? "bg-white dark:bg-neutral-900 text-purple-600 shadow-sm"
                   : "bg-transparent text-neutral-600 dark:text-neutral-400 hover:bg-neutral-200 dark:hover:bg-neutral-700"
-              }`}
-            >
-              <p className="text-xs lg:text-sm font-bold lg:font-semibold leading-normal tracking-[0.015em]">Settings</p>
-            </button>
+                  }`}
+              >
+                <p className="text-xs lg:text-sm font-bold lg:font-semibold leading-normal tracking-[0.015em]">Settings</p>
+              </button>
+            </div>
           </div>
-        </div>
 
-        {/* Tab Content */}
-        {activeTab === "posts" && selectedProjectId && (
-          <FindPostsTab projectId={selectedProjectId} onCountChange={setPostsCount} />
-        )}
-        {activeTab === "leads" && selectedProjectId && (
-          <FindLeadsTab projectId={selectedProjectId} onCountChange={setLeadsCount} />
-        )}
-        {activeTab === "settings" && selectedProjectId && (
-          <SettingsTab projectId={selectedProjectId} />
-        )}
+          {/* Tab Content */}
+          {hasAccess === false ? (
+            <BlurredLeads
+              plans={plans}
+              onChoosePlan={handleChoosePlan}
+              processing={isProcessing}
+            />
+          ) : (
+            <>
+              {activeTab === "posts" && selectedProjectId && (
+                <FindPostsTab projectId={selectedProjectId} onCountChange={setPostsCount} />
+              )}
+              {activeTab === "leads" && selectedProjectId && (
+                <FindLeadsTab projectId={selectedProjectId} onCountChange={setLeadsCount} />
+              )}
+              {activeTab === "settings" && selectedProjectId && (
+                <SettingsTab projectId={selectedProjectId} />
+              )}
+            </>
+          )}
         </div>
       </div>
 
-      {/* Metrics Panel */}
-      {/* <MetricsPanel /> */}
+      <PaymentStatusModal
+        isOpen={paymentModal.isOpen}
+        onClose={() => setPaymentModal({ ...paymentModal, isOpen: false })}
+        status={paymentModal.status}
+        title={paymentModal.title}
+        message={paymentModal.message}
+        onContinue={() => setPaymentModal({ ...paymentModal, isOpen: false })}
+      />
     </div>
   );
 }

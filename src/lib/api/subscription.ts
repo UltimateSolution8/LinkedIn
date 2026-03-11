@@ -1,8 +1,12 @@
+// [PROD-KEEP] No internal code changes are needed in this file for production.
+// Ensure that VITE_RIXLY_API_BASE_URL in your production environment variables points to your live backend.
 const RIXLY_API_BASE_URL = import.meta.env.VITE_RIXLY_API_BASE_URL;
 
 export interface SubscriptionStatus {
-  hasAccess: boolean;
+  hasActiveSubscription: boolean;
   canBypass: boolean;
+  isTrial?: boolean;
+  trialEndsAt?: string | null;
   subscription: {
     id: string;
     planId: string;

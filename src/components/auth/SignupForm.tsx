@@ -69,7 +69,7 @@ export default function SignupForm({ onSuccess }: SignupFormProps = {}) {
 
       // Check if email is verified and redirect accordingly
       if (response.user.isEmailVerified) {
-        navigate("/auth-pricing");
+        navigate("/create-project");
       } else {
         navigate("/verify-email-prompt");
       }

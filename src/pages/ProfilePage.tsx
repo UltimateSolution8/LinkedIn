@@ -50,7 +50,7 @@ export default function ProfilePage() {
     const loadSubscriptionDetails = async () => {
       setIsLoadingSubscription(true);
       setSubscriptionDetails(null);
-      
+
       try {
         const details = await getSubscriptionStatusCached();
         setSubscriptionDetails(details);
@@ -326,7 +326,7 @@ export default function ProfilePage() {
                           />
                         </div>
 
-                         {subscriptionDetails.subscription.cancelAtPeriodEnd ?<Button
+                        {subscriptionDetails.subscription.cancelAtPeriodEnd ? <Button
                           type="button"
                           variant="outline"
                           onClick={() => setShowCancelDialog(true)}
@@ -335,14 +335,14 @@ export default function ProfilePage() {
                         >
                           {isCancelling ? "Cancelling..." : "Reactivate Subscription"}
                         </Button> : <Button
-                         type="button"
+                          type="button"
                           variant="outline"
                           onClick={() => setShowCancelDialog(true)}
                           disabled={isCancelling}
                           className="mt-2 border-red-600/30 text-red-600 dark:text-red-400 hover:bg-red-600/10 disabled:opacity-50"
                         >
                           {isCancelling ? "Cancelling..." : "Cancel Subscription"}
-                        </Button> }
+                        </Button>}
                       </>
                     ) : null}
 

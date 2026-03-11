@@ -117,7 +117,7 @@ export default function LandingPage() {
   };
 
   return (
-       <>
+    <>
       {/* Hero Section */}
       <section>
         <div className="max-w-7xl mx-auto">
@@ -139,14 +139,14 @@ export default function LandingPage() {
                 AI-powered monitoring, smart keyword tracking, and automated comment suggestions that turn Reddit conversations into real business opportunities.
               </p>
 
-                <Link to={`/request-demo`}>
-              <Button
-                size="lg"
-                disabled={isLoading}
-                className="bg-gradient-to-r from-purple-600 to-purple-700 hover:from-purple-700 hover:to-purple-800 text-white text-base sm:text-lg px-6 py-4 sm:px-8 sm:py-6 rounded-xl disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                {isLoading ? "Loading..." : "Get Started"} <ArrowRight className="ml-2 w-5 h-5" />
-              </Button>
+              <Link to={`/login`}>
+                <Button
+                  size="lg"
+                  disabled={isLoading}
+                  className="bg-gradient-to-r from-purple-600 to-purple-700 hover:from-purple-700 hover:to-purple-800 text-white text-base sm:text-lg px-6 py-4 sm:px-8 sm:py-6 rounded-xl disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  {isLoading ? "Loading..." : "Get Started"} <ArrowRight className="ml-2 w-5 h-5" />
+                </Button>
               </Link>
             </div>
 
@@ -361,7 +361,7 @@ export default function LandingPage() {
                     <h4 className="font-semibold text-gray-900">Recent Alerts</h4>
                     <Button variant="link" className="text-purple-600 text-sm p-0">View all</Button>
                   </div>
-                  
+
                   <div className="space-y-4">
                     <Card className="border border-purple-100">
                       <CardContent className="p-4 space-y-2">
@@ -391,7 +391,7 @@ export default function LandingPage() {
                           <span className="text-xs text-gray-500">r/SaaS</span>
                         </div>
                         <p className="text-sm text-gray-900 font-medium">
-                           &quot;AI-powered social media monitoring - any recommendations? &quot;
+                          &quot;AI-powered social media monitoring - any recommendations? &quot;
                         </p>
                         <p className="text-xs text-gray-600">
                           Looking for tools to showcase an AI capabilities, help commercial...
@@ -508,23 +508,23 @@ export default function LandingPage() {
             <Sparkles className="w-4 h-4" />
             <span>AI-Powered Reddit Intelligence</span>
           </div>
-          
+
           <h2 className="text-3xl sm:text-5xl font-bold text-white mb-6">
             Start tracking conversations that convert
           </h2>
-          
+
           <p className="text-lg sm:text-xl text-purple-100 mb-10">
             Access to keyword tracking, subreddit monitoring, and AI comment suggestions.
           </p>
 
-          <Link to={`/request-demo`}>    
-          <Button
-            size="lg"
-            disabled={isLoading}
-            className="bg-white text-purple-700 hover:bg-gray-100 text-base sm:text-lg px-6 py-4 sm:px-8 sm:py-6 rounded-xl font-semibold shadow-xl disabled:opacity-50 disabled:cursor-not-allowed"
-          >
-            {isLoading ? "Loading..." : "Get Started"} <ArrowRight className="ml-2 w-5 h-5" />
-          </Button>
+          <Link to={`/login`}>
+            <Button
+              size="lg"
+              disabled={isLoading}
+              className="bg-white text-purple-700 hover:bg-gray-100 text-base sm:text-lg px-6 py-4 sm:px-8 sm:py-6 rounded-xl font-semibold shadow-xl disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              {isLoading ? "Loading..." : "Get Started"} <ArrowRight className="ml-2 w-5 h-5" />
+            </Button>
           </Link>
         </div>
       </section>

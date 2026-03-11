@@ -11,6 +11,7 @@ import { Link } from "react-router-dom";
 import GoogleIcon from "@/components/auth/GoogleIcon";
 import { signin } from "@/lib/api/auth";
 import { checkSubscriptionAccess } from "@/lib/utils/subscription";
+import { getProjects } from "@/lib/api/projects";
 import logger from "@/lib/logger";
 
 const loginSchema = z.object({
@@ -78,11 +79,22 @@ export default function LoginForm({ onSuccess }: LoginFormProps = {}) {
         if (hasAccess) {
           navigate("/dashboard");
         } else {
-          navigate("/auth-pricing");
+          // If no subscription, check if they have any projects
+          try {
+            const projects = await getProjects();
+            if (projects.length === 0) {
+              navigate("/create-project");
+            } else {
+              navigate("/dashboard");
+            }
+          } catch (projError) {
+            console.error("Error fetching projects during login:", projError);
+            navigate("/create-project"); // Default to create-project if check fails
+          }
         }
       } catch (error) {
         console.error("Error checking subscription status:", error);
-        navigate("/auth-pricing");
+        navigate("/dashboard"); // Go to dashboard and let it handle the access state
       }
     } catch (error) {
       setApiError(error instanceof Error ? error.message : "An error occurred during signin");

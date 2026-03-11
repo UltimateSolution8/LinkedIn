@@ -1,10 +1,9 @@
 import { useEffect, useState } from 'react'
-import { Outlet, useNavigate } from 'react-router-dom'
+import { Outlet } from 'react-router-dom'
 import Sidebar from '@/components/dashboard/Sidebar'
 import DashboardHeader from '@/components/dashboard/DashboardHeader'
 import { ProjectProvider, useProject } from '@/contexts/ProjectContext'
 import { useAuthGuard } from '@/hooks/useAuthGuard'
-import { checkSubscriptionAccess } from '@/lib/utils/subscription'
 
 function DashboardLayoutContent() {
   const { projects, isLoading } = useProject()
@@ -30,7 +29,6 @@ function DashboardLayoutContent() {
 }
 
 export default function DashboardLayout() {
-  const navigate = useNavigate()
   const { isLoading: isAuthLoading, isAuthorized: isAuthenticated } = useAuthGuard({
     redirectTo: '/login',
   })
@@ -38,48 +36,11 @@ export default function DashboardLayout() {
   const [isChecking, setIsChecking] = useState(true)
 
   useEffect(() => {
-    let isMounted = true
-
-    // Wait for auth to complete first
-    if (isAuthLoading || !isAuthenticated) {
-      return
+    if (!isAuthLoading && isAuthenticated) {
+      setIsAuthorized(true)
+      setIsChecking(false)
     }
-
-    const checkAccess = async () => {
-      if (!isMounted) return
-
-      setIsChecking(true)
-      setIsAuthorized(false)
-
-      // Check subscription access - ALWAYS fetch fresh data from API
-      try {
-        const hasAccess = await checkSubscriptionAccess()
-
-        if (!isMounted) return
-
-        if (!hasAccess) {
-          // User doesn't have active subscription - redirect to auth pricing
-          navigate('/auth-pricing')
-          return
-        }
-
-        setIsAuthorized(true)
-        setIsChecking(false)
-      } catch (error) {
-        console.error('Error checking access:', error)
-        if (!isMounted) return
-        // On error, redirect to auth pricing for security
-        navigate('/auth-pricing')
-      }
-    }
-
-    // Initial check
-    checkAccess()
-
-    return () => {
-      isMounted = false
-    }
-  }, [navigate, isAuthLoading, isAuthenticated])
+  }, [isAuthLoading, isAuthenticated])
 
   if (isAuthLoading || isChecking) {
     return (
