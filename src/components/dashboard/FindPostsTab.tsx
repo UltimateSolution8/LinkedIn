@@ -120,11 +120,13 @@ export default function FindPostsTab({ projectId, onCountChange }: FindPostsTabP
 
   if (posts.length === 0) {
     return (
-      <LeadDiscoveryState
-        type="posts"
-        onRefresh={handleRefresh}
-        isRefreshing={isRefreshing}
-      />
+      <div className="flex flex-col pt-6">
+        <LeadDiscoveryState
+          type="posts"
+          onRefresh={handleRefresh}
+          isRefreshing={isRefreshing}
+        />
+      </div>
     );
   }
 

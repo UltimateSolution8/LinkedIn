@@ -109,11 +109,13 @@ export default function FindLeadsTab({ projectId, onCountChange }: FindLeadsTabP
 
   if (leads.length === 0) {
     return (
-      <LeadDiscoveryState
-        type="leads"
-        onRefresh={handleRefresh}
-        isRefreshing={isRefreshing}
-      />
+      <div className="flex flex-col pt-6">
+        <LeadDiscoveryState
+          type="leads"
+          onRefresh={handleRefresh}
+          isRefreshing={isRefreshing}
+        />
+      </div>
     );
   }
 

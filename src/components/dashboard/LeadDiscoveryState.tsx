@@ -18,7 +18,7 @@ export default function LeadDiscoveryState({
     : "We're discovering leads from Reddit conversations matching your keywords";
 
   return (
-    <div className="flex flex-col items-center justify-center py-16 px-6 max-h-[calc(100vh-300px)]">
+    <div className="flex flex-col items-center justify-center py-8 lg:py-16 px-6 min-h-[400px]">
       <div className="max-w-md w-full text-center space-y-6">
         {/* Icon */}
         <div className="flex justify-center">
