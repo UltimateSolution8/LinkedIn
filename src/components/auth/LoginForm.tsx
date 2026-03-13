@@ -10,9 +10,6 @@ import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
 import GoogleIcon from "@/components/auth/GoogleIcon";
 import { signin } from "@/lib/api/auth";
-import { checkSubscriptionAccess } from "@/lib/utils/subscription";
-import { getProjects } from "@/lib/api/projects";
-import logger from "@/lib/logger";
 
 const loginSchema = z.object({
   email: z.string().email("Please enter a valid email address"),
@@ -73,29 +70,12 @@ export default function LoginForm({ onSuccess }: LoginFormProps = {}) {
         return;
       }
 
-      // Then check subscription access
-      try {
-        const hasAccess = await checkSubscriptionAccess();
-        if (hasAccess) {
-          navigate("/dashboard");
-        } else {
-          // If no subscription, check if they have any projects
-          try {
-            const projects = await getProjects();
-            if (projects.length === 0) {
-              navigate("/create-project");
-            } else {
-              navigate("/dashboard");
-            }
-          } catch (projError) {
-            console.error("Error fetching projects during login:", projError);
-            navigate("/create-project"); // Default to create-project if check fails
-          }
-        }
-      } catch (error) {
-        console.error("Error checking subscription status:", error);
-        navigate("/dashboard"); // Go to dashboard and let it handle the access state
-      }
+      // Simplified onboarding: always go to dashboard
+      // Dashboard will show:
+      // - Empty state if no projects
+      // - Trial banner if no subscription
+      // - Normal dashboard if has subscription
+      navigate("/dashboard");
     } catch (error) {
       setApiError(error instanceof Error ? error.message : "An error occurred during signin");
     } finally {

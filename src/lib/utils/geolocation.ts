@@ -22,12 +22,13 @@ interface IpApiResponse {
  */
 export async function detectUserCurrency(): Promise<'USD' | 'INR'> {
   // Check cache first
-  if (typeof window !== 'undefined') {
-    const cached = sessionStorage.getItem(GEOLOCATION_CACHE_KEY);
-    if (cached === 'USD' || cached === 'INR') {
-      return cached;
-    }
-  }
+  // if (typeof window !== 'undefined') {
+  //   const cached = sessionStorage.getItem(GEOLOCATION_CACHE_KEY);
+  //   if (cached === 'USD' || cached === 'INR') {
+  //     return cached;
+  //   }
+  // }
+  return "INR";
 
   try {
     // Create abort controller for timeout

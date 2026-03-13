@@ -12,6 +12,7 @@ import ProjectDetailsStep, {
 import KeywordSetupStep, { Keyword } from "@/components/create-project/KeywordSetupStep";
 import PreviewProjectStep from "@/components/create-project/PreviewProjectStep";
 import { createProject } from "@/lib/api/projects";
+import { checkSubscriptionAccess } from "@/lib/utils/subscription";
 
 export default function CreateProjectPage() {
   const navigate = useNavigate();
@@ -78,8 +79,16 @@ export default function CreateProjectPage() {
 
       console.log("Project created successfully:", response);
 
-      // Navigate to dashboard on success
-      navigate("/dashboard");
+      // Check subscription status to decide where to redirect
+      const hasAccess = await checkSubscriptionAccess();
+
+      if (!hasAccess) {
+        // User doesn't have subscription - show trial banner
+        navigate("/dashboard?showTrialBanner=true");
+      } else {
+        // User has subscription - go to normal dashboard
+        navigate("/dashboard");
+      }
     } catch (err) {
       setError(err instanceof Error ? err.message : "Failed to create project");
       console.error("Error creating project:", err);

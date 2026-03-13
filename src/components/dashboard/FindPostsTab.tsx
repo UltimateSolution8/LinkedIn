@@ -5,6 +5,7 @@ import Pagination from "@/components/ui/pagination";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { getPosts, type Post } from "@/lib/api/posts";
 import { ArrowUpDown, ArrowUp, ArrowDown } from "lucide-react";
+import LeadDiscoveryState from "./LeadDiscoveryState";
 
 interface FindPostsTabProps {
   projectId: string;
@@ -14,6 +15,7 @@ interface FindPostsTabProps {
 export default function FindPostsTab({ projectId, onCountChange }: FindPostsTabProps) {
   const [posts, setPosts] = useState<Post[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [isRefreshing, setIsRefreshing] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
   const [sortBy, setSortBy] = useState<"hotness" | "comments" | "date" | "status">("date");
@@ -26,41 +28,52 @@ export default function FindPostsTab({ projectId, onCountChange }: FindPostsTabP
     pageSize: 10,
   });
 
-  useEffect(() => {
-    const fetchPosts = async () => {
-      try {
+  const fetchPosts = async (isManualRefresh = false) => {
+    try {
+      if (isManualRefresh) {
+        setIsRefreshing(true);
+      } else {
         setIsLoading(true);
-        setError(null);
-        const response = await getPosts(projectId, currentPage, 10, sortBy, sortOrder);
-        setPosts(response.data);
-        setPagination({
-          totalPages: response.pagination.totalPages,
-          totalPosts: response.pagination.totalPosts,
-          hasNextPage: response.pagination.hasNextPage,
-          hasPrevPage: response.pagination.hasPrevPage,
-          pageSize: response.pagination.pageSize,
-        });
-
-        // Notify parent of total count
-        if (onCountChange) {
-          onCountChange(response.pagination.totalPosts);
-        }
-      } catch (err) {
-        setError(err instanceof Error ? err.message : "Failed to fetch posts");
-        console.error("Error fetching posts:", err);
-        // Reset count on error
-        if (onCountChange) {
-          onCountChange(0);
-        }
-      } finally {
-        setIsLoading(false);
       }
-    };
+      setError(null);
+      const response = await getPosts(projectId, currentPage, 10, sortBy, sortOrder);
+      setPosts(response.data);
+      setPagination({
+        totalPages: response.pagination.totalPages,
+        totalPosts: response.pagination.totalPosts,
+        hasNextPage: response.pagination.hasNextPage,
+        hasPrevPage: response.pagination.hasPrevPage,
+        pageSize: response.pagination.pageSize,
+      });
 
+      // Notify parent of total count
+      if (onCountChange) {
+        onCountChange(response.pagination.totalPosts);
+      }
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Failed to fetch posts");
+      console.error("Error fetching posts:", err);
+      // Reset count on error
+      if (onCountChange) {
+        onCountChange(0);
+      }
+    } finally {
+      setIsLoading(false);
+      setIsRefreshing(false);
+    }
+  };
+
+  useEffect(() => {
     if (projectId) {
       fetchPosts();
     }
-  }, [projectId, currentPage, sortBy, sortOrder, onCountChange]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [projectId, currentPage, sortBy, sortOrder]);
+
+  // Handle manual refresh
+  const handleRefresh = () => {
+    fetchPosts(true);
+  };
 
   const handlePageChange = (page: number) => {
     setCurrentPage(page);
@@ -107,11 +120,11 @@ export default function FindPostsTab({ projectId, onCountChange }: FindPostsTabP
 
   if (posts.length === 0) {
     return (
-      <div className="flex flex-col items-center justify-center pt-20">
-        <p className="text-neutral-500 dark:text-neutral-400 text-lg">
-         We’re digging through Reddit to fetch the right posts. It’ll take a short while. we’ll let you know once the results are in
-        </p>
-      </div>
+      <LeadDiscoveryState
+        type="posts"
+        onRefresh={handleRefresh}
+        isRefreshing={isRefreshing}
+      />
     );
   }
 

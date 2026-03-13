@@ -3,12 +3,13 @@ import { useState } from "react";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { ExternalLink, Plus } from "lucide-react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import FindPostsTab from "@/components/dashboard/FindPostsTab";
 import FindLeadsTab from "@/components/dashboard/FindLeadsTab";
 import SettingsTab from "@/components/dashboard/SettingsTab";
-import SyncStatusTimer from "@/components/dashboard/SyncStatusTimer";
+// import SyncStatusTimer from "@/components/dashboard/SyncStatusTimer"; // Hidden for now
 import EmptyProjectState from "@/components/dashboard/EmptyProjectState";
+import TrialActivationBanner from "@/components/dashboard/TrialActivationBanner";
 import { useProject } from "@/contexts/ProjectContext";
 import { getCurrentUser } from "@/lib/api/auth";
 import BlurredLeads from "@/components/dashboard/BlurredLeads";
@@ -22,15 +23,20 @@ const MAX_PROJECTS = 2;
 
 export default function DashboardPage() {
   const navigate = useNavigate();
+  const [searchParams, setSearchParams] = useSearchParams();
   const [activeTab, setActiveTab] = useState<"posts" | "leads" | "settings">("posts");
   const { selectedProjectId, setSelectedProjectId, getProjectById, projects, isLoading } = useProject();
   const [postsCount, setPostsCount] = useState(0);
   const [leadsCount, setLeadsCount] = useState(0);
 
+  // Trial banner state
+  const [showTrialBanner, setShowTrialBanner] = useState(false);
+
   // Subscription state
   const [hasAccess, setHasAccess] = useState<boolean | null>(null);
   const [plans, setPlans] = useState<PricingPlan[]>([]);
-  const [isProcessing, setIsProcessing] = useState(false);
+  const [isProcessingTrial, setIsProcessingTrial] = useState(false);
+  const [isProcessingPayment, setIsProcessingPayment] = useState(false);
   const [paymentModal, setPaymentModal] = useState<{
     isOpen: boolean;
     status: "success" | "error" | "loading";
@@ -69,6 +75,15 @@ export default function DashboardPage() {
           const currency = await detectUserCurrency();
           const fetchedPlans = await getPricingPlans(currency);
           setPlans(fetchedPlans);
+
+          // Check if we should show trial banner
+          const shouldShowBanner = searchParams.get('showTrialBanner') === 'true';
+          if (shouldShowBanner) {
+            setShowTrialBanner(true);
+            // Remove query param from URL
+            searchParams.delete('showTrialBanner');
+            setSearchParams(searchParams, { replace: true });
+          }
         }
       } catch (err) {
         console.error("Error checking access in Dashboard:", err);
@@ -77,11 +92,16 @@ export default function DashboardPage() {
     };
 
     checkAccess();
-  }, []);
+  }, [searchParams, setSearchParams]);
 
   const handleChoosePlan = async (plan: PricingPlan, isTrial: boolean) => {
     try {
-      setIsProcessing(true);
+      // Set processing state based on which button was clicked
+      if (isTrial) {
+        setIsProcessingTrial(true);
+      } else {
+        setIsProcessingPayment(true);
+      }
 
       const subResponse = await createSubscription({
         planId: plan.id,
@@ -97,7 +117,12 @@ export default function DashboardPage() {
         title: isTrial ? "Trial Error" : "Payment Error",
         message: error instanceof Error ? error.message : "Failed to initiate payment.",
       });
-      setIsProcessing(false);
+      // Reset the appropriate processing state
+      if (isTrial) {
+        setIsProcessingTrial(false);
+      } else {
+        setIsProcessingPayment(false);
+      }
     }
   };
 
@@ -133,6 +158,7 @@ export default function DashboardPage() {
               });
               // Refresh access locally
               setHasAccess(true);
+              setShowTrialBanner(false); // Hide trial banner
               getSubscriptionStatusCached(true); // Background refresh
             } else {
               setPaymentModal({ isOpen: true, status: "error", title: "Verification Failed", message: "Could not verify payment." });
@@ -140,13 +166,15 @@ export default function DashboardPage() {
           } catch (error) {
             setPaymentModal({ isOpen: true, status: "error", title: "Verification Failed", message: "An error occurred." });
           } finally {
-            setIsProcessing(false);
+            setIsProcessingTrial(false);
+            setIsProcessingPayment(false);
           }
         },
         theme: { color: "#9333ea" },
         modal: {
           ondismiss: () => {
-            setIsProcessing(false);
+            setIsProcessingTrial(false);
+            setIsProcessingPayment(false);
             setPaymentModal({ isOpen: false, status: "error" });
           },
         },
@@ -155,6 +183,17 @@ export default function DashboardPage() {
       rzp.open();
     };
   };
+
+  // Show empty state if user has no projects
+  if (!isLoading && projects.length === 0) {
+    return (
+      <div className="flex flex-1 h-full overflow-x-hidden">
+        <div className="flex-1 w-full h-full overflow-y-auto">
+          <EmptyProjectState />
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="flex flex-1 h-full overflow-x-hidden">
@@ -258,10 +297,21 @@ export default function DashboardPage() {
             </div>
           )}
 
-          {/* Timer - Always visible */}
-          <div className="mb-4 flex justify-center lg:justify-start">
+          {/* Timer - Hidden for now */}
+          {/* <div className="mb-4 flex justify-center lg:justify-start">
             <SyncStatusTimer />
-          </div>
+          </div> */}
+
+          {/* Trial Activation Banner */}
+          {showTrialBanner && !hasAccess && plans.length > 0 && (
+            <TrialActivationBanner
+              plans={plans}
+              onChoosePlan={handleChoosePlan}
+              onDismiss={() => setShowTrialBanner(false)}
+              processingTrial={isProcessingTrial}
+              processingPayment={isProcessingPayment}
+            />
+          )}
 
           {/* Tabs Navigation */}
           <div className="pb-6 overflow-x-auto no-scrollbar -mx-4 px-4 lg:mx-0 lg:px-0">
@@ -317,7 +367,7 @@ export default function DashboardPage() {
             <BlurredLeads
               plans={plans}
               onChoosePlan={handleChoosePlan}
-              processing={isProcessing}
+              processing={isProcessingTrial || isProcessingPayment}
             />
           ) : (
             <>

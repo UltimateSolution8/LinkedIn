@@ -69,7 +69,9 @@ export default function SignupForm({ onSuccess }: SignupFormProps = {}) {
 
       // Check if email is verified and redirect accordingly
       if (response.user.isEmailVerified) {
-        navigate("/create-project");
+        // New users always go to dashboard
+        // Dashboard will show empty state (0 projects) with CTA to create first project
+        navigate("/dashboard");
       } else {
         navigate("/verify-email-prompt");
       }

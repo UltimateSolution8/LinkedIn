@@ -88,6 +88,9 @@ export async function createSubscription(
   data: CreateSubscriptionRequest
 ): Promise<RazorpaySubscriptionResponse> {
   try {
+    console.log('[Frontend API] Creating subscription with data:', data);
+    console.log('[Frontend API] isTrial flag:', data.isTrial);
+
     const response = await fetch(`${RIXLY_API_BASE_URL}/api/subscriptions`, {
       method: "POST",
       headers: {

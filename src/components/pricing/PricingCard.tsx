@@ -87,41 +87,40 @@ export default function PricingCard({ plan, onChoosePlan, processing = false }: 
                 </ul>
 
                 {/* Trial Button */}
-                <Button
-                    onClick={() => onChoosePlan(true)}
-                    disabled={processing}
-                    variant="outline"
-                    className="w-full border-purple-600 text-purple-600 hover:bg-purple-50 py-4 sm:py-6 rounded-xl text-sm sm:text-base font-semibold disabled:opacity-50 disabled:cursor-not-allowed mb-3"
-                >
-                    {processing ? (
-                        <>
-                            <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                            Processing...
-                        </>
-                    ) : (
-                        "Start 3-Day Free Trial"
-                    )}
-                </Button>
+                {!processing && (
+                    <>
+                        <Button
+                            onClick={() => onChoosePlan(true)}
+                            variant="outline"
+                            className="w-full border-purple-600 text-purple-600 hover:bg-purple-50 py-4 sm:py-6 rounded-xl text-sm sm:text-base font-semibold mb-3"
+                        >
+                            Start 3-Day Free Trial
+                        </Button>
 
-                <p className="text-xs text-center text-gray-500 mb-4">
-                    No charge for 3 days. Cancel anytime.
-                </p>
+                        <p className="text-xs text-center text-gray-500 mb-4">
+                            No charge for 3 days. Cancel anytime.
+                        </p>
 
-                {/* Pay Now Button (existing flow) */}
-                <Button
-                    onClick={() => onChoosePlan(false)}
-                    disabled={processing}
-                    className="w-full bg-gradient-to-r from-purple-600 to-purple-700 hover:from-purple-700 hover:to-purple-800 text-white py-4 sm:py-6 rounded-xl text-sm sm:text-base font-semibold disabled:opacity-50 disabled:cursor-not-allowed"
-                >
-                    {processing ? (
-                        <>
-                            <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                            Processing...
-                        </>
-                    ) : (
-                        "Pay Now"
-                    )}
-                </Button>
+                        {/* Pay Now Button (existing flow) */}
+                        <Button
+                            onClick={() => onChoosePlan(false)}
+                            className="w-full bg-gradient-to-r from-purple-600 to-purple-700 hover:from-purple-700 hover:to-purple-800 text-white py-4 sm:py-6 rounded-xl text-sm sm:text-base font-semibold"
+                        >
+                            Pay Now
+                        </Button>
+                    </>
+                )}
+
+                {/* Processing State */}
+                {processing && (
+                    <Button
+                        disabled
+                        className="w-full bg-gradient-to-r from-purple-600 to-purple-700 text-white py-4 sm:py-6 rounded-xl text-sm sm:text-base font-semibold"
+                    >
+                        <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                        Processing...
+                    </Button>
+                )}
             </CardContent>
         </Card>
     );

@@ -5,6 +5,7 @@ import Pagination from "@/components/ui/pagination";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { getLeads, type Lead } from "@/lib/api/leads";
 import { ArrowUpDown, ArrowUp, ArrowDown } from "lucide-react";
+import LeadDiscoveryState from "./LeadDiscoveryState";
 
 interface FindLeadsTabProps {
   projectId: string;
@@ -14,6 +15,7 @@ interface FindLeadsTabProps {
 export default function FindLeadsTab({ projectId, onCountChange }: FindLeadsTabProps) {
   const [leads, setLeads] = useState<Lead[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [isRefreshing, setIsRefreshing] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
   const [sortBy, setSortBy] = useState<"date" | "relevance">("date");
@@ -26,41 +28,52 @@ export default function FindLeadsTab({ projectId, onCountChange }: FindLeadsTabP
     pageSize: 10,
   });
 
-  useEffect(() => {
-    const fetchLeads = async () => {
-      try {
+  const fetchLeads = async (isManualRefresh = false) => {
+    try {
+      if (isManualRefresh) {
+        setIsRefreshing(true);
+      } else {
         setIsLoading(true);
-        setError(null);
-        const response = await getLeads(projectId, currentPage, 10, sortBy, sortOrder);
-        setLeads(response.data);
-        setPagination({
-          totalPages: response.pagination.totalPages,
-          totalLeads: response.pagination.totalLeads,
-          hasNextPage: response.pagination.hasNextPage,
-          hasPrevPage: response.pagination.hasPrevPage,
-          pageSize: response.pagination.pageSize,
-        });
-
-        // Notify parent of total count
-        if (onCountChange) {
-          onCountChange(response.pagination.totalLeads);
-        }
-      } catch (err) {
-        setError(err instanceof Error ? err.message : "Failed to fetch leads");
-        console.error("Error fetching leads:", err);
-        // Reset count on error
-        if (onCountChange) {
-          onCountChange(0);
-        }
-      } finally {
-        setIsLoading(false);
       }
-    };
+      setError(null);
+      const response = await getLeads(projectId, currentPage, 10, sortBy, sortOrder);
+      setLeads(response.data);
+      setPagination({
+        totalPages: response.pagination.totalPages,
+        totalLeads: response.pagination.totalLeads,
+        hasNextPage: response.pagination.hasNextPage,
+        hasPrevPage: response.pagination.hasPrevPage,
+        pageSize: response.pagination.pageSize,
+      });
 
+      // Notify parent of total count
+      if (onCountChange) {
+        onCountChange(response.pagination.totalLeads);
+      }
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Failed to fetch leads");
+      console.error("Error fetching leads:", err);
+      // Reset count on error
+      if (onCountChange) {
+        onCountChange(0);
+      }
+    } finally {
+      setIsLoading(false);
+      setIsRefreshing(false);
+    }
+  };
+
+  useEffect(() => {
     if (projectId) {
       fetchLeads();
     }
-  }, [projectId, currentPage, sortBy, sortOrder, onCountChange]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [projectId, currentPage, sortBy, sortOrder]);
+
+  // Handle manual refresh
+  const handleRefresh = () => {
+    fetchLeads(true);
+  };
 
   const handlePageChange = (page: number) => {
     setCurrentPage(page);
@@ -96,11 +109,11 @@ export default function FindLeadsTab({ projectId, onCountChange }: FindLeadsTabP
 
   if (leads.length === 0) {
     return (
-      <div className="flex flex-col items-center justify-center pt-20">
-        <p className="text-neutral-500 dark:text-neutral-400 text-lg">
-          Hang tight! We’re scanning Reddit to uncover potential leads. We’ll let you know as soon as the results are in.
-        </p>
-      </div>
+      <LeadDiscoveryState
+        type="leads"
+        onRefresh={handleRefresh}
+        isRefreshing={isRefreshing}
+      />
     );
   }
 
