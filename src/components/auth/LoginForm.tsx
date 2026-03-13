@@ -135,7 +135,6 @@ export default function LoginForm({ onSuccess }: LoginFormProps = {}) {
       <Link
         to="/forgot-password"
         className="text-sm text-purple-600 dark:text-purple-500 hover:underline self-end"
-        onClick={() => logger.logUserAction('forgot_password_clicked', { from: 'login_form' })}
       >
         Forgot Password?
       </Link>
