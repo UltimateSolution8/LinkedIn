@@ -1,14 +1,14 @@
-import { Routes, Route } from 'react-router-dom'
+import { Routes, Route, Navigate } from 'react-router-dom'
 import { useEffect } from 'react'
 
 // Layouts
 import HomeLayout from '@/layouts/HomeLayout'
 import AuthLayout from '@/layouts/AuthLayout'
-import DashboardLayout from '@/layouts/DashboardLayout'
 import ProfileLayout from '@/layouts/ProfileLayout'
 import CreateProjectLayout from '@/layouts/CreateProjectLayout'
 import NotificationsLayout from '@/layouts/NotificationsLayout'
 import AdminLayout from '@/layouts/AdminLayout'
+import AppLayout from '@/layouts/AppLayout'
 
 // Pages
 import HomePage from '@/pages/HomePage'
@@ -19,7 +19,6 @@ import PrivacyPolicyPage from '@/pages/policies/PrivacyPolicyPage'
 import TermsPage from '@/pages/policies/TermsPage'
 import CancelAndRefundPage from '@/pages/policies/CancelAndRefundPage'
 import LoginPage from '@/pages/LoginPage'
-import DashboardPage from '@/pages/DashboardPage'
 import ProfilePage from '@/pages/ProfilePage'
 import CreateProjectPage from '@/pages/CreateProjectPage'
 import NotificationsPage from '@/pages/NotificationsPage'
@@ -34,6 +33,15 @@ import VerifyEmailPromptPage from '@/pages/verify-email-prompt/VerifyEmailPrompt
 import ForgotPasswordPage from '@/pages/forgot-password/ForgotPasswordPage'
 import ResetPasswordPage from '@/pages/reset-password/ResetPasswordPage'
 import AuthPricingPage from '@/pages/AuthPricingPage'
+
+// App Views (New Route-Based Navigation)
+import DashboardView from '@/pages/app/DashboardView'
+import LeadsView from '@/pages/app/LeadsView'
+import OpportunitiesView from '@/pages/app/OpportunitiesView'
+import SettingsView from '@/pages/app/SettingsView'
+import ProjectRouteGuard from '@/components/app/ProjectRouteGuard'
+import DashboardRedirect from '@/components/DashboardRedirect'
+import OnboardingPage from '@/pages/OnboardingPage'
 
 export default function AppRouter() {
   // Set default page title and meta description
@@ -73,9 +81,22 @@ export default function AppRouter() {
         {/* Auth Pricing Route */}
         <Route path="/auth-pricing" element={<AuthPricingPage />} />
 
-        {/* Dashboard Routes */}
-        <Route element={<DashboardLayout />}>
-          <Route path="/dashboard" element={<DashboardPage />} />
+        {/* Dashboard Routes - OLD (Backward Compatibility) */}
+        {/* Redirect old /dashboard to new /app/:projectId/dashboard structure */}
+        <Route path="/dashboard" element={<DashboardRedirect />} />
+
+        {/* App Routes - NEW (Route-Based Navigation) */}
+        {/* Onboarding (no guard needed - for users with 0 projects) */}
+        <Route path="/app/onboarding" element={<OnboardingPage />} />
+
+        {/* App routes with project guard */}
+        <Route element={<ProjectRouteGuard><AppLayout /></ProjectRouteGuard>}>
+          <Route path="/app/:projectId/dashboard" element={<DashboardView />} />
+          <Route path="/app/:projectId/leads" element={<LeadsView />} />
+          <Route path="/app/:projectId/opportunities" element={<OpportunitiesView />} />
+          <Route path="/app/:projectId/settings" element={<SettingsView />} />
+          {/* Redirect /app/:projectId to /app/:projectId/dashboard */}
+          <Route path="/app/:projectId" element={<Navigate to="dashboard" replace />} />
         </Route>
 
         {/* Profile Routes */}
