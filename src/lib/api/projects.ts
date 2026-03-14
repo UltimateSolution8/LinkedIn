@@ -62,14 +62,19 @@ export interface GenerateDescriptionResponse {
 
 export interface GenerateKeywordsRequest {
   productDescription: string;
+  targetAudience?: string[];
+  valuePropositions?: string[];
 }
 
 export interface GenerateKeywordsResponseData {
   keywords: string[];
-  count: number;
+  keywordsCount: number;
+  targetAudience: string[];
+  valuePropositions: string[];
 }
 
 export interface GenerateKeywordsResponse {
+  message: string;
   data: GenerateKeywordsResponseData;
 }
 

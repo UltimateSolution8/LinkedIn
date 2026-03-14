@@ -15,7 +15,7 @@ import { getCurrentUser } from "@/lib/api/auth";
 import BlurredLeads from "@/components/dashboard/BlurredLeads";
 import { getPricingPlans, createSubscription, verifySubscriptionPayment, type PricingPlan, RazorpaySubscriptionResponse } from "@/lib/api/pricing";
 import { detectUserCurrency } from "@/lib/utils/geolocation";
-import { getSubscriptionStatusCached } from "@/lib/utils/subscription";
+import { getSubscriptionStatusCached, checkSubscriptionAccess } from "@/lib/utils/subscription";
 import PaymentStatusModal from "@/components/pricing/PaymentStatusModal";
 import { useEffect } from "react";
 
@@ -68,10 +68,10 @@ export default function DashboardPage() {
   useEffect(() => {
     const checkAccess = async () => {
       try {
-        const status = await getSubscriptionStatusCached();
-        setHasAccess(status.hasActiveSubscription);
+        const hasAccess = await checkSubscriptionAccess();
+        setHasAccess(hasAccess);
 
-        if (!status.hasActiveSubscription) {
+        if (!hasAccess) {
           const currency = await detectUserCurrency();
           const fetchedPlans = await getPricingPlans(currency);
           setPlans(fetchedPlans);

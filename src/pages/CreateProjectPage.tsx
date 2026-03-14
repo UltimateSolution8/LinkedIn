@@ -217,6 +217,8 @@ export default function CreateProjectPage() {
             keywords={keywords}
             onKeywordsChange={setKeywords}
             productDescription={projectDetails?.description || ""}
+            targetAudience={projectDetails?.targetAudience}
+            valuePropositions={projectDetails?.valuePropositions}
           />
         )}
 

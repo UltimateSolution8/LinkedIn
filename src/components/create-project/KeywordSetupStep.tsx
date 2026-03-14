@@ -1,6 +1,6 @@
 
 import { useState } from "react";
-import { Sparkles, X, ArrowRight, Loader2 } from "lucide-react";
+import { Sparkles, X, ArrowRight, Loader2, AlertCircle } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { generateKeywords } from "@/lib/api/projects";
@@ -17,6 +17,8 @@ interface KeywordSetupStepProps {
   keywords: Keyword[];
   onKeywordsChange: (keywords: Keyword[]) => void;
   productDescription: string;
+  targetAudience?: string[];
+  valuePropositions?: string[];
 }
 
 export default function KeywordSetupStep({
@@ -25,6 +27,8 @@ export default function KeywordSetupStep({
   keywords,
   onKeywordsChange,
   productDescription,
+  targetAudience,
+  valuePropositions,
 }: KeywordSetupStepProps) {
   const [keywordInput, setKeywordInput] = useState("");
   const [isGenerating, setIsGenerating] = useState(false);
@@ -58,6 +62,8 @@ export default function KeywordSetupStep({
     try {
       const response = await generateKeywords({
         productDescription: productDescription,
+        targetAudience: targetAudience,
+        valuePropositions: valuePropositions,
       });
 
       if (response.data.keywords && response.data.keywords.length > 0) {
@@ -135,10 +141,27 @@ export default function KeywordSetupStep({
           {generationError && (
             <p className="text-sm text-red-500">{generationError}</p>
           )}
+
+          {/* Minimum Keywords Warning */}
+          {keywords.length < 30 && (
+            <div className="flex items-start gap-3 p-4 bg-amber-50 dark:bg-amber-950/20 border border-amber-200 dark:border-amber-800/50 rounded-lg">
+              <AlertCircle className="w-5 h-5 text-amber-600 dark:text-amber-500 flex-shrink-0 mt-0.5" />
+              <p className="text-sm text-amber-800 dark:text-amber-300">
+                You need at least <strong>30 keywords</strong> to proceed. Use the <strong>AI Keyword Generator</strong> above to get started quickly.
+              </p>
+            </div>
+          )}
         </div>
 
         {/* Keywords Display */}
         <div className="flex flex-col gap-3 rounded-lg bg-neutral-100 dark:bg-neutral-900/50 p-4 min-h-[12rem]">
+          {/* Keyword Counter */}
+          <div className="flex items-center justify-between mb-2">
+            <h4 className="text-sm font-semibold text-neutral-700 dark:text-neutral-300">Your Keywords</h4>
+            <span className={`text-sm font-medium ${keywords.length >= 30 ? "text-green-600 dark:text-green-500" : "text-amber-600 dark:text-amber-500"}`}>
+              {keywords.length} / 30 keywords
+            </span>
+          </div>
           <div className="flex flex-wrap gap-3">
             {keywords.length === 0 ? (
               <p className="text-neutral-500 dark:text-neutral-400 text-sm">
@@ -186,6 +209,7 @@ export default function KeywordSetupStep({
         <Button
           type="button"
           onClick={onNext}
+          disabled={keywords.length < 30}
           className="min-w-[84px] bg-purple-600 hover:bg-purple-700 text-white gap-2"
         >
           <span>Next</span>
