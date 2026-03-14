@@ -13,15 +13,17 @@ import KeywordSetupStep, { Keyword } from "@/components/create-project/KeywordSe
 import PreviewProjectStep from "@/components/create-project/PreviewProjectStep";
 import { createProject } from "@/lib/api/projects";
 import { checkSubscriptionAccess } from "@/lib/utils/subscription";
+import { useProject } from "@/contexts/ProjectContext";
 
 export default function CreateProjectPage() {
   const navigate = useNavigate();
   const [currentStep, setCurrentStep] = useState(1);
   const [projectInfo, setProjectInfo] = useState<ProjectInfoData | null>(null);
   const [projectDetails, setProjectDetails] = useState<ProjectDetailsData | null>(null);
-  const [keywords, setKeywords] = useState<Keyword[]>([  ]);
+  const [keywords, setKeywords] = useState<Keyword[]>([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const { refreshProjects, setSelectedProjectId } = useProject();
 
   const totalSteps = 4;
   const progressPercentage = (currentStep / totalSteps) * 100;
@@ -78,6 +80,13 @@ export default function CreateProjectPage() {
       const response = await createProject(projectData);
 
       console.log("Project created successfully:", response);
+
+      // Refresh project list and select the new project BEFORE redirecting
+      await refreshProjects();
+      const newProject = response.project as any;
+      if (newProject && newProject.id) {
+        setSelectedProjectId(String(newProject.id));
+      }
 
       // Check subscription status to decide where to redirect
       const hasAccess = await checkSubscriptionAccess();

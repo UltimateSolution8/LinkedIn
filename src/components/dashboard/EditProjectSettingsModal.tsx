@@ -148,12 +148,12 @@ export default function EditProjectSettingsModal({
                 <Badge
                   key={idx}
                   variant="outline"
-                  className="px-3 py-1 bg-purple-50 dark:bg-purple-900/20 text-purple-700 dark:text-purple-300 border-purple-200 dark:border-purple-800"
+                  className="px-3 py-1 bg-primary/10 text-primary border-primary/20"
                 >
                   {keyword}
                   <button
                     onClick={() => handleRemoveKeyword(keyword)}
-                    className="ml-2 hover:text-purple-900 dark:hover:text-purple-100"
+                    className="ml-2 hover:text-red-500 transition-colors"
                   >
                     <X className="w-3 h-3" />
                   </button>
@@ -191,12 +191,12 @@ export default function EditProjectSettingsModal({
                 <Badge
                   key={idx}
                   variant="outline"
-                  className="px-3 py-1 bg-blue-50 dark:bg-blue-900/20 text-blue-700 dark:text-blue-300 border-blue-200 dark:border-blue-800"
+                  className="px-3 py-1 bg-primary/10 text-primary border-primary/20"
                 >
                   {audience}
                   <button
                     onClick={() => handleRemoveAudience(audience)}
-                    className="ml-2 hover:text-blue-900 dark:hover:text-blue-100"
+                    className="ml-2 hover:text-red-500 transition-colors"
                   >
                     <X className="w-3 h-3" />
                   </button>
@@ -234,12 +234,12 @@ export default function EditProjectSettingsModal({
                 <Badge
                   key={idx}
                   variant="outline"
-                  className="px-3 py-1 bg-red-50 dark:bg-red-900/20 text-red-700 dark:text-red-300 border-red-200 dark:border-red-800"
+                  className="px-3 py-1 bg-primary/10 text-primary border-primary/20"
                 >
                   {valueProposition}
                   <button
                     onClick={() => handleRemoveValueProposition(valueProposition)}
-                    className="ml-2 hover:text-red-900 dark:hover:text-red-100"
+                    className="ml-2 hover:text-red-500 transition-colors"
                   >
                     <X className="w-3 h-3" />
                   </button>
@@ -287,7 +287,7 @@ export default function EditProjectSettingsModal({
           <Button
             onClick={handleSave}
             disabled={isSaving}
-            className="bg-purple-600 hover:bg-purple-700 text-white"
+            className="bg-primary hover:bg-primary/90 text-white"
           >
             {isSaving ? (
               <>

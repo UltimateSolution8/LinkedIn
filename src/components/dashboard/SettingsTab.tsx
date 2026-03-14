@@ -32,18 +32,18 @@ export default function SettingsTab({ projectId }: SettingsTabProps) {
   };
 
   return (
-    <div className="flex flex-col pt-6 gap-8 max-w-5xl">
+    <div className="flex flex-col pt-6 gap-8 pb-12">
       {/* Header with Edit Button */}
       <div className="flex justify-between items-center">
         <div>
-          <h1 className="text-2xl font-bold text-neutral-950 dark:text-white">Project Settings</h1>
+          <h2 className="text-xl font-bold text-neutral-950 dark:text-white">Configure Project</h2>
           <p className="text-sm text-neutral-500 dark:text-neutral-400 mt-1">
-            Manage your project configuration and preferences
+            General settings and descriptions
           </p>
         </div>
         <Button
           onClick={() => setIsEditModalOpen(true)}
-          className="bg-purple-600 hover:bg-purple-700 text-white"
+          className="bg-primary hover:bg-primary/90 text-white"
         >
           <Pencil className="w-4 h-4 mr-2" />
           Edit Settings
@@ -63,7 +63,7 @@ export default function SettingsTab({ projectId }: SettingsTabProps) {
             {targetAudience.map((audience, index) => (
               <Badge
                 key={index}
-                className="bg-blue-600/10 dark:bg-blue-600/20 text-blue-600 dark:text-blue-400 hover:bg-blue-600/20 text-sm px-3 py-1.5"
+                className="bg-primary/10 text-primary hover:bg-primary/20 border-none text-sm px-3 py-1.5 transition-colors"
               >
                 {audience}
               </Badge>
@@ -91,7 +91,7 @@ export default function SettingsTab({ projectId }: SettingsTabProps) {
             {valuePropositions.map((valueProposition, index) => (
               <Badge
                 key={index}
-                className="bg-red-600/10 dark:bg-red-600/20 text-red-600 dark:text-red-400 hover:bg-red-600/20 text-sm px-3 py-1.5"
+                className="bg-primary/10 text-primary hover:bg-primary/20 border-none text-sm px-3 py-1.5 transition-colors"
               >
                 {valueProposition}
               </Badge>
@@ -119,7 +119,7 @@ export default function SettingsTab({ projectId }: SettingsTabProps) {
             {keywords.map((keyword, index) => (
               <Badge
                 key={index}
-                className="bg-purple-600/10 dark:bg-purple-600/20 text-purple-600 dark:text-purple-400 hover:bg-purple-600/20 text-sm px-3 py-1.5"
+                className="bg-primary/10 text-primary hover:bg-primary/20 border-none text-sm px-3 py-1.5 transition-colors"
               >
                 {keyword}
               </Badge>
@@ -142,9 +142,9 @@ export default function SettingsTab({ projectId }: SettingsTabProps) {
             Receive alerts when new leads are discovered
           </p>
         </div>
-        <div className="bg-neutral-50 dark:bg-neutral-800/50 border border-neutral-200 dark:border-neutral-700 rounded-lg p-6">
+        <div className="bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-xl p-6 shadow-sm">
           <div className="flex items-center gap-3">
-            <div className={`w-3 h-3 rounded-full ${project.emailNotifyEnabled ? 'bg-green-500' : 'bg-neutral-400 dark:bg-neutral-600'}`} />
+            <div className={`w-3 h-3 rounded-full ${project.emailNotifyEnabled ? 'bg-primary animate-pulse shadow-[0_0_8px_rgba(14,124,110,0.5)]' : 'bg-neutral-400 dark:bg-neutral-600'}`} />
             <p className="text-sm font-medium text-neutral-700 dark:text-neutral-300">
               Email notifications are {project.emailNotifyEnabled ? 'enabled' : 'disabled'}
             </p>

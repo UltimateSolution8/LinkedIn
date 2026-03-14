@@ -1,6 +1,7 @@
 
 import { useParams } from "react-router-dom";
 import SettingsTab from "@/components/dashboard/SettingsTab";
+import { useProject } from "@/contexts/ProjectContext";
 
 /**
  * SettingsView - Project Settings
@@ -14,18 +15,25 @@ import SettingsTab from "@/components/dashboard/SettingsTab";
  */
 export default function SettingsView() {
   const { projectId } = useParams<{ projectId: string }>();
+  const { getProjectById } = useProject();
+
+  const project = projectId ? getProjectById(projectId) : null;
 
   return (
     <div className="p-4 lg:p-8">
       {/* Page Header */}
-      <div className="mb-6">
-        <h1 className="text-2xl font-bold text-neutral-950 dark:text-white">
-          Settings
-        </h1>
-        <p className="text-sm text-neutral-600 dark:text-neutral-400 mt-1">
-          Manage your project configuration
-        </p>
-      </div>
+      {project && (
+        <div className="mb-8 space-y-3">
+          <div className="flex items-center gap-3">
+            <h1 className="text-3xl font-bold text-neutral-950 dark:text-white">
+              {project.projectName} Settings
+            </h1>
+          </div>
+          <p className="text-sm text-neutral-600 dark:text-neutral-400 leading-relaxed">
+            Manage your project configuration and preferences
+          </p>
+        </div>
+      )}
 
       {/* Settings Content */}
       {projectId && <SettingsTab projectId={projectId} />}
