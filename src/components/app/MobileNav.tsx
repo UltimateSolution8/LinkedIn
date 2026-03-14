@@ -93,20 +93,16 @@ export default function MobileNav({ leadsCount = 0, opportunitiesCount = 0 }: Mo
                   onClick={handleNavClick}
                   className={({ isActive }) =>
                     cn(
-                      "flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors relative",
+                      "flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-colors relative",
                       isActive
-                        ? "bg-teal-50 dark:bg-teal-950/20 text-teal-700 dark:text-teal-400"
-                        : "text-neutral-700 dark:text-neutral-300 hover:bg-neutral-100 dark:hover:bg-neutral-900"
+                        ? "bg-primary/10 text-primary"
+                        : "text-neutral-600 dark:text-neutral-400 hover:bg-neutral-50 dark:hover:bg-neutral-900"
                     )
                   }
                 >
-                  {({ isActive }) => (
+                  {() => (
                     <>
-                      {/* Left border indicator for active item */}
-                      {isActive && (
-                        <div className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-8 bg-teal-600 rounded-r-full" />
-                      )}
-                      <Icon className={cn("h-5 w-5", isActive ? "text-teal-600 dark:text-teal-500" : "text-neutral-500")} />
+                      <Icon className="h-5 w-5" />
                       <span className="flex-1">{item.label}</span>
                       {item.badge !== undefined && item.badge > 0 && (
                         <Badge

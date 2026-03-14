@@ -12,14 +12,11 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { getCurrentUser } from "@/lib/api/auth";
 import { logout } from "@/lib/api/auth";
-import { useProject } from "@/contexts/ProjectContext";
+import ProjectSwitcher from "./ProjectSwitcher";
 
 export default function AppHeader() {
   const navigate = useNavigate();
   const currentUser = getCurrentUser();
-  const { selectedProjectId, getProjectById } = useProject();
-
-  const selectedProject = selectedProjectId ? getProjectById(selectedProjectId) : null;
 
   const getUserInitials = (firstName: string, lastName: string) => {
     return `${firstName[0] || ''}${lastName[0] || ''}`.toUpperCase();
@@ -41,11 +38,9 @@ export default function AppHeader() {
 
   return (
     <header className="h-16 flex-shrink-0 border-b border-neutral-200 dark:border-neutral-800 bg-white/80 dark:bg-neutral-950/80 backdrop-blur-md px-8 flex items-center justify-between sticky top-0 z-10">
-      {/* Left: Project Name */}
+      {/* Left: Project Switcher */}
       <div className="flex items-center gap-4">
-        <h2 className="text-lg font-bold text-neutral-900 dark:text-white">
-          {selectedProject?.projectName || "Rixly"}
-        </h2>
+        <ProjectSwitcher />
         {/* TODO: Status badge will be added in Story 001B for extraction progress */}
       </div>
 

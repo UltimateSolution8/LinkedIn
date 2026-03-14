@@ -2,7 +2,6 @@
 import { NavLink, useParams, useNavigate } from "react-router-dom";
 import { LayoutDashboard, Flame, Target, Settings, Plus, Rocket } from "lucide-react";
 import { cn } from "@/lib/utils";
-import ProjectSwitcher from "./ProjectSwitcher";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
@@ -82,14 +81,6 @@ export default function AppSidebar({ leadsCount = 0, opportunitiesCount = 0 }: A
           <Plus className="h-4 w-4" />
           <span>New project</span>
         </Button>
-      </div>
-
-      {/* Current Project Section */}
-      <div className="px-4 mb-8">
-        <p className="px-3 text-xs font-semibold text-neutral-400 uppercase tracking-wider mb-2">
-          Current Project
-        </p>
-        <ProjectSwitcher />
       </div>
 
       {/* Navigation */}
