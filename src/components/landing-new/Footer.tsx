@@ -76,7 +76,7 @@ export const Footer = () => {
           {/* Brand */}
           <div className="col-span-2 md:col-span-1">
             <Link to="/" className="flex items-center gap-2 mb-4">
-              <img src="/logo.png" alt="Rixly Logo" className="w-9 h-9 object-contain" />
+              <img src="/logo.png" alt="Rixly Logo" className="w-9 h-9 object-contain logo-theme-tint" />
               <span className="font-heading font-bold text-xl">RIXLY</span>
             </Link>
             <p className="text-sm text-muted-foreground mb-6">

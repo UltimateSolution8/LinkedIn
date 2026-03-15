@@ -1,7 +1,7 @@
 // @ts-nocheck
 import { motion } from "framer-motion";
-import { ArrowRight } from "lucide-react";
 import { Button } from "../ui/button";
+import LinkedInEarlyAccessDialog from "./LinkedInEarlyAccessDialog";
 
 export const CTASection = () => {
   return (
@@ -62,14 +62,10 @@ export const CTASection = () => {
               transition={{ delay: 0.4 }}
               className="flex flex-wrap justify-center gap-4"
             >
-              <Button
-                size="lg"
-                className="rounded-full font-medium text-lg px-8 glow-primary glow-primary-hover btn-press"
-                data-testid="cta-get-started"
-              >
-                LinkedIn early access
-                <ArrowRight className="ml-2 w-5 h-5" />
-              </Button>
+              <LinkedInEarlyAccessDialog
+                triggerClassName="rounded-full font-medium text-lg px-8 glow-primary glow-primary-hover btn-press"
+                triggerLabel="LinkedIn early access"
+              />
               <Button
                 size="lg"
                 variant="outline"

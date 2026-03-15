@@ -1,6 +1,6 @@
 // @ts-nocheck
 import { motion, AnimatePresence } from "framer-motion";
-import { ChevronDown } from "lucide-react";
+import { Plus } from "lucide-react";
 import { useState } from "react";
 
 const categories = [
@@ -158,10 +158,10 @@ export const FAQSection = () => {
                 >
                   <span className="font-medium text-sm pr-4">{faq.question}</span>
                   <motion.div
-                    animate={{ rotate: openIndex === index ? 180 : 0 }}
+                    animate={{ rotate: openIndex === index ? 45 : 0 }}
                     transition={{ duration: 0.25, ease: "easeOut" }}
                   >
-                    <ChevronDown className="w-4 h-4 text-muted-foreground flex-shrink-0" />
+                    <Plus className="w-4 h-4 text-muted-foreground flex-shrink-0" />
                   </motion.div>
                 </button>
                 <AnimatePresence>

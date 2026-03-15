@@ -45,7 +45,7 @@ export const Navbar = ({ isDark, toggleTheme, setView }) => {
             <img
               src="/logo.png"
               alt="Rixly Logo"
-              className="w-9 h-9 object-contain group-hover:scale-105 transition-transform duration-300"
+              className="w-9 h-9 object-contain logo-theme-tint group-hover:scale-105 transition-transform duration-300"
             />
             <span className="font-heading font-bold text-2xl tracking-tighter text-slate-900 dark:text-white">
               RIXLY
