@@ -107,7 +107,7 @@ export default function LeadCard({
                 variant={source === "comment" ? "default" : "secondary"}
                 className={`text-xs font-semibold ${
                   source === "comment"
-                    ? "bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-400"
+                    ? "bg-teal-100 text-teal-700 dark:bg-teal-900/30 dark:text-teal-400"
                     : "bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400"
                 }`}
               >
@@ -181,7 +181,7 @@ export default function LeadCard({
                   href={commentUrl}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="flex items-center gap-1.5 text-purple-600 dark:text-teal-400 text-sm font-bold hover:underline"
+                  className="flex items-center gap-1.5 text-teal-600 dark:text-teal-400 text-sm font-bold hover:underline"
                 >
                   <span>View Comment</span>
                   <ExternalLink className="w-4 h-4 text-neutral-500 dark:text-neutral-400 " />
@@ -191,7 +191,7 @@ export default function LeadCard({
                 href={postUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex items-center gap-1.5 text-purple-600 dark:text-teal-400 text-sm font-bold hover:underline"
+                className="flex items-center gap-1.5 text-teal-600 dark:text-teal-400 text-sm font-bold hover:underline"
               >
                 <span>{source === "comment" ? "View Post" : "View Post"}</span>
                 <ExternalLink className="w-4 h-4 text-neutral-500 dark:text-neutral-400 " />
@@ -214,8 +214,8 @@ export default function LeadCard({
               </div>
             )}
             {matchReason && (
-              <div className="p-4 rounded-lg bg-purple-50 dark:bg-purple-900/10 border border-purple-200 dark:border-purple-800/30">
-                <p className="text-xs font-semibold text-purple-700 dark:text-purple-400 uppercase tracking-wider mb-2">
+              <div className="p-4 rounded-lg bg-teal-50 dark:bg-teal-900/10 border border-teal-200 dark:border-teal-800/30">
+                <p className="text-xs font-semibold text-teal-700 dark:text-teal-400 uppercase tracking-wider mb-2">
                   How It Fits
                 </p>
                 <p className="text-neutral-950 dark:text-white text-sm leading-relaxed">
@@ -232,7 +232,7 @@ export default function LeadCard({
             <DialogTrigger asChild>
               <Button
                 variant="link"
-                className="text-purple-600 dark:text-purple-400 p-0 h-auto mt-2 text-sm font-medium self-start"
+                className="text-teal-600 dark:text-teal-400 p-0 h-auto mt-2 text-sm font-medium self-start"
               >
                 Show More
               </Button>
@@ -273,7 +273,7 @@ export default function LeadCard({
                         href={commentUrl}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="flex items-center gap-1.5 text-purple-600 dark:text-teal-400 text-sm font-bold hover:underline mt-2"
+                        className="flex items-center gap-1.5 text-teal-600 dark:text-teal-400 text-sm font-bold hover:underline mt-2"
                       >
                         <span>View Comment</span>
                         <ArrowRight className="w-4 h-4" />
@@ -300,7 +300,7 @@ export default function LeadCard({
                       href={postUrl}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="flex items-center gap-1.5 text-purple-600 dark:text-teal-400 text-sm font-bold hover:underline"
+                      className="flex items-center gap-1.5 text-teal-600 dark:text-teal-400 text-sm font-bold hover:underline"
                     >
                       <span>View Post</span>
                       <ArrowRight className="w-4 h-4" />
@@ -321,8 +321,8 @@ export default function LeadCard({
                 )}
 
                 {matchReason && (
-                  <div className="p-4 rounded-lg bg-purple-50 dark:bg-purple-900/10 border border-purple-200 dark:border-purple-800/30">
-                    <p className="text-sm font-semibold text-purple-700 dark:text-purple-400">
+                  <div className="p-4 rounded-lg bg-teal-50 dark:bg-teal-900/10 border border-teal-200 dark:border-teal-800/30">
+                    <p className="text-sm font-semibold text-teal-700 dark:text-teal-400">
                       How It Fits
                     </p>
                     <p className="text-neutral-950 dark:text-white text-sm font-normal leading-normal mt-1 whitespace-pre-wrap">
@@ -333,7 +333,7 @@ export default function LeadCard({
 
                 {/* Reason for Match (fallback) */}
                 {!mainPainpoint && !matchReason && (
-                  <div className="p-4 rounded-lg bg-purple-600/5 dark:bg-neutral-900">
+                  <div className="p-4 rounded-lg bg-teal-600/5 dark:bg-neutral-900">
                     <p className="text-sm font-semibold text-neutral-950 dark:text-white">
                       Reason for Match
                     </p>
@@ -353,7 +353,7 @@ export default function LeadCard({
             variant="outline"
             size="sm"
             onClick={() => setIsMessageDialogOpen(true)}
-            className="text-purple-600 dark:text-purple-400 border-purple-600 dark:border-purple-400 hover:bg-purple-50 dark:hover:bg-purple-950"
+            className="text-teal-600 dark:text-teal-400 border-teal-600 dark:border-teal-400 hover:bg-teal-50 dark:hover:bg-teal-950"
           >
             <Sparkles className="w-4 h-4 mr-2" />
             Generate Response

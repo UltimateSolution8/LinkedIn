@@ -49,7 +49,7 @@ export default function RequestDemoDialog({ isOpen, onClose }: RequestDemoDialog
             </p>
             <button
               onClick={handleClose}
-              className="w-full py-2 rounded-lg bg-purple-600 text-white font-medium hover:bg-purple-700"
+              className="w-full py-2 rounded-lg bg-teal-600 text-white font-medium hover:bg-teal-700"
             >
               Close
             </button>

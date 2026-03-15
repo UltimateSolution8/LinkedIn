@@ -15,7 +15,7 @@ export default function AuthBrandingSection() {
             backgroundImage: `url("https://lh3.googleusercontent.com/aida-public/AB6AXuBZkk1NM_u8VUzIEiId_e7I3riW_1ENUQGhnpnfLGJhYx2MpSPXKt4eU7HbFDQsfDF9d8QxheaS7SikBUJCsaAAxwEOtosZxdsR1JohNh4lOSnF1ChhUVZC4LkFOCZN6CpCZUGDFX4ZHDqyXRNvxpIVHzhp3ATc2dOR9SNO98r9Sk36OysbjaZSjHvG7VXMmFymlH1I0gTiSWFQncThgb8s6ye6CUUbmqS98_uGmQEITTacvepi8k9kd78DbDoMtFldXIvT8d_R7Ixs")`
           }}
           role="img"
-          aria-label="Abstract purple and teal gradient waves representing data and AI"
+          aria-label="Abstract teal and teal gradient waves representing data and AI"
         />
       </div>
     </div>

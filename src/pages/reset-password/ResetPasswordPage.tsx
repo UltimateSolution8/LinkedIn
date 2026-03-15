@@ -90,13 +90,13 @@ function ResetPasswordContent() {
 
   if (status === "loading") {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-purple-50 to-white flex items-center justify-center px-4 sm:px-6 lg:px-8">
+      <div className="min-h-screen bg-gradient-to-br from-teal-50 to-white flex items-center justify-center px-4 sm:px-6 lg:px-8">
         <div className="max-w-md w-full">
           <Card className="border-0 shadow-lg">
             <CardContent className="p-8">
               <div className="flex flex-col items-center text-center gap-6">
-                <div className="w-16 h-16 bg-purple-100 rounded-full flex items-center justify-center">
-                  <Loader2 className="w-8 h-8 text-purple-600 animate-spin" />
+                <div className="w-16 h-16 bg-teal-100 rounded-full flex items-center justify-center">
+                  <Loader2 className="w-8 h-8 text-teal-600 animate-spin" />
                 </div>
                 <div className="space-y-2">
                   <h1 className="text-2xl font-bold text-gray-900">Verifying Reset Token</h1>
@@ -112,7 +112,7 @@ function ResetPasswordContent() {
 
   if (status === "success") {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-purple-50 to-white flex items-center justify-center px-4 sm:px-6 lg:px-8">
+      <div className="min-h-screen bg-gradient-to-br from-teal-50 to-white flex items-center justify-center px-4 sm:px-6 lg:px-8">
         <div className="max-w-md w-full">
           <Card className="border-0 shadow-lg">
             <CardContent className="p-8">
@@ -130,7 +130,7 @@ function ResetPasswordContent() {
                 <div className="flex flex-col sm:flex-row gap-3 w-full mt-4">
                   <Button
                     onClick={() => navigate("/login")}
-                    className="w-full bg-purple-600 hover:bg-purple-700 text-white"
+                    className="w-full bg-teal-600 hover:bg-teal-700 text-white"
                   >
                     Go to Login
                   </Button>
@@ -145,7 +145,7 @@ function ResetPasswordContent() {
 
   if (status === "error") {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-purple-50 to-white flex items-center justify-center px-4 sm:px-6 lg:px-8">
+      <div className="min-h-screen bg-gradient-to-br from-teal-50 to-white flex items-center justify-center px-4 sm:px-6 lg:px-8">
         <div className="max-w-md w-full">
           <Card className="border-0 shadow-lg">
             <CardContent className="p-8">
@@ -167,7 +167,7 @@ function ResetPasswordContent() {
                   </Button>
                   <Button
                     onClick={() => navigate("/login")}
-                    className="w-full bg-purple-600 hover:bg-purple-700 text-white"
+                    className="w-full bg-teal-600 hover:bg-teal-700 text-white"
                   >
                     Go to Login
                   </Button>
@@ -181,14 +181,14 @@ function ResetPasswordContent() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-purple-50 to-white flex items-center justify-center px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen bg-gradient-to-br from-teal-50 to-white flex items-center justify-center px-4 sm:px-6 lg:px-8">
       <div className="max-w-md w-full">
         <Card className="border-0 shadow-lg">
           <CardContent className="p-8">
             <div className="flex flex-col gap-6">
               <div className="flex flex-col items-center text-center gap-4">
-                <div className="w-16 h-16 bg-purple-100 rounded-full flex items-center justify-center">
-                  <Lock className="w-8 h-8 text-purple-600" />
+                <div className="w-16 h-16 bg-teal-100 rounded-full flex items-center justify-center">
+                  <Lock className="w-8 h-8 text-teal-600" />
                 </div>
                 <div className="space-y-2">
                   <h1 className="text-2xl font-bold text-gray-900">Reset Your Password</h1>
@@ -210,7 +210,7 @@ function ResetPasswordContent() {
                       placeholder="••••••••"
                       autoComplete="new-password"
                       {...register("password")}
-                      className="border-neutral-200 dark:border-white/20 focus-visible:ring-purple-600/50 focus-visible:border-purple-600/50 pr-10"
+                      className="border-neutral-200 dark:border-white/20 focus-visible:ring-teal-600/50 focus-visible:border-teal-600/50 pr-10"
                     />
                     <button
                       type="button"
@@ -240,7 +240,7 @@ function ResetPasswordContent() {
                       placeholder="••••••••"
                       autoComplete="new-password"
                       {...register("confirmPassword")}
-                      className="border-neutral-200 dark:border-white/20 focus-visible:ring-purple-600/50 focus-visible:border-purple-600/50 pr-10"
+                      className="border-neutral-200 dark:border-white/20 focus-visible:ring-teal-600/50 focus-visible:border-teal-600/50 pr-10"
                     />
                     <button
                       type="button"
@@ -262,7 +262,7 @@ function ResetPasswordContent() {
                 <Button
                   type="submit"
                   disabled={isSubmitting}
-                  className="w-full bg-purple-600 hover:bg-purple-700 text-white focus:ring-2 focus:ring-offset-2 focus:ring-purple-600 dark:focus:ring-offset-neutral-950 mt-4 disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="w-full bg-teal-600 hover:bg-teal-700 text-white focus:ring-2 focus:ring-offset-2 focus:ring-teal-600 dark:focus:ring-offset-neutral-950 mt-4 disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   {isSubmitting ? "Resetting Password..." : "Reset Password"}
                 </Button>
@@ -284,7 +284,7 @@ function ResetPasswordContent() {
         {/* Brand Footer */}
         <div className="text-center mt-6">
           <p className="text-sm text-gray-500">
-            Powered by <span className="font-semibold text-purple-600">Rixly</span>
+            Powered by <span className="font-semibold text-teal-600">Rixly</span>
           </p>
         </div>
       </div>
@@ -296,8 +296,8 @@ export default function ResetPasswordPage() {
   return (
     <Suspense
       fallback={
-        <div className="min-h-screen bg-gradient-to-br from-purple-50 to-white flex items-center justify-center">
-          <Loader2 className="w-8 h-8 text-purple-600 animate-spin" />
+        <div className="min-h-screen bg-gradient-to-br from-teal-50 to-white flex items-center justify-center">
+          <Loader2 className="w-8 h-8 text-teal-600 animate-spin" />
         </div>
       }
     >

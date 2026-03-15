@@ -80,7 +80,7 @@ export default function AdminJobHistoryPage() {
       <div className="container mx-auto p-8">
         <div className="flex items-center justify-center h-64">
           <div className="text-center">
-            <Loader2 className="w-8 h-8 animate-spin mx-auto mb-4 text-purple-600" />
+            <Loader2 className="w-8 h-8 animate-spin mx-auto mb-4 text-teal-600" />
             <p className="text-lg text-neutral-600 dark:text-neutral-400">
               Loading job history...
             </p>
@@ -183,7 +183,7 @@ export default function AdminJobHistoryPage() {
         <CardContent>
           {isLoading ? (
             <div className="flex items-center justify-center py-8">
-              <Loader2 className="w-6 h-6 animate-spin text-purple-600" />
+              <Loader2 className="w-6 h-6 animate-spin text-teal-600" />
             </div>
           ) : (
             <>

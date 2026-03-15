@@ -224,14 +224,14 @@ export default function DashboardPage() {
                         key={proj._id}
                         onClick={() => setSelectedProjectId(proj._id)}
                         className={`flex-shrink-0 flex items-center gap-2 px-4 py-2 rounded-full transition-all ${isActive
-                          ? "bg-purple-100 dark:bg-neutral-800 border border-purple-600/20 dark:border-purple-600/40"
+                          ? "bg-teal-100 dark:bg-neutral-800 border border-teal-600/20 dark:border-teal-600/40"
                           : "bg-neutral-50 dark:bg-neutral-800 border border-transparent opacity-60 hover:opacity-100"
                           }`}
                       >
                         <Avatar className="h-6 w-6 flex-shrink-0">
                           <AvatarFallback
                             className={`text-xs font-bold ${isActive
-                              ? "bg-purple-600 text-white"
+                              ? "bg-teal-600 text-white"
                               : "bg-neutral-200 dark:bg-neutral-600 text-neutral-500 dark:text-neutral-300"
                               }`}
                           >
@@ -240,7 +240,7 @@ export default function DashboardPage() {
                         </Avatar>
                         <span
                           className={`text-sm font-medium whitespace-nowrap ${isActive
-                            ? "text-purple-600 dark:text-purple-400"
+                            ? "text-teal-600 dark:text-teal-400"
                             : "text-neutral-950 dark:text-neutral-300"
                             }`}
                         >
@@ -254,7 +254,7 @@ export default function DashboardPage() {
                     disabled={isCreateButtonDisabled}
                     className={`flex-shrink-0 w-10 h-10 flex items-center justify-center rounded-full transition-colors ${isCreateButtonDisabled
                       ? "bg-neutral-100 dark:bg-neutral-800 text-neutral-400 cursor-not-allowed"
-                      : "bg-neutral-100 dark:bg-neutral-800 text-purple-600 hover:bg-neutral-200 dark:hover:bg-neutral-700"
+                      : "bg-neutral-100 dark:bg-neutral-800 text-teal-600 hover:bg-neutral-200 dark:hover:bg-neutral-700"
                       }`}
                     title={
                       isAdmin
@@ -283,7 +283,7 @@ export default function DashboardPage() {
                     href={project.websiteUrl}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="text-purple-600 hover:text-purple-700 dark:text-purple-400 dark:hover:text-purple-300 transition-colors"
+                    className="text-teal-600 hover:text-teal-700 dark:text-teal-400 dark:hover:text-teal-300 transition-colors"
                   >
                     <ExternalLink className="w-5 h-5" />
                   </a>
@@ -319,15 +319,15 @@ export default function DashboardPage() {
               <button
                 onClick={() => setActiveTab("posts")}
                 className={`flex-1 lg:flex-initial flex items-center justify-center gap-1 lg:gap-2 px-3 lg:px-6 py-2 lg:py-3 rounded-full lg:rounded-lg transition-all duration-300 ease-in-out ${activeTab === "posts"
-                  ? "bg-white dark:bg-neutral-900 text-purple-600 shadow-sm"
+                  ? "bg-white dark:bg-neutral-900 text-teal-600 shadow-sm"
                   : "bg-transparent text-neutral-600 dark:text-neutral-400 hover:bg-neutral-200 dark:hover:bg-neutral-700"
                   }`}
               >
                 <p className="text-xs lg:text-sm font-bold lg:font-semibold leading-normal tracking-[0.015em]">Find Posts</p>
                 {postsCount > 0 && (
                   <Badge className={`text-[10px] lg:text-xs px-1.5 lg:px-2 h-5 ${activeTab === "posts"
-                    ? "bg-purple-600 text-white hover:bg-purple-600"
-                    : "bg-purple-600/10 dark:bg-purple-600/20 text-purple-600 dark:text-purple-400 hover:bg-purple-600/10"
+                    ? "bg-teal-600 text-white hover:bg-teal-600"
+                    : "bg-teal-600/10 dark:bg-teal-600/20 text-teal-600 dark:text-teal-400 hover:bg-teal-600/10"
                     }`}>
                     {postsCount}
                   </Badge>
@@ -336,15 +336,15 @@ export default function DashboardPage() {
               <button
                 onClick={() => setActiveTab("leads")}
                 className={`flex-1 lg:flex-initial flex items-center justify-center gap-1 lg:gap-2 px-3 lg:px-6 py-2 lg:py-3 rounded-full lg:rounded-lg transition-all duration-300 ease-in-out ${activeTab === "leads"
-                  ? "bg-white dark:bg-neutral-900 text-purple-600 shadow-sm"
+                  ? "bg-white dark:bg-neutral-900 text-teal-600 shadow-sm"
                   : "bg-transparent text-neutral-600 dark:text-neutral-400 hover:bg-neutral-200 dark:hover:bg-neutral-700"
                   }`}
               >
                 <p className="text-xs lg:text-sm font-bold lg:font-semibold leading-normal tracking-[0.015em]">Find Leads</p>
                 {leadsCount > 0 && (
                   <Badge className={`text-[10px] lg:text-xs px-1.5 lg:px-2 h-5 ${activeTab === "leads"
-                    ? "bg-purple-600 text-white hover:bg-purple-600"
-                    : "bg-purple-600/10 dark:bg-purple-600/20 text-purple-600 dark:text-purple-400 hover:bg-purple-600/10"
+                    ? "bg-teal-600 text-white hover:bg-teal-600"
+                    : "bg-teal-600/10 dark:bg-teal-600/20 text-teal-600 dark:text-teal-400 hover:bg-teal-600/10"
                     }`}>
                     {leadsCount}
                   </Badge>
@@ -353,7 +353,7 @@ export default function DashboardPage() {
               <button
                 onClick={() => setActiveTab("settings")}
                 className={`flex-1 lg:flex-initial flex items-center justify-center gap-1 lg:gap-2 px-3 lg:px-6 py-2 lg:py-3 rounded-full lg:rounded-lg transition-all duration-300 ease-in-out ${activeTab === "settings"
-                  ? "bg-white dark:bg-neutral-900 text-purple-600 shadow-sm"
+                  ? "bg-white dark:bg-neutral-900 text-teal-600 shadow-sm"
                   : "bg-transparent text-neutral-600 dark:text-neutral-400 hover:bg-neutral-200 dark:hover:bg-neutral-700"
                   }`}
               >

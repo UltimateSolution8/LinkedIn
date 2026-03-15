@@ -43,7 +43,7 @@ export default function UserProfileDropdown() {
               src="https://lh3.googleusercontent.com/aida-public/AB6AXuBsnPGu5M6nFcPNR0KouOKeLAMoT_QLM3RLfwrXica398NguGKlrBYeLAGStadPyMyrPbTpFaZJtCdnhWnCtzOODPEFWmb60MS4P-ubvXQNWgvTATBFB6wfw0s7TOsIKIYq8Dr3GNzBaS5uV_n99hkhTkE8chwwsjpU265PVObaObAdfH6IKXj2Cct11GiqCzuHcwjpUnZI05lnaQHBpoz2uFJxQKcBn-vLN-A0o_cTN9XCTvyOgUbLxlZ_kHqeZbEPhS92pwRie6PD"
               alt={user ? `${user.firstName} ${user.lastName}` : "User"}
             />
-            <AvatarFallback className="bg-purple-600 text-white">
+            <AvatarFallback className="bg-teal-600 text-white">
               {getInitials()}
             </AvatarFallback>
           </Avatar>

@@ -108,7 +108,7 @@ export default function LoginForm({ onSuccess }: LoginFormProps = {}) {
           placeholder="you@example.com"
           autoComplete="email"
           {...register("email")}
-          className="border-neutral-200 dark:border-white/20 focus-visible:ring-purple-600/50 focus-visible:border-purple-600/50"
+          className="border-neutral-200 dark:border-white/20 focus-visible:ring-teal-600/50 focus-visible:border-teal-600/50"
         />
         {errors.email && (
           <p className="text-sm text-red-500">{errors.email.message}</p>
@@ -125,7 +125,7 @@ export default function LoginForm({ onSuccess }: LoginFormProps = {}) {
           placeholder="••••••••"
           autoComplete="current-password"
           {...register("password")}
-          className="border-neutral-200 dark:border-white/20 focus-visible:ring-purple-600/50 focus-visible:border-purple-600/50"
+          className="border-neutral-200 dark:border-white/20 focus-visible:ring-teal-600/50 focus-visible:border-teal-600/50"
         />
         {errors.password && (
           <p className="text-sm text-red-500">{errors.password.message}</p>
@@ -134,7 +134,7 @@ export default function LoginForm({ onSuccess }: LoginFormProps = {}) {
 
       <Link
         to="/forgot-password"
-        className="text-sm text-purple-600 dark:text-purple-500 hover:underline self-end"
+        className="text-sm text-teal-600 dark:text-teal-500 hover:underline self-end"
       >
         Forgot Password?
       </Link>
@@ -142,7 +142,7 @@ export default function LoginForm({ onSuccess }: LoginFormProps = {}) {
       <Button
         type="submit"
         disabled={isLoading}
-        className="w-full bg-purple-600 text-white hover:bg-purple-700 focus:ring-2 focus:ring-offset-2 focus:ring-purple-600 dark:focus:ring-offset-neutral-950 mt-4 disabled:opacity-50 disabled:cursor-not-allowed"
+        className="w-full bg-teal-600 text-white hover:bg-teal-700 focus:ring-2 focus:ring-offset-2 focus:ring-teal-600 dark:focus:ring-offset-neutral-950 mt-4 disabled:opacity-50 disabled:cursor-not-allowed"
       >
         {isLoading ? "Signing In..." : "Continue with Email"}
       </Button>
@@ -165,11 +165,11 @@ export default function LoginForm({ onSuccess }: LoginFormProps = {}) {
 
       <p className="text-xs text-center text-neutral-500 dark:text-neutral-400 mt-8">
         By continuing, you agree to Rixly&apos;s{" "}
-        <Link to="/policies/terms" className="text-purple-600/90 hover:underline">
+        <Link to="/policies/terms" className="text-teal-600/90 hover:underline">
           Terms of Service
         </Link>{" "}
         and{" "}
-        <Link to="/policies/privacy" className="text-purple-600/90 hover:underline">
+        <Link to="/policies/privacy" className="text-teal-600/90 hover:underline">
           Privacy Policy
         </Link>
         .

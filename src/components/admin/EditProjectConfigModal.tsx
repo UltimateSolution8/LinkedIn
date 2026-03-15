@@ -155,12 +155,12 @@ export default function EditProjectConfigModal({
                 <Badge
                   key={idx}
                   variant="outline"
-                  className="px-3 py-1 bg-purple-50 dark:bg-purple-900/20 text-purple-700 dark:text-purple-300 border-purple-200 dark:border-purple-800"
+                  className="px-3 py-1 bg-teal-50 dark:bg-teal-900/20 text-teal-700 dark:text-teal-300 border-teal-200 dark:border-teal-800"
                 >
                   {keyword}
                   <button
                     onClick={() => handleRemoveKeyword(keyword)}
-                    className="ml-2 hover:text-purple-900 dark:hover:text-purple-100"
+                    className="ml-2 hover:text-teal-900 dark:hover:text-teal-100"
                   >
                     <X className="w-3 h-3" />
                   </button>
@@ -331,7 +331,7 @@ export default function EditProjectConfigModal({
           <Button
             onClick={handleSave}
             disabled={isSaving}
-            className="bg-purple-600 hover:bg-purple-700 text-white"
+            className="bg-teal-600 hover:bg-teal-700 text-white"
           >
             {isSaving ? (
               <>

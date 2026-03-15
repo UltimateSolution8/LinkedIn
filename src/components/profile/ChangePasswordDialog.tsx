@@ -101,8 +101,8 @@ export default function ChangePasswordDialog({
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-purple-100 rounded-full flex items-center justify-center">
-              <Lock className="w-5 h-5 text-purple-600" />
+            <div className="w-10 h-10 bg-teal-100 rounded-full flex items-center justify-center">
+              <Lock className="w-5 h-5 text-teal-600" />
             </div>
             <div>
               <DialogTitle className="text-left">Change Password</DialogTitle>
@@ -216,7 +216,7 @@ export default function ChangePasswordDialog({
             <Button
               type="submit"
               disabled={isLoading}
-              className="bg-purple-600 hover:bg-purple-700 text-white disabled:opacity-50 disabled:cursor-not-allowed"
+              className="bg-teal-600 hover:bg-teal-700 text-white disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {isLoading ? "Changing..." : "Change Password"}
             </Button>

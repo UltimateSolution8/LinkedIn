@@ -365,7 +365,7 @@ export default function AuthPricingPage() {
   if (checkingSubscription) {
     return (
       <div className="min-h-screen bg-white flex items-center justify-center">
-        <Loader2 className="w-8 h-8 animate-spin text-purple-600" />
+        <Loader2 className="w-8 h-8 animate-spin text-teal-600" />
       </div>
     );
   }
@@ -488,7 +488,7 @@ export default function AuthPricingPage() {
         {/* Pricing Cards - Centered since there's only one plan */}
         {loading ? (
           <div className="flex justify-center items-center py-20">
-            <Loader2 className="w-8 h-8 animate-spin text-purple-600" />
+            <Loader2 className="w-8 h-8 animate-spin text-teal-600" />
           </div>
         ) : (
           <div className="flex justify-center">

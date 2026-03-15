@@ -201,9 +201,9 @@ export default function AuthDialog({
 
         {/* Informational Banner */}
         {activeView !== "otp" && (
-          <div className="bg-purple-50 dark:bg-purple-900/20 border border-purple-200 dark:border-purple-800 rounded-md p-2 flex items-start gap-2">
-            <AlertCircle className="w-3.5 h-3.5 text-purple-600 dark:text-purple-400 flex-shrink-0 mt-0.5" />
-            <p className="text-[10px] leading-tight text-purple-900 dark:text-purple-100">
+          <div className="bg-teal-50 dark:bg-teal-900/20 border border-teal-200 dark:border-teal-800 rounded-md p-2 flex items-start gap-2">
+            <AlertCircle className="w-3.5 h-3.5 text-teal-600 dark:text-teal-400 flex-shrink-0 mt-0.5" />
+            <p className="text-[10px] leading-tight text-teal-900 dark:text-teal-100">
               {activeView === "signup" ? "Sign up" : "Log in"} to proceed to payment
             </p>
           </div>
@@ -248,7 +248,7 @@ export default function AuthDialog({
             <Button
               type="submit"
               disabled={isLoading}
-              className="w-full bg-purple-600 hover:bg-purple-700 h-9 text-sm"
+              className="w-full bg-teal-600 hover:bg-teal-700 h-9 text-sm"
             >
               {isLoading ? "Logging in..." : "Log in"}
             </Button>
@@ -281,7 +281,7 @@ export default function AuthDialog({
                   setApiError(null);
                   loginForm.reset();
                 }}
-                className="w-full border-purple-600 text-purple-600 hover:bg-purple-50 h-8 text-xs"
+                className="w-full border-teal-600 text-teal-600 hover:bg-teal-50 h-8 text-xs"
               >
                 Sign up with Email
               </Button>
@@ -364,7 +364,7 @@ export default function AuthDialog({
             <Button
               type="submit"
               disabled={isLoading}
-              className="w-full bg-purple-600 hover:bg-purple-700 h-9 text-sm"
+              className="w-full bg-teal-600 hover:bg-teal-700 h-9 text-sm"
             >
               {isLoading ? "Creating account..." : "Create Account"}
             </Button>
@@ -397,7 +397,7 @@ export default function AuthDialog({
                   setApiError(null);
                   signupForm.reset();
                 }}
-                className="w-full border-purple-600 text-purple-600 hover:bg-purple-50 h-8 text-xs"
+                className="w-full border-teal-600 text-teal-600 hover:bg-teal-50 h-8 text-xs"
               >
                 Log in
               </Button>
@@ -431,7 +431,7 @@ export default function AuthDialog({
               type="button"
               onClick={handleVerifyOtp}
               disabled={isLoading}
-              className="w-full bg-purple-600 hover:bg-purple-700 h-9 text-sm"
+              className="w-full bg-teal-600 hover:bg-teal-700 h-9 text-sm"
             >
               {isLoading ? "Verifying..." : "Verify OTP"}
             </Button>

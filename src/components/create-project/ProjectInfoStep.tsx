@@ -75,7 +75,7 @@ export default function ProjectInfoStep({
             type="text"
             placeholder="e.g., Q1 Marketing Campaign"
             {...register("projectName")}
-            className="border-neutral-300 dark:border-neutral-700 bg-white dark:bg-neutral-900 focus-visible:ring-purple-600/50 focus-visible:border-purple-600/80"
+            className="border-neutral-300 dark:border-neutral-700 bg-white dark:bg-neutral-900 focus-visible:ring-teal-600/50 focus-visible:border-teal-600/80"
           />
           {errors.projectName && (
             <p className="text-sm text-red-500">{errors.projectName.message}</p>
@@ -95,7 +95,7 @@ export default function ProjectInfoStep({
             type="text"
             placeholder="e.g., San Francisco, CA or United States"
             {...register("location")}
-            className="border-neutral-300 dark:border-neutral-700 bg-white dark:bg-neutral-900 focus-visible:ring-purple-600/50 focus-visible:border-purple-600/80"
+            className="border-neutral-300 dark:border-neutral-700 bg-white dark:bg-neutral-900 focus-visible:ring-teal-600/50 focus-visible:border-teal-600/80"
           />
           {errors.location && (
             <p className="text-sm text-red-500">{errors.location.message}</p>
@@ -116,7 +116,7 @@ export default function ProjectInfoStep({
           >
             <SelectTrigger
               id="business-type"
-              className="border-neutral-300 dark:border-neutral-700 bg-white dark:bg-neutral-900 focus:ring-purple-600/50 focus:border-purple-600/80"
+              className="border-neutral-300 dark:border-neutral-700 bg-white dark:bg-neutral-900 focus:ring-teal-600/50 focus:border-teal-600/80"
             >
               <SelectValue placeholder="Select business type" />
             </SelectTrigger>
@@ -145,7 +145,7 @@ export default function ProjectInfoStep({
               type="text"
               placeholder="Describe your business type"
               {...register("businessTypeOther")}
-              className="border-neutral-300 dark:border-neutral-700 bg-white dark:bg-neutral-900 focus-visible:ring-purple-600/50 focus-visible:border-purple-600/80"
+              className="border-neutral-300 dark:border-neutral-700 bg-white dark:bg-neutral-900 focus-visible:ring-teal-600/50 focus-visible:border-teal-600/80"
             />
             {errors.businessTypeOther && (
               <p className="text-sm text-red-500">{errors.businessTypeOther.message}</p>
@@ -165,7 +165,7 @@ export default function ProjectInfoStep({
           </Button>
           <Button
             type="submit"
-            className="min-w-[8rem] bg-purple-600 hover:bg-purple-700 text-white"
+            className="min-w-[8rem] bg-teal-600 hover:bg-teal-700 text-white"
           >
             Next
           </Button>

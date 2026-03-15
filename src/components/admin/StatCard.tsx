@@ -22,7 +22,7 @@ export default function StatCard({ title, value, icon: Icon, isLoading, descript
       <CardContent>
         {isLoading ? (
           <div className="flex items-center justify-center py-2">
-            <Loader2 className="w-6 h-6 animate-spin text-purple-600" />
+            <Loader2 className="w-6 h-6 animate-spin text-teal-600" />
           </div>
         ) : (
           <>

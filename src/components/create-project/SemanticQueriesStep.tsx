@@ -113,12 +113,12 @@ export default function SemanticQueriesStep({
               value={queryInput}
               onChange={(e) => setQueryInput(e.target.value)}
               onKeyPress={handleKeyPress}
-              className="border-neutral-300 dark:border-neutral-700 bg-neutral-100 dark:bg-neutral-900 focus-visible:ring-purple-600/50"
+              className="border-neutral-300 dark:border-neutral-700 bg-neutral-100 dark:bg-neutral-900 focus-visible:ring-teal-600/50"
             />
             <Button
               type="button"
               onClick={handleAddQuery}
-              className="flex-shrink-0 bg-purple-600 hover:bg-purple-700 text-white px-6"
+              className="flex-shrink-0 bg-teal-600 hover:bg-teal-700 text-white px-6"
             >
               Add
             </Button>
@@ -135,12 +135,12 @@ export default function SemanticQueriesStep({
         >
           {isGenerating ? (
             <>
-              <Loader2 className="w-5 h-5 text-purple-600 animate-spin" />
+              <Loader2 className="w-5 h-5 text-teal-600 animate-spin" />
               <span>Generating Queries...</span>
             </>
           ) : (
             <>
-              <Sparkles className="w-5 h-5 text-purple-600" />
+              <Sparkles className="w-5 h-5 text-teal-600" />
               <span>Generate with AI</span>
             </>
           )}
@@ -160,13 +160,13 @@ export default function SemanticQueriesStep({
           queries.map((query) => (
             <div
               key={query.id}
-              className="flex items-center justify-between gap-3 rounded-lg bg-purple-600/10 dark:bg-purple-600/20 border border-purple-600/20 dark:border-purple-600/30 px-4 py-3 text-purple-700 dark:text-purple-300"
+              className="flex items-center justify-between gap-3 rounded-lg bg-teal-600/10 dark:bg-teal-600/20 border border-teal-600/20 dark:border-teal-600/30 px-4 py-3 text-teal-700 dark:text-teal-300"
             >
               <p className="text-sm font-medium leading-normal flex-1">{query.text}</p>
               <button
                 type="button"
                 onClick={() => handleRemoveQuery(query.id)}
-                className="flex items-center justify-center w-6 h-6 rounded-full hover:bg-purple-600/20 dark:hover:bg-purple-600/40 transition-colors flex-shrink-0"
+                className="flex items-center justify-center w-6 h-6 rounded-full hover:bg-teal-600/20 dark:hover:bg-teal-600/40 transition-colors flex-shrink-0"
               >
                 <X className="w-4 h-4" />
               </button>
@@ -188,7 +188,7 @@ export default function SemanticQueriesStep({
         <Button
           type="button"
           onClick={onNext}
-          className="w-full sm:w-auto min-w-[84px] bg-purple-600 hover:bg-purple-700 text-white shadow-lg shadow-purple-600/20 transition-colors"
+          className="w-full sm:w-auto min-w-[84px] bg-teal-600 hover:bg-teal-700 text-white shadow-lg shadow-teal-600/20 transition-colors"
         >
           Next
         </Button>

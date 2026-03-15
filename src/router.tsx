@@ -51,9 +51,11 @@ export default function AppRouter() {
 
   return (
     <Routes>
+        {/* New Landing Route (exact RixlyNew landing implementation) */}
+        <Route path="/" element={<HomePage />} />
+
         {/* Public Routes with Home Layout */}
         <Route element={<HomeLayout />}>
-          <Route path="/" element={<HomePage />} />
           <Route path="/pricing" element={<PricingPage />} />
           <Route path="/contactus" element={<ContactUsPage />} />
           <Route path="/request-demo" element={<RequestDemoPage />} />
@@ -64,6 +66,13 @@ export default function AppRouter() {
             element={<CancelAndRefundPage />}
           />
         </Route>
+
+        {/* Landing-compatible legacy aliases */}
+        <Route path="/privacy" element={<Navigate to="/policies/privacy" replace />} />
+        <Route path="/terms" element={<Navigate to="/policies/terms" replace />} />
+        <Route path="/cancelandrefund" element={<Navigate to="/policies/cancelandrefund" replace />} />
+        <Route path="/signup" element={<Navigate to="/login" replace />} />
+        <Route path="/blogs" element={<Navigate to="/" replace />} />
 
         {/* Auth Routes */}
         <Route element={<AuthLayout />}>

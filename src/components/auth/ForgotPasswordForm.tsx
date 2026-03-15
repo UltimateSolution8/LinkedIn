@@ -112,7 +112,7 @@ export default function ForgotPasswordForm({ onBack }: ForgotPasswordFormProps =
               setApiError(null);
             }}
             variant="ghost"
-            className="w-full text-purple-600 dark:text-purple-500 hover:text-purple-700 dark:hover:text-purple-400"
+            className="w-full text-teal-600 dark:text-teal-500 hover:text-teal-700 dark:hover:text-teal-400"
           >
             Try Different Email
           </Button>
@@ -160,7 +160,7 @@ export default function ForgotPasswordForm({ onBack }: ForgotPasswordFormProps =
             placeholder="you@example.com"
             autoComplete="email"
             {...register("email")}
-            className="border-neutral-200 dark:border-white/20 focus-visible:ring-purple-600/50 focus-visible:border-purple-600/50"
+            className="border-neutral-200 dark:border-white/20 focus-visible:ring-teal-600/50 focus-visible:border-teal-600/50"
           />
           {errors.email && (
             <p className="text-sm text-red-500">{errors.email.message}</p>
@@ -170,7 +170,7 @@ export default function ForgotPasswordForm({ onBack }: ForgotPasswordFormProps =
         <Button
           type="submit"
           disabled={isLoading}
-          className="w-full bg-purple-600 text-white hover:bg-purple-700 focus:ring-2 focus:ring-offset-2 focus:ring-purple-600 dark:focus:ring-offset-neutral-950 mt-4 disabled:opacity-50 disabled:cursor-not-allowed"
+          className="w-full bg-teal-600 text-white hover:bg-teal-700 focus:ring-2 focus:ring-offset-2 focus:ring-teal-600 dark:focus:ring-offset-neutral-950 mt-4 disabled:opacity-50 disabled:cursor-not-allowed"
         >
           {isLoading ? (
             "Sending Reset Link..."

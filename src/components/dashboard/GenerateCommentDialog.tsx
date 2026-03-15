@@ -153,7 +153,7 @@ export default function GenerateCommentDialog({
                     onClick={() => setTone(option.value)}
                     className={`py-1.5 px-2 rounded-md border-2 transition-all ${
                       tone === option.value
-                        ? "border-purple-600 bg-purple-50 dark:bg-purple-950 dark:border-purple-400"
+                        ? "border-teal-600 bg-teal-50 dark:bg-teal-950 dark:border-teal-400"
                         : "border-neutral-200 dark:border-neutral-800 hover:border-neutral-300 dark:hover:border-neutral-700"
                     }`}
                   >
@@ -177,7 +177,7 @@ export default function GenerateCommentDialog({
                     onClick={() => setLength(option.value)}
                     className={`py-1.5 px-2 rounded-md border-2 transition-all ${
                       length === option.value
-                        ? "border-purple-600 bg-purple-50 dark:bg-purple-950 dark:border-purple-400"
+                        ? "border-teal-600 bg-teal-50 dark:bg-teal-950 dark:border-teal-400"
                         : "border-neutral-200 dark:border-neutral-800 hover:border-neutral-300 dark:hover:border-neutral-700"
                     }`}
                   >
@@ -194,7 +194,7 @@ export default function GenerateCommentDialog({
           <Button
             onClick={handleGenerateComment}
             disabled={isGeneratingComment || remainingAttempts <= 0 || isLoadingComments}
-            className="w-full py-2 bg-purple-600 hover:bg-purple-700 dark:bg-purple-600 dark:hover:bg-purple-700"
+            className="w-full py-2 bg-teal-600 hover:bg-teal-700 dark:bg-teal-600 dark:hover:bg-teal-700"
           >
             {isGeneratingComment ? (
               <>
@@ -219,7 +219,7 @@ export default function GenerateCommentDialog({
           {/* Loading State */}
           {isLoadingComments && (
             <div className="flex items-center justify-center p-4">
-              <Loader2 className="w-5 h-5 animate-spin text-purple-600 dark:text-purple-400" />
+              <Loader2 className="w-5 h-5 animate-spin text-teal-600 dark:text-teal-400" />
               <span className="ml-2 text-xs text-neutral-500 dark:text-neutral-400">
                 Loading previous comments...
               </span>
@@ -269,7 +269,7 @@ export default function GenerateCommentDialog({
           <DialogFooter className="mt-2 pt-2 border-t border-neutral-200 dark:border-neutral-800">
             <Button
               onClick={handleCopyComment}
-              className="w-full py-2 bg-purple-600 hover:bg-purple-700 dark:bg-purple-600 dark:hover:bg-purple-700"
+              className="w-full py-2 bg-teal-600 hover:bg-teal-700 dark:bg-teal-600 dark:hover:bg-teal-700"
             >
               <MessageSquare className="w-3.5 h-3.5 mr-2" />
               <span className="text-xs">Copy Comment</span>

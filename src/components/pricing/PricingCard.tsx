@@ -26,7 +26,7 @@ export default function PricingCard({ plan, onChoosePlan, processing = false }: 
     return (
         <Card className="relative w-full max-w-md bg-white border-0 shadow-lg rounded-2xl overflow-hidden hover:shadow-xl transition-shadow duration-300">
             {/* Purple Accent Header */}
-            <div className="h-2 bg-gradient-to-r from-purple-600 to-purple-700"></div>
+            <div className="h-2 bg-gradient-to-r from-teal-600 to-teal-700"></div>
 
             <CardHeader className="p-4 sm:p-6 pb-0">
                 <h3 className="text-xl sm:text-2xl font-bold text-gray-900 mb-6">{plan.name}</h3>
@@ -45,7 +45,7 @@ export default function PricingCard({ plan, onChoosePlan, processing = false }: 
 
                     {/* Subtitle - Offer Info */}
                     <div className="space-y-0.5">
-                        <p className="text-xs font-medium text-purple-600 uppercase tracking-wide">Introductory Offer for Limited Period</p>
+                        <p className="text-xs font-medium text-teal-600 uppercase tracking-wide">Introductory Offer for Limited Period</p>
                         <p className="text-sm font-bold text-orange-600">Flat 67% off</p>
                     </div>
                 </div>
@@ -53,7 +53,7 @@ export default function PricingCard({ plan, onChoosePlan, processing = false }: 
                 {/* Highlight Feature */}
                 {plan.highlightNumber && (
                     <div className="flex items-center gap-2 text-gray-600 mt-4">
-                        <Zap className="w-5 h-5 text-purple-600" />
+                        <Zap className="w-5 h-5 text-teal-600" />
                         <span className="font-semibold">{plan.highlightNumber}</span>
                         <span className="text-sm">{plan.highlightLabel}</span>
                     </div>
@@ -92,7 +92,7 @@ export default function PricingCard({ plan, onChoosePlan, processing = false }: 
                         <Button
                             onClick={() => onChoosePlan(true)}
                             variant="outline"
-                            className="w-full border-purple-600 text-purple-600 hover:bg-purple-50 py-4 sm:py-6 rounded-xl text-sm sm:text-base font-semibold mb-3"
+                            className="w-full border-teal-600 text-teal-600 hover:bg-teal-50 py-4 sm:py-6 rounded-xl text-sm sm:text-base font-semibold mb-3"
                         >
                             Start 3-Day Free Trial
                         </Button>
@@ -104,7 +104,7 @@ export default function PricingCard({ plan, onChoosePlan, processing = false }: 
                         {/* Pay Now Button (existing flow) */}
                         <Button
                             onClick={() => onChoosePlan(false)}
-                            className="w-full bg-gradient-to-r from-purple-600 to-purple-700 hover:from-purple-700 hover:to-purple-800 text-white py-4 sm:py-6 rounded-xl text-sm sm:text-base font-semibold"
+                            className="w-full bg-gradient-to-r from-teal-600 to-teal-700 hover:from-teal-700 hover:to-teal-800 text-white py-4 sm:py-6 rounded-xl text-sm sm:text-base font-semibold"
                         >
                             Pay Now
                         </Button>
@@ -115,7 +115,7 @@ export default function PricingCard({ plan, onChoosePlan, processing = false }: 
                 {processing && (
                     <Button
                         disabled
-                        className="w-full bg-gradient-to-r from-purple-600 to-purple-700 text-white py-4 sm:py-6 rounded-xl text-sm sm:text-base font-semibold"
+                        className="w-full bg-gradient-to-r from-teal-600 to-teal-700 text-white py-4 sm:py-6 rounded-xl text-sm sm:text-base font-semibold"
                     >
                         <Loader2 className="w-4 h-4 mr-2 animate-spin" />
                         Processing...

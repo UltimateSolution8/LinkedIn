@@ -110,8 +110,8 @@ export default function VerifyEmailPromptPage() {
             <CardContent className="p-8 sm:p-12">
               <div className="flex flex-col items-center text-center gap-6">
                 {/* Email Icon */}
-                <div className="w-20 h-20 bg-purple-100 rounded-full flex items-center justify-center">
-                  <Mail className="w-10 h-10 text-purple-600" />
+                <div className="w-20 h-20 bg-teal-100 rounded-full flex items-center justify-center">
+                  <Mail className="w-10 h-10 text-teal-600" />
                 </div>
 
                 {/* Header */}
@@ -122,7 +122,7 @@ export default function VerifyEmailPromptPage() {
                   <p className="text-lg text-gray-600">
                     We've sent a verification link to
                   </p>
-                  <p className="text-lg font-semibold text-purple-600">
+                  <p className="text-lg font-semibold text-teal-600">
                     {user.email}
                   </p>
                 </div>
@@ -169,7 +169,7 @@ export default function VerifyEmailPromptPage() {
                     onClick={handleResendEmail}
                     disabled={isResending || cooldown > 0}
                     variant="outline"
-                    className="w-full border-purple-600 text-purple-600 hover:bg-purple-50 disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="w-full border-teal-600 text-teal-600 hover:bg-teal-50 disabled:opacity-50 disabled:cursor-not-allowed"
                   >
                     {isResending ? (
                       <>
@@ -193,7 +193,7 @@ export default function VerifyEmailPromptPage() {
                     Didn't receive the email?{" "}
                     <button
                       onClick={handleLogout}
-                      className="text-purple-600 hover:underline font-semibold"
+                      className="text-teal-600 hover:underline font-semibold"
                     >
                       Try a different email address
                     </button>
@@ -207,7 +207,7 @@ export default function VerifyEmailPromptPage() {
           <div className="mt-8 text-center">
             <p className="text-sm text-gray-500">
               Need help?{" "}
-              <a href="mailto:support@rixly.com" className="text-purple-600 hover:underline font-semibold">
+              <a href="mailto:support@rixly.com" className="text-teal-600 hover:underline font-semibold">
                 Contact Support
               </a>
             </p>

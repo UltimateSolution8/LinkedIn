@@ -102,7 +102,7 @@ export default function PreviewProjectStep({
                 href={projectData.websiteUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex items-center gap-1 text-purple-600 hover:underline break-all"
+                className="inline-flex items-center gap-1 text-teal-600 hover:underline break-all"
               >
                 <span>{projectData.websiteUrl}</span>
                 <span className="text-sm">↗</span>
@@ -199,7 +199,7 @@ export default function PreviewProjectStep({
                   {projectData.keywords.map((keyword, index) => (
                     <span
                       key={index}
-                      className="bg-purple-100 dark:bg-purple-900/30 text-purple-800 dark:text-purple-300 text-sm font-medium px-3 py-1 rounded-full"
+                      className="bg-teal-100 dark:bg-teal-900/30 text-teal-800 dark:text-teal-300 text-sm font-medium px-3 py-1 rounded-full"
                     >
                       {keyword}
                     </span>
@@ -222,7 +222,7 @@ export default function PreviewProjectStep({
         </p>
         <div className="space-y-4">
           <div className="flex items-start gap-4">
-            <div className="flex-shrink-0 w-8 h-8 flex items-center justify-center bg-purple-100 dark:bg-purple-900/30 text-purple-600 dark:text-purple-400 font-bold rounded-full">
+            <div className="flex-shrink-0 w-8 h-8 flex items-center justify-center bg-teal-100 dark:bg-teal-900/30 text-teal-600 dark:text-teal-400 font-bold rounded-full">
               1
             </div>
             <div>
@@ -235,7 +235,7 @@ export default function PreviewProjectStep({
             </div>
           </div>
           <div className="flex items-start gap-4">
-            <div className="flex-shrink-0 w-8 h-8 flex items-center justify-center bg-purple-100 dark:bg-purple-900/30 text-purple-600 dark:text-purple-400 font-bold rounded-full">
+            <div className="flex-shrink-0 w-8 h-8 flex items-center justify-center bg-teal-100 dark:bg-teal-900/30 text-teal-600 dark:text-teal-400 font-bold rounded-full">
               2
             </div>
             <div>
@@ -273,7 +273,7 @@ export default function PreviewProjectStep({
           type="button"
           onClick={onNext}
           disabled={isSubmitting}
-          className="w-full sm:w-auto bg-purple-600 hover:bg-purple-700 text-white shadow-lg shadow-purple-600/20"
+          className="w-full sm:w-auto bg-teal-600 hover:bg-teal-700 text-white shadow-lg shadow-teal-600/20"
         >
           {isSubmitting ? "Creating Project..." : "Create Project"}
         </Button>
