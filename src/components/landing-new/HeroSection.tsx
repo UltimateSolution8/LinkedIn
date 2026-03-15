@@ -213,7 +213,7 @@ export const HeroSection = () => {
                   initial={{ opacity: 0, y: 20, x: 20 }}
                   animate={{ opacity: 1, y: 0, x: 0 }}
                   transition={{ delay: 1.2 }}
-                  className="absolute -bottom-4 -right-4 bg-card border border-border rounded-lg p-3 shadow-lg"
+                  className="absolute bottom-6 left-12 -rotate-3 bg-card border border-border rounded-lg p-3 shadow-lg z-20"
                 >
                   <div className="flex items-center gap-3">
                     <div className="w-8 h-8 rounded-full bg-green-500/10 flex items-center justify-center">

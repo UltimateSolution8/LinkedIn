@@ -21,25 +21,25 @@ const features = [
     icon: Target,
     title: "Subreddit Monitoring",
     description: "Track targeted subreddits and surface high-intent threads.",
-    span: "",
+    span: "md:col-span-2",
   },
   {
     icon: Zap,
     title: "Real-Time Alerts",
     description: "Get notified the moment someone asks for a solution you offer.",
-    span: "",
+    span: "md:col-span-2",
   },
   {
     icon: BarChart3,
     title: "Conversation Analytics",
     description: "Track which threads, subreddits, and replies drive results.",
-    span: "",
+    span: "md:col-span-3",
   },
   {
     icon: Shield,
     title: "Compliance-First",
     description: "Value-first engagement. No spam. No automation abuse.",
-    span: "",
+    span: "md:col-span-3",
   },
 ];
 
@@ -70,7 +70,7 @@ export const FeaturesSection = () => {
         </motion.div>
 
         {/* Bento Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-4 md:gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-6 gap-4 md:gap-6">
           {features.map((feature, index) => (
             <motion.div
               key={feature.title}

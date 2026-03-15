@@ -1,0 +1,68 @@
+# Robots.txt for Rixly - AI-Powered Lead Generation Platform
+# https://rixly.com
+
+User-agent: *
+Allow: /
+
+# Sitemap
+Sitemap: https://rixly.com/sitemap.xml
+
+# Crawl-delay (optional - use if needed to reduce server load)
+Crawl-delay: 1
+
+# Disallow admin and private areas (if any)
+Disallow: /api/
+Disallow: /admin/
+Disallow: /private/
+Disallow: /404.html
+Disallow: /*.json$
+Disallow: /*.xml$
+Disallow: /?
+
+# Allow important paths
+Allow: /$
+Allow: /reddit-lead-generation
+Allow: /linkedin-lead-generation
+Allow: /twitter-lead-generation
+Allow: /social-media-lead-generation
+Allow: /conversation-intelligence-platform
+Allow: /privacy-policy
+Allow: /terms
+
+# Sitemap index (if you have multiple sitemaps)
+Sitemap: https://rixly.com/sitemap-index.xml
+
+# Cache control
+Cache-Control: no-cache, no-store, must-revalidate
+Pragma: no-cache
+Expires: 0
+
+# Googlebot specific
+User-agent: Googlebot
+Allow: /
+Crawl-delay: 1
+
+# Bingbot specific
+User-agent: Bingbot
+Allow: /
+Crawl-delay: 1
+
+# Facebook crawler
+User-agent: FacebookBot
+Allow: /
+
+# Twitter crawler
+User-agent: Twitterbot
+Allow: /
+
+# Apple bot
+User-agent: Applebot
+Allow: /
+
+# Discord bot
+User-agent: Discordbot
+Allow: /
+
+# Slack bot
+User-agent: Slackbot
+Allow: /
