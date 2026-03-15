@@ -88,7 +88,9 @@ export default function LoginForm({ onSuccess }: LoginFormProps = {}) {
         } else {
           // Has projects - go to dashboard (which redirects to /app/{projectId}/dashboard)
           console.log("[LoginForm] Projects found, navigating to dashboard");
-          navigate("/dashboard");
+          const firstProjectId = projects[0]._id;
+          console.log("[LoginForm] First project ID:", firstProjectId);
+          navigate(`/app/${firstProjectId}/dashboard`);
         }
       } catch (projectError) {
         // If fetching projects fails, default to dashboard

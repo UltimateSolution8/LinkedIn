@@ -16,14 +16,7 @@ export default function ProjectRouteGuard({ children }: ProjectRouteGuardProps) 
     // Wait for projects to load
     if (isLoading) return;
 
-    // Case 1: User has zero projects → redirect to onboarding
-    if (projects.length === 0) {
-      console.log("No projects found, redirecting to onboarding");
-      navigate("/app/onboarding", { replace: true });
-      return;
-    }
-
-    // Case 2: Check if projectId in URL is valid
+    // Check if projectId in URL is valid
     if (projectId) {
       const project = getProjectById(projectId);
 

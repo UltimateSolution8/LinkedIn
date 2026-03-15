@@ -159,13 +159,9 @@ export async function logout(): Promise<void> {
     console.error("Error during logout:", error);
   }
 
-  // Clear ALL authentication and session data from localStorage
-  localStorage.removeItem("user");
-  // Clear any cached subscription data
-  localStorage.removeItem("subscriptionStatus");
-  localStorage.removeItem("subscriptionDetails");
-  // Clear any other session data that might exist
+  // Clear ALL authentication and session data from localStorage and sessionStorage
   localStorage.clear();
+  sessionStorage.clear();
   clearCurrencyCache();
   clearSubscriptionCache();
 }

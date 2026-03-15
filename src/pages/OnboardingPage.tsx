@@ -1,5 +1,4 @@
 import { useNavigate } from "react-router-dom";
-import { useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import {
@@ -10,7 +9,6 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Plus } from "lucide-react";
-import { useProject } from "@/contexts/ProjectContext";
 import { getCurrentUser, logout } from "@/lib/api/auth";
 
 /**
@@ -19,19 +17,7 @@ import { getCurrentUser, logout } from "@/lib/api/auth";
  */
 export default function OnboardingPage() {
   const navigate = useNavigate();
-  const { projects, isLoading, selectedProjectId } = useProject();
   const currentUser = getCurrentUser();
-
-  // Redirect users with projects to their dashboard
-  useEffect(() => {
-    if (isLoading) return;
-
-    if (projects.length > 0) {
-      // User has projects, redirect to dashboard
-      const projectId = selectedProjectId || projects[0]._id;
-      navigate(`/app/${projectId}/dashboard`, { replace: true });
-    }
-  }, [projects, isLoading, selectedProjectId, navigate]);
 
   const getUserInitials = (firstName: string, lastName: string) => {
     return `${firstName[0] || ''}${lastName[0] || ''}`.toUpperCase();
@@ -50,18 +36,6 @@ export default function OnboardingPage() {
   const handleProfile = () => {
     navigate("/profile");
   };
-
-  // Show loading while checking projects
-  if (isLoading) {
-    return (
-      <div className="flex items-center justify-center min-h-screen bg-neutral-50 dark:bg-neutral-900">
-        <div className="text-center">
-          <div className="inline-block h-8 w-8 animate-spin rounded-full border-4 border-solid border-primary border-r-transparent"></div>
-          <p className="mt-4 text-sm text-neutral-600 dark:text-neutral-400">Loading...</p>
-        </div>
-      </div>
-    );
-  }
 
   return (
     <div className="flex flex-col min-h-screen bg-neutral-50 dark:bg-neutral-900">

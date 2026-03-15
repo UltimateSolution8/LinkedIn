@@ -24,7 +24,7 @@ export const Navbar = ({ isDark, toggleTheme, setView }) => {
     { href: "#pricing", label: "Pricing" },
     { label: "ROI", onClick: () => setView("roi"), hidden: true },
     { label: "Analytics", onClick: () => setView("dashboard"), hidden: true },
-    { to: "/blogs", label: "Blogs" },
+    // { to: "/blogs", label: "Blogs", hidden: true },
   ];
 
   return (
