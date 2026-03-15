@@ -30,12 +30,7 @@ export default function HomePage() {
   const [isDark, setIsDark] = useState(() => {
     const saved = localStorage.getItem("theme");
     if (saved) return saved === "dark";
-
-    try {
-      return !!(window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches);
-    } catch (_e) {
-      return false;
-    }
+    return false;
   });
 
   useEffect(() => {

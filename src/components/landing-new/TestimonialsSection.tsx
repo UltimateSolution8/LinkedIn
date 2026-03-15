@@ -207,7 +207,7 @@ export const TestimonialsSection = () => {
           }
         }
         .animate-scroll {
-          animation: scroll 40s linear infinite;
+          animation: scroll 30s linear infinite;
         }
         .animate-scroll:hover {
           animation-play-state: paused;

@@ -1,5 +1,6 @@
 // @ts-nocheck
 import { motion } from "framer-motion";
+import LinkedInEarlyAccessDialog from "./LinkedInEarlyAccessDialog";
 
 // Platform icons as SVG components
 const RedditIcon = () => (
@@ -170,10 +171,10 @@ export function LeadSourcesSection() {
           transition={{ delay: 0.4 }}
           className="text-center"
         >
-          <button className="px-8 py-4 bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white font-semibold rounded-full shadow-lg shadow-blue-500/25 transition-all duration-300 hover:scale-105"
-          >
-            Join LinkedIn early access
-          </button>
+          <LinkedInEarlyAccessDialog
+            triggerClassName="px-8 py-4 bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white font-semibold rounded-full shadow-lg shadow-blue-500/25 transition-all duration-300 hover:scale-105"
+            triggerLabel="Join LinkedIn early access"
+          />
         </motion.div>
       </div>
     </section>
