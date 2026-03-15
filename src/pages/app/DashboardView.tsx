@@ -1,31 +1,36 @@
-
-import { useState } from "react";
 import { useParams } from "react-router-dom";
 import { useProject } from "@/contexts/ProjectContext";
-import FindPostsTab from "@/components/dashboard/FindPostsTab";
+import { useDashboardData } from "@/hooks/useDashboardData";
 import EmptyProjectState from "@/components/dashboard/EmptyProjectState";
-import { ExternalLink } from "lucide-react";
+import ScanningBanner from "@/components/dashboard/ScanningBanner";
+import KPICards from "@/components/dashboard/KPICards";
+import OnboardingStepper from "@/components/dashboard/OnboardingStepper";
+import WhileYouWait from "@/components/dashboard/WhileYouWait";
 
 /**
  * DashboardView - Stats Dashboard
  *
- * This is a temporary view that wraps the existing FindPostsTab.
- * In Story 002, this will be replaced with the new stats dashboard showing:
- * - KPI cards (Total Matches, Hot Leads, Opportunities, Avg Confidence)
- * - Lead growth chart
- * - Top subreddits
- * - Pain tags distribution
- * - Recent activity feed
+ * Shows scanning state with progress tracking and onboarding guidance.
+ * Displays:
+ * - Scanning banner with progress
+ * - KPI cards (placeholders during scan)
+ * - Onboarding stepper
+ * - "While you wait" panel with tips
  */
 export default function DashboardView() {
   const { projectId } = useParams<{ projectId: string }>();
-  const { getProjectById, projects, isLoading } = useProject();
-  const [_postsCount, setPostsCount] = useState(0);
+  const { getProjectById, projects, isLoading: projectsLoading } = useProject();
 
   const project = projectId ? getProjectById(projectId) : null;
 
+  // Fetch dashboard data with auto-polling
+  const { data: dashboardData, isLoading: dashboardLoading, error } = useDashboardData({
+    projectId: projectId || "",
+    enabled: !!projectId
+  });
+
   // Show empty state if user has no projects
-  if (!isLoading && projects.length === 0) {
+  if (!projectsLoading && projects.length === 0) {
     return (
       <div className="flex flex-1 h-full overflow-x-hidden">
         <div className="flex-1 w-full h-full overflow-y-auto">
@@ -35,38 +40,68 @@ export default function DashboardView() {
     );
   }
 
+  // Show loading state
+  if (dashboardLoading && !dashboardData) {
+    return (
+      <div className="p-4 lg:p-8">
+        <div className="flex items-center justify-center h-64">
+          <p className="text-neutral-500">Loading dashboard...</p>
+        </div>
+      </div>
+    );
+  }
+
+  // Show error state
+  if (error) {
+    return (
+      <div className="p-4 lg:p-8">
+        <div className="flex items-center justify-center h-64">
+          <p className="text-red-500">Error loading dashboard: {error}</p>
+        </div>
+      </div>
+    );
+  }
+
+  const isScanning = dashboardData?.scanState === "scanning_empty" || dashboardData?.scanState === "scanning_partial";
+  const scanProgress = dashboardData?.scanProgress || 0;
+
   return (
     <div className="p-4 lg:p-8">
-      {/* Project Header */}
-      {project && (
-        <div className="mb-8 space-y-3">
-          <div className="flex items-center gap-3">
-            <h1 className="text-3xl font-bold text-neutral-950 dark:text-white">
-              {project.projectName}
-            </h1>
-            {project.websiteUrl && (
-              <a
-                href={project.websiteUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-teal-600 hover:text-teal-700 dark:text-teal-400 dark:hover:text-teal-300 transition-colors"
-              >
-                <ExternalLink className="w-5 h-5" />
-              </a>
-            )}
+      {/* Scanning Banner - only show during scanning */}
+      {isScanning && dashboardData && (
+        <ScanningBanner scanProgress={scanProgress} />
+      )}
+
+      {/* KPI Cards */}
+      {dashboardData && (
+        <KPICards kpis={dashboardData.kpis} isScanning={isScanning} />
+      )}
+
+      {/* Main Layout Grid - Onboarding Stepper + While You Wait */}
+      {isScanning && dashboardData && (
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8">
+          {/* LEFT COLUMN: Onboarding Stepper */}
+          <div className="lg:col-span-7">
+            <OnboardingStepper
+              scanProgress={scanProgress}
+              subreddits={project?.keywords || []}
+            />
           </div>
-          {project.description && (
-            <p className="text-sm text-neutral-600 dark:text-neutral-400 leading-relaxed">
-              {project.description}
-            </p>
-          )}
+
+          {/* RIGHT COLUMN: While You Wait */}
+          <div className="lg:col-span-5">
+            <WhileYouWait />
+          </div>
         </div>
       )}
 
-      {/* Temporary: Show existing Find Posts Tab */}
-      {/* TODO: Replace with new stats dashboard in Story 002 */}
-      {projectId && (
-        <FindPostsTab projectId={projectId} onCountChange={setPostsCount} />
+      {/* TODO: Add complete state UI components in Story 005 */}
+      {!isScanning && dashboardData && (
+        <div className="mt-8">
+          <p className="text-neutral-500 text-center">
+            Complete state dashboard coming soon...
+          </p>
+        </div>
       )}
     </div>
   );

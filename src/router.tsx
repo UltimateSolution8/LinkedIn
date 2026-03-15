@@ -97,6 +97,9 @@ export default function AppRouter() {
         <Route path="/dashboard" element={<DashboardRedirect />} />
 
         {/* App Routes - NEW (Route-Based Navigation) */}
+        {/* Redirect /app to appropriate location */}
+        <Route path="/app" element={<DashboardRedirect />} />
+
         {/* Onboarding (no guard needed - for users with 0 projects) */}
         <Route path="/app/onboarding" element={<OnboardingPage />} />
 

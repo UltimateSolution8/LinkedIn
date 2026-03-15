@@ -10,6 +10,7 @@ import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
 import GoogleIcon from "@/components/auth/GoogleIcon";
 import { signup } from "@/lib/api/auth";
+import { getProjects } from "@/lib/api/projects";
 
 const signupSchema = z.object({
   firstName: z.string().min(1, "First name is required"),
@@ -67,13 +68,36 @@ export default function SignupForm({ onSuccess }: SignupFormProps = {}) {
         return;
       }
 
-      // Check if email is verified and redirect accordingly
-      if (response.user.isEmailVerified) {
-        // New users always go to dashboard
-        // Dashboard will show empty state (0 projects) with CTA to create first project
-        navigate("/dashboard");
-      } else {
+      // Check if email is verified first
+      if (!response.user.isEmailVerified) {
         navigate("/verify-email-prompt");
+        return;
+      }
+
+      // Small delay to ensure cookie is set properly
+      await new Promise(resolve => setTimeout(resolve, 100));
+
+      // Fetch projects to determine where to navigate
+      try {
+        const projects = await getProjects();
+
+        console.log("[SignupForm] Fetched projects:", projects);
+        console.log("[SignupForm] Projects count:", projects.length);
+
+        if (projects.length === 0) {
+          // No projects - go to onboarding (new users typically have 0 projects)
+          console.log("[SignupForm] No projects found, navigating to onboarding");
+          navigate("/app/onboarding");
+        } else {
+          // Has projects - go to dashboard (which redirects to /app/{projectId}/dashboard)
+          console.log("[SignupForm] Projects found, navigating to dashboard");
+          navigate("/dashboard");
+        }
+      } catch (projectError) {
+        // If fetching projects fails, default to onboarding (safer for new users)
+        console.error("[SignupForm] Error fetching projects:", projectError);
+        console.log("[SignupForm] Falling back to /app/onboarding");
+        navigate("/app/onboarding");
       }
     } catch (error) {
       setApiError(error instanceof Error ? error.message : "An error occurred during signup");

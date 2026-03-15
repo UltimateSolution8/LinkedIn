@@ -337,3 +337,85 @@ export async function updateProjectSettings(
     throw new Error(responseData.message || "Failed to update project settings");
   }
 }
+
+// ===== Dashboard API =====
+
+export type ScanState = "scanning_empty" | "scanning_partial" | "complete";
+
+export interface DashboardKPIs {
+  hotLeadCount: number;
+  leadsThisWeek: number;
+  totalLeads: number;
+  postsScanned: number;
+}
+
+export interface LeadGrowthDataPoint {
+  weekLabel: string;
+  count: number;
+}
+
+export interface SubredditData {
+  subreddit: string;
+  count: number;
+}
+
+export interface KeywordData {
+  keyword: string;
+  count: number;
+}
+
+export interface HotLead {
+  id: number;
+  title: string;
+  subreddit: string;
+  score: number;
+  painTags: string[];
+  createdAt: string;
+}
+
+export interface PainPoint {
+  label: string;
+  count: number;
+}
+
+export interface ActivityFeedItem {
+  type: "hot_lead" | "scan_complete" | "scan_progress" | "scan_start";
+  message: string;
+  createdAt: string;
+}
+
+export interface DashboardData {
+  scanState: ScanState;
+  scanProgress: number;
+  kpis: DashboardKPIs;
+  leadGrowthChart: LeadGrowthDataPoint[];
+  topSubreddits: SubredditData[];
+  topKeywords: KeywordData[];
+  recentHotLeads: HotLead[];
+  trendingPainPoints: PainPoint[];
+  activityFeed: ActivityFeedItem[];
+}
+
+export interface DashboardResponse {
+  success: boolean;
+  data: DashboardData;
+  message?: string;
+}
+
+export async function getDashboardData(projectId: string): Promise<DashboardData> {
+  const response = await fetch(`${RIXLY_API_BASE_URL}/api/projects/${projectId}/dashboard`, {
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    credentials: "include",
+  });
+
+  const responseData: DashboardResponse = await response.json();
+
+  if (!response.ok) {
+    throw new Error(responseData.message || "Failed to fetch dashboard data");
+  }
+
+  return responseData.data;
+}

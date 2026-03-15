@@ -10,6 +10,7 @@ import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
 import GoogleIcon from "@/components/auth/GoogleIcon";
 import { signin } from "@/lib/api/auth";
+import { getProjects } from "@/lib/api/projects";
 
 const loginSchema = z.object({
   email: z.string().email("Please enter a valid email address"),
@@ -70,12 +71,31 @@ export default function LoginForm({ onSuccess }: LoginFormProps = {}) {
         return;
       }
 
-      // Simplified onboarding: always go to dashboard
-      // Dashboard will show:
-      // - Empty state if no projects
-      // - Trial banner if no subscription
-      // - Normal dashboard if has subscription
-      navigate("/dashboard");
+      // Small delay to ensure cookie is set properly
+      await new Promise(resolve => setTimeout(resolve, 100));
+
+      // Fetch projects to determine where to navigate
+      try {
+        const projects = await getProjects();
+
+        console.log("[LoginForm] Fetched projects:", projects);
+        console.log("[LoginForm] Projects count:", projects.length);
+
+        if (projects.length === 0) {
+          // No projects - go to onboarding
+          console.log("[LoginForm] No projects found, navigating to onboarding");
+          navigate("/app/onboarding");
+        } else {
+          // Has projects - go to dashboard (which redirects to /app/{projectId}/dashboard)
+          console.log("[LoginForm] Projects found, navigating to dashboard");
+          navigate("/dashboard");
+        }
+      } catch (projectError) {
+        // If fetching projects fails, default to dashboard
+        console.error("[LoginForm] Error fetching projects:", projectError);
+        console.log("[LoginForm] Falling back to /dashboard");
+        navigate("/dashboard");
+      }
     } catch (error) {
       setApiError(error instanceof Error ? error.message : "An error occurred during signin");
     } finally {

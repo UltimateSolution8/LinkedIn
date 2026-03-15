@@ -53,6 +53,9 @@ export function ProjectProvider({ children }: { children: ReactNode }) {
           // Fall back to first project
           setSelectedProjectId(data[0]._id);
         }
+      } else if (data.length === 0) {
+        // No projects - clear any selected project
+        setSelectedProjectId(null);
       }
     } catch (err) {
       setError(err instanceof Error ? err.message : "Failed to fetch projects");
