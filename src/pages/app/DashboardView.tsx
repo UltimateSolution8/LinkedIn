@@ -2,11 +2,14 @@ import { useParams } from "react-router-dom";
 import { useProject } from "@/contexts/ProjectContext";
 import { useDashboardData } from "@/hooks/useDashboardData";
 import { useScanningStatus } from "@/hooks/useScanningStatus";
+import { useProjectStats } from "@/hooks/useProjectStats";
 import EmptyProjectState from "@/components/dashboard/EmptyProjectState";
 import ScanningBanner from "@/components/dashboard/ScanningBanner";
 import KPICards from "@/components/dashboard/KPICards";
 import ScanningProgressSteps from "@/components/dashboard/ScanningProgressSteps";
 import WhileYouWait from "@/components/dashboard/WhileYouWait";
+import SubredditPerformanceChart from "@/components/dashboard/SubredditPerformanceChart";
+import KeywordPerformanceChart from "@/components/dashboard/KeywordPerformanceChart";
 
 /**
  * DashboardView - Stats Dashboard
@@ -20,9 +23,7 @@ import WhileYouWait from "@/components/dashboard/WhileYouWait";
  */
 export default function DashboardView() {
   const { projectId } = useParams<{ projectId: string }>();
-  const { getProjectById, projects, isLoading: projectsLoading } = useProject();
-
-  const project = projectId ? getProjectById(projectId) : null;
+  const { projects, isLoading: projectsLoading } = useProject();
 
   // Fetch dashboard data with auto-polling
   const { data: dashboardData, isLoading: dashboardLoading, error } = useDashboardData({
@@ -35,6 +36,13 @@ export default function DashboardView() {
     projectId: projectId || "",
     enabled: !!projectId
   });
+
+  // Fetch project stats (only when scanning is completed)
+  const isCompleted = scanningStatus?.stage === 'completed';
+  const { stats: projectStats, isLoading: statsLoading } = useProjectStats(
+    projectId,
+    isCompleted
+  );
 
   // Show empty state if user has no projects
   if (!projectsLoading && projects.length === 0) {
@@ -106,12 +114,36 @@ export default function DashboardView() {
         </div>
       )}
 
-      {/* TODO: Add complete state UI components (Top Subreddits & Keywords) */}
-      {!showScanningProgress && dashboardData && (
+      {/* Top Subreddits & Keywords - Show when scanning is completed */}
+      {isCompleted && !showScanningProgress && (
         <div className="mt-8">
-          <p className="text-neutral-500 text-center">
-            Complete state dashboard coming soon...
-          </p>
+          {statsLoading ? (
+            <div className="flex items-center justify-center h-32">
+              <p className="text-neutral-500 text-sm">Loading analytics...</p>
+            </div>
+          ) : projectStats ? (
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              {/* Top Subreddits */}
+              <div className="bg-white dark:bg-neutral-800 rounded-lg p-6 shadow-sm border border-neutral-200 dark:border-neutral-700">
+                <h3 className="text-lg font-semibold text-neutral-900 dark:text-white mb-4">
+                  Top Subreddits
+                </h3>
+                <SubredditPerformanceChart data={projectStats.topSubreddits} />
+              </div>
+
+              {/* Top Keywords */}
+              <div className="bg-white dark:bg-neutral-800 rounded-lg p-6 shadow-sm border border-neutral-200 dark:border-neutral-700">
+                <h3 className="text-lg font-semibold text-neutral-900 dark:text-white mb-4">
+                  Top Keywords
+                </h3>
+                <KeywordPerformanceChart data={projectStats.topKeywords} />
+              </div>
+            </div>
+          ) : (
+            <div className="flex items-center justify-center h-32">
+              <p className="text-neutral-500 text-sm">No analytics data available yet</p>
+            </div>
+          )}
         </div>
       )}
     </div>
