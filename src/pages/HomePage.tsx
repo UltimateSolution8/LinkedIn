@@ -23,6 +23,7 @@ import { CompanyLogos } from "@/components/landing-new/CompanyLogos";
 import { ScrollToTop } from "@/components/landing-new/ScrollToTop";
 import ExitIntentPlaybookDialog from "@/components/landing-new/ExitIntentPlaybookDialog";
 import { getCurrentUser } from "@/lib/api/auth";
+import { useExitIntent } from "@/hooks/useExitIntent";
 
 const AnalyticsDashboard = lazy(() => import("@/components/landing-new/AnalyticsDashboard"));
 const ROIPage = lazy(() => import("@/components/landing-new/ROIPage").then((mod) => ({ default: mod.ROIPage })));
@@ -35,6 +36,7 @@ export default function HomePage() {
     return false;
   });
   const [showExitIntent, setShowExitIntent] = useState(false);
+  const isAnonymousVisitor = !getCurrentUser();
 
   useEffect(() => {
     localStorage.setItem("theme", isDark ? "dark" : "light");
@@ -63,44 +65,17 @@ export default function HomePage() {
     };
   }, []);
 
-  useEffect(() => {
-    if (view !== "landing") return;
-    if (getCurrentUser()) return;
-    // Show once per browser tab session for anonymous visitors.
-    if (sessionStorage.getItem("rixly_exit_intent_seen") === "1") return;
-
-    let lastY = window.innerHeight;
-
-    const openExitIntent = () => {
-      if (sessionStorage.getItem("rixly_exit_intent_seen") === "1") return;
-      setShowExitIntent(true);
-      sessionStorage.setItem("rixly_exit_intent_seen", "1");
-    };
-
-    // Primary signal: cursor leaves viewport near the top (common close/tab-switch behavior).
-    const handleMouseLeave = (event: MouseEvent) => {
-      if (event.clientY <= 12 && !event.relatedTarget) {
-        openExitIntent();
-      }
-    };
-
-    // Fallback signal: quick upward movement into browser chrome region.
-    const handleMouseMove = (event: MouseEvent) => {
-      const movingUpFast = lastY - event.clientY > 18;
-      if (event.clientY <= 18 && movingUpFast) {
-        openExitIntent();
-      }
-      lastY = event.clientY;
-    };
-
-    document.addEventListener("mouseleave", handleMouseLeave);
-    document.addEventListener("mousemove", handleMouseMove);
-
-    return () => {
-      document.removeEventListener("mouseleave", handleMouseLeave);
-      document.removeEventListener("mousemove", handleMouseMove);
-    };
-  }, [view]);
+  useExitIntent({
+    enabled: view === "landing" && isAnonymousVisitor,
+    onExitIntent: () => setShowExitIntent(true),
+    sessionKey: "rixly_exit_intent_seen",
+    cooldownHours: 24,
+    minTimeOnPageMs: 3000,
+    minScrollY: 80,
+    topBoundaryPx: 24,
+    minUpwardDeltaPx: 18,
+    beforeUnloadFallback: true,
+  });
 
   const toggleTheme = () => setIsDark(!isDark);
 
