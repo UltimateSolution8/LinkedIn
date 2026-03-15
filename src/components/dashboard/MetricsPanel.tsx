@@ -19,7 +19,7 @@ export default function MetricsPanel() {
         <Button
           variant="ghost"
           size="icon"
-          className="p-1 rounded-md text-neutral-500 dark:text-neutral-400 hover:bg-purple-600/10 dark:hover:bg-purple-600/20"
+          className="p-1 rounded-md text-neutral-500 dark:text-neutral-400 hover:bg-teal-600/10 dark:hover:bg-teal-600/20"
         >
           <X className="w-5 h-5" />
         </Button>

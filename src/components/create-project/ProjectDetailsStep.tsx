@@ -225,7 +225,7 @@ export default function ProjectDetailsStep({
                 type="url"
                 placeholder="https://www.yourproject.com"
                 {...register("websiteUrl")}
-                className="pl-10 border-neutral-300 dark:border-neutral-700 bg-white dark:bg-neutral-900 focus-visible:ring-purple-600/50 focus-visible:border-purple-600/80"
+                className="pl-10 border-neutral-300 dark:border-neutral-700 bg-white dark:bg-neutral-900 focus-visible:ring-teal-600/50 focus-visible:border-teal-600/80"
               />
             </div>
             {errors.websiteUrl && (
@@ -267,7 +267,7 @@ export default function ProjectDetailsStep({
               id="description"
               placeholder="Describe your product or service, its key features, and unique value proposition..."
               {...register("description")}
-              className="flex w-full min-w-0 flex-1 resize-y overflow-hidden rounded-lg text-neutral-900 dark:text-white focus:outline-0 focus:ring-2 focus:ring-purple-600/50 border border-neutral-300 dark:border-neutral-700 bg-white dark:bg-neutral-900 focus:border-purple-600/80 min-h-[120px] placeholder:text-neutral-400 dark:placeholder:text-neutral-600 p-4 text-sm font-normal leading-normal"
+              className="flex w-full min-w-0 flex-1 resize-y overflow-hidden rounded-lg text-neutral-900 dark:text-white focus:outline-0 focus:ring-2 focus:ring-teal-600/50 border border-neutral-300 dark:border-neutral-700 bg-white dark:bg-neutral-900 focus:border-teal-600/80 min-h-[120px] placeholder:text-neutral-400 dark:placeholder:text-neutral-600 p-4 text-sm font-normal leading-normal"
             />
             {errors.description && (
               <p className="text-sm text-red-500">{errors.description.message}</p>
@@ -317,7 +317,7 @@ export default function ProjectDetailsStep({
             <Label className="text-neutral-800 dark:text-neutral-200 text-sm font-medium">
               Target Audience
             </Label>
-            <div className="flex flex-col gap-3 p-3 rounded-lg border border-neutral-300 dark:border-neutral-700 bg-white dark:bg-neutral-900 focus-within:ring-2 focus-within:ring-purple-600/50 focus-within:border-purple-600/80 transition-all">
+            <div className="flex flex-col gap-3 p-3 rounded-lg border border-neutral-300 dark:border-neutral-700 bg-white dark:bg-neutral-900 focus-within:ring-2 focus-within:ring-teal-600/50 focus-within:border-teal-600/80 transition-all">
               {/* Display added segments */}
               {targetAudience.length > 0 && (
                 <div className="flex flex-wrap gap-2">
@@ -360,7 +360,7 @@ export default function ProjectDetailsStep({
             <Label className="text-neutral-800 dark:text-neutral-200 text-sm font-medium">
               Value Propositions
             </Label>
-            <div className="flex flex-col gap-3 p-3 rounded-lg border border-neutral-300 dark:border-neutral-700 bg-white dark:bg-neutral-900 focus-within:ring-2 focus-within:ring-purple-600/50 focus-within:border-purple-600/80 transition-all">
+            <div className="flex flex-col gap-3 p-3 rounded-lg border border-neutral-300 dark:border-neutral-700 bg-white dark:bg-neutral-900 focus-within:ring-2 focus-within:ring-teal-600/50 focus-within:border-teal-600/80 transition-all">
               {/* Display added value propositions */}
               {valuePropositions.length > 0 ? (
                 <div className="flex flex-wrap gap-2">
@@ -414,7 +414,7 @@ export default function ProjectDetailsStep({
             </Button>
             <Button
               type="submit"
-              className="min-w-[7rem] bg-purple-600 hover:bg-purple-700 text-white"
+              className="min-w-[7rem] bg-teal-600 hover:bg-teal-700 text-white"
             >
               Next
             </Button>

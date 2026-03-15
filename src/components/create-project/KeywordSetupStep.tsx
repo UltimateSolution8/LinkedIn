@@ -107,12 +107,12 @@ export default function KeywordSetupStep({
               value={keywordInput}
               onChange={(e) => setKeywordInput(e.target.value)}
               onKeyPress={handleKeyPress}
-              className="border-neutral-300 dark:border-neutral-700 bg-neutral-100 dark:bg-neutral-800 focus-visible:ring-purple-600/50 focus-visible:border-purple-600"
+              className="border-neutral-300 dark:border-neutral-700 bg-neutral-100 dark:bg-neutral-800 focus-visible:ring-teal-600/50 focus-visible:border-teal-600"
             />
             <Button
               type="button"
               onClick={handleAddKeyword}
-              className="flex-shrink-0 bg-purple-600 hover:bg-purple-700 text-white px-6"
+              className="flex-shrink-0 bg-teal-600 hover:bg-teal-700 text-white px-6"
             >
               Add
             </Button>
@@ -128,12 +128,12 @@ export default function KeywordSetupStep({
           >
             {isGenerating ? (
               <>
-                <Loader2 className="w-5 h-5 text-purple-600 animate-spin" />
+                <Loader2 className="w-5 h-5 text-teal-600 animate-spin" />
                 <span>Generating Keywords...</span>
               </>
             ) : (
               <>
-                <Sparkles className="w-5 h-5 text-purple-600" />
+                <Sparkles className="w-5 h-5 text-teal-600" />
                 <span>AI Keyword Generator</span>
               </>
             )}
@@ -210,7 +210,7 @@ export default function KeywordSetupStep({
           type="button"
           onClick={onNext}
           disabled={keywords.length < 30}
-          className="min-w-[84px] bg-purple-600 hover:bg-purple-700 text-white gap-2"
+          className="min-w-[84px] bg-teal-600 hover:bg-teal-700 text-white gap-2"
         >
           <span>Next</span>
           <ArrowRight className="w-5 h-5" />

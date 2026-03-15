@@ -80,7 +80,7 @@ export default function AdminProjectLeads({ userId, projectId, projectName }: Ad
           <select
             value={selectedSource}
             onChange={(e) => handleSourceChange(e.target.value)}
-            className="px-3 py-1.5 text-sm border border-neutral-200 dark:border-neutral-700 rounded-md bg-white dark:bg-neutral-800 text-neutral-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-purple-600/50"
+            className="px-3 py-1.5 text-sm border border-neutral-200 dark:border-neutral-700 rounded-md bg-white dark:bg-neutral-800 text-neutral-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-teal-600/50"
           >
             <option value="all">All Sources</option>
             <option value="ask">Ask</option>
@@ -92,7 +92,7 @@ export default function AdminProjectLeads({ userId, projectId, projectName }: Ad
 
       {isLoading ? (
         <div className="flex items-center justify-center py-12">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-purple-600"></div>
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-teal-600"></div>
         </div>
       ) : error ? (
         <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 text-red-600 dark:text-red-400 px-4 py-3 rounded-md text-sm">

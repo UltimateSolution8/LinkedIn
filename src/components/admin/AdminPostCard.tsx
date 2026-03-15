@@ -64,7 +64,7 @@ export default function AdminPostCard({
       case "IN_PROGRESS":
         return "bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-400";
       case "FOLLOW_UP_SCHEDULED":
-        return "bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-400";
+        return "bg-teal-100 text-teal-700 dark:bg-teal-900/30 dark:text-teal-400";
       case "CONVERTED":
         return "bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400";
       case "NOT_INTERESTED":
@@ -135,8 +135,8 @@ export default function AdminPostCard({
         {(mainPainpoint || matchReason) && (
           <div className="mt-4 space-y-2">
             {matchReason && (
-              <div className="bg-purple-50 dark:bg-purple-900/20 rounded-lg p-3 border border-purple-200 dark:border-purple-800">
-                <p className="text-purple-600 dark:text-purple-400 text-xs uppercase font-bold tracking-wider mb-1">
+              <div className="bg-teal-50 dark:bg-teal-900/20 rounded-lg p-3 border border-teal-200 dark:border-teal-800">
+                <p className="text-teal-600 dark:text-teal-400 text-xs uppercase font-bold tracking-wider mb-1">
                   Match Reason
                 </p>
                 <p className="text-neutral-950 dark:text-white text-sm leading-relaxed">
@@ -196,7 +196,7 @@ export default function AdminPostCard({
             href={url}
             target="_blank"
             rel="noopener noreferrer"
-            className="flex items-center gap-1.5 text-purple-600 dark:text-teal-400 text-sm font-bold hover:underline"
+            className="flex items-center gap-1.5 text-teal-600 dark:text-teal-400 text-sm font-bold hover:underline"
           >
             <span>View Post</span>
             <ExternalLink className="w-4 h-4 text-neutral-500 dark:text-neutral-400 " />
@@ -209,7 +209,7 @@ export default function AdminPostCard({
             <DialogTrigger asChild>
               <Button
                 variant="link"
-                className="text-purple-600 dark:text-purple-400 p-0 h-auto mt-2 text-sm font-medium self-start"
+                className="text-teal-600 dark:text-teal-400 p-0 h-auto mt-2 text-sm font-medium self-start"
               >
                 Show More
               </Button>
@@ -238,8 +238,8 @@ export default function AdminPostCard({
                 {(mainPainpoint || matchReason) && (
                   <div className="space-y-2">
                     {matchReason && (
-                      <div className="bg-purple-50 dark:bg-purple-900/20 rounded-lg p-3 border border-purple-200 dark:border-purple-800">
-                        <p className="text-purple-600 dark:text-purple-400 text-xs uppercase font-bold tracking-wider mb-1">
+                      <div className="bg-teal-50 dark:bg-teal-900/20 rounded-lg p-3 border border-teal-200 dark:border-teal-800">
+                        <p className="text-teal-600 dark:text-teal-400 text-xs uppercase font-bold tracking-wider mb-1">
                           Match Reason
                         </p>
                         <p className="text-neutral-950 dark:text-white text-sm leading-relaxed">
@@ -293,7 +293,7 @@ export default function AdminPostCard({
                     href={url}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="flex items-center gap-1.5 text-purple-600 dark:text-teal-400 text-sm font-bold hover:underline"
+                    className="flex items-center gap-1.5 text-teal-600 dark:text-teal-400 text-sm font-bold hover:underline"
                   >
                     <span>View Post</span>
                     <ArrowRight className="w-4 h-4" />

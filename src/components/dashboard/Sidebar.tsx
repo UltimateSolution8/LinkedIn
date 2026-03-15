@@ -61,15 +61,15 @@ export default function Sidebar() {
                     onClick={() => setSelectedProjectId(project._id)}
                     className={`flex items-center gap-3 px-3 py-2 rounded-lg cursor-pointer transition-colors ${
                       isActive
-                        ? "bg-purple-600/10 dark:bg-purple-600/20"
-                        : "hover:bg-purple-600/10 dark:hover:bg-purple-600/20"
+                        ? "bg-teal-600/10 dark:bg-teal-600/20"
+                        : "hover:bg-teal-600/10 dark:hover:bg-teal-600/20"
                     }`}
                   >
                     <Avatar className="h-8 w-8">
                       <AvatarFallback
                         className={`text-xs font-semibold ${
                           isActive
-                            ? "bg-purple-600 text-white"
+                            ? "bg-teal-600 text-white"
                             : "bg-neutral-200 dark:bg-neutral-800 text-neutral-700 dark:text-neutral-300"
                         }`}
                       >
@@ -107,7 +107,7 @@ export default function Sidebar() {
             className={`w-full gap-2 ${
               isCreateButtonDisabled
                 ? "bg-neutral-400 hover:bg-neutral-400 text-neutral-600 cursor-not-allowed"
-                : "bg-purple-600 hover:bg-purple-700 text-white"
+                : "bg-teal-600 hover:bg-teal-700 text-white"
             }`}
           >
             <Plus className="w-5 h-5" />

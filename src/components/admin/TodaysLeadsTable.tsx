@@ -122,7 +122,7 @@ export default function TodaysLeadsTable({ leads }: TodaysLeadsTableProps) {
                 </div>
               </td>
               <td className="py-3 px-4 text-right">
-                <Badge className="bg-purple-600/10 dark:bg-purple-600/20 text-purple-600 dark:text-purple-400">
+                <Badge className="bg-teal-600/10 dark:bg-teal-600/20 text-teal-600 dark:text-teal-400">
                   {lead.saleLeads}
                 </Badge>
               </td>

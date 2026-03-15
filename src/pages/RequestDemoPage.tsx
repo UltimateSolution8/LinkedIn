@@ -36,7 +36,7 @@ const RequestDemoPage = () => {
             </p>
             <button
               onClick={handleNewRequest}
-              className="w-full py-2 rounded-lg bg-purple-600 text-white font-medium hover:bg-purple-700"
+              className="w-full py-2 rounded-lg bg-teal-600 text-white font-medium hover:bg-teal-700"
             >
               Submit Another Request
             </button>

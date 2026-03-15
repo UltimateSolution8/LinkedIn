@@ -4,7 +4,7 @@ import Footer from '@/components/Footer'
 
 export default function HomeLayout() {
   return (
-    <div className="min-h-screen bg-linear-to-br from-purple-100 via-white to-purple-50">
+    <div className="min-h-screen bg-linear-to-br from-teal-100 via-white to-teal-50">
       {/* Header */}
       <Navbar />
 

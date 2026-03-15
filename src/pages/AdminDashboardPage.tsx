@@ -244,7 +244,7 @@ export default function AdminDashboardPage() {
           <CardContent>
             {isLoadingLeads ? (
               <div className="flex items-center justify-center py-8">
-                <Loader2 className="w-6 h-6 animate-spin text-purple-600" />
+                <Loader2 className="w-6 h-6 animate-spin text-teal-600" />
               </div>
             ) : (
               <TodaysLeadsTable leads={todaysLeads} />
@@ -263,7 +263,7 @@ export default function AdminDashboardPage() {
           <CardContent>
             {isLoadingJobs ? (
               <div className="flex items-center justify-center py-4">
-                <Loader2 className="w-6 h-6 animate-spin text-purple-600" />
+                <Loader2 className="w-6 h-6 animate-spin text-teal-600" />
               </div>
             ) : (
               <NextJobTimer
@@ -285,7 +285,7 @@ export default function AdminDashboardPage() {
           <CardContent>
             {isLoadingJobs ? (
               <div className="flex items-center justify-center py-4">
-                <Loader2 className="w-6 h-6 animate-spin text-purple-600" />
+                <Loader2 className="w-6 h-6 animate-spin text-teal-600" />
               </div>
             ) : activeJobs.length === 0 ? (
               <div className="text-center py-4 text-neutral-500 dark:text-neutral-400">
@@ -349,7 +349,7 @@ export default function AdminDashboardPage() {
         <CardContent>
           {isLoadingJobs ? (
             <div className="flex items-center justify-center py-8">
-              <Loader2 className="w-6 h-6 animate-spin text-purple-600" />
+              <Loader2 className="w-6 h-6 animate-spin text-teal-600" />
             </div>
           ) : (
             <JobRunTable jobs={recentJobs} />

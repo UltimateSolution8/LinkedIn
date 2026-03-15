@@ -31,8 +31,8 @@ export default function ContactUsPage() {
 
             {/* Email */}
             <div className="flex flex-wrap items-start gap-4">
-              <div className="flex-shrink-0 w-12 h-12 bg-purple-100 rounded-full flex items-center justify-center">
-                <Mail className="w-6 h-6 text-purple-600" />
+              <div className="flex-shrink-0 w-12 h-12 bg-teal-100 rounded-full flex items-center justify-center">
+                <Mail className="w-6 h-6 text-teal-600" />
               </div>
               <div>
                 <h3 className="text-lg font-semibold text-gray-900 mb-1">
@@ -40,7 +40,7 @@ export default function ContactUsPage() {
                 </h3>
                 <a
                   href="mailto:admin@userixly.com"
-                  className="text-gray-600 hover:text-purple-600 transition"
+                  className="text-gray-600 hover:text-teal-600 transition"
                 >
                   admin@userixly.com
                 </a>
@@ -49,8 +49,8 @@ export default function ContactUsPage() {
 
             {/* Phone */}
             <div className="flex flex-wrap items-start gap-4">
-              <div className="flex-shrink-0 w-12 h-12 bg-purple-100 rounded-full flex items-center justify-center">
-                <Phone className="w-6 h-6 text-purple-600" />
+              <div className="flex-shrink-0 w-12 h-12 bg-teal-100 rounded-full flex items-center justify-center">
+                <Phone className="w-6 h-6 text-teal-600" />
               </div>
               <div>
                 <h3 className="text-lg font-semibold text-gray-900 mb-1">
@@ -58,7 +58,7 @@ export default function ContactUsPage() {
                 </h3>
                 <a
                   href="tel:8249467209"
-                  className="text-gray-600 hover:text-purple-600 transition"
+                  className="text-gray-600 hover:text-teal-600 transition"
                 >
                   8249467209
                 </a>
@@ -67,8 +67,8 @@ export default function ContactUsPage() {
 
             {/* Registered Address */}
             <div className="flex flex-wrap items-start gap-4">
-              <div className="flex-shrink-0 w-12 h-12 bg-purple-100 rounded-full flex items-center justify-center">
-                <MapPin className="w-6 h-6 text-purple-600" />
+              <div className="flex-shrink-0 w-12 h-12 bg-teal-100 rounded-full flex items-center justify-center">
+                <MapPin className="w-6 h-6 text-teal-600" />
               </div>
               <div>
                 <h3 className="text-lg font-semibold text-gray-900 mb-1">
@@ -86,8 +86,8 @@ export default function ContactUsPage() {
 
             {/* Operational Address */}
             <div className="flex flex-wrap items-start gap-4">
-              <div className="flex-shrink-0 w-12 h-12 bg-purple-100 rounded-full flex items-center justify-center">
-                <MapPin className="w-6 h-6 text-purple-600" />
+              <div className="flex-shrink-0 w-12 h-12 bg-teal-100 rounded-full flex items-center justify-center">
+                <MapPin className="w-6 h-6 text-teal-600" />
               </div>
               <div>
                 <h3 className="text-lg font-semibold text-gray-900 mb-1">

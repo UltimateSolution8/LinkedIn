@@ -164,7 +164,7 @@ export default function ProfilePage() {
               <div className="flex flex-col sm:flex-row items-center gap-6 pb-6 border-b border-neutral-200 dark:border-neutral-800">
                 <div className="relative shrink-0">
                   <Avatar className="h-24 w-24">
-                    <AvatarFallback className="bg-purple-600 text-white text-3xl">
+                    <AvatarFallback className="bg-teal-600 text-white text-3xl">
                       {getInitials()}
                     </AvatarFallback>
                   </Avatar>
@@ -190,7 +190,7 @@ export default function ProfilePage() {
                     type="text"
                     value={firstName}
                     onChange={(e) => setFirstName(e.target.value)}
-                    className="border-neutral-200 dark:border-neutral-800 bg-neutral-50 dark:bg-neutral-900 focus-visible:ring-purple-600/50"
+                    className="border-neutral-200 dark:border-neutral-800 bg-neutral-50 dark:bg-neutral-900 focus-visible:ring-teal-600/50"
                   />
                 </div>
                 <div className="flex flex-col gap-2">
@@ -202,7 +202,7 @@ export default function ProfilePage() {
                     type="text"
                     value={lastName}
                     onChange={(e) => setLastName(e.target.value)}
-                    className="border-neutral-200 dark:border-neutral-800 bg-neutral-50 dark:bg-neutral-900 focus-visible:ring-purple-600/50"
+                    className="border-neutral-200 dark:border-neutral-800 bg-neutral-50 dark:bg-neutral-900 focus-visible:ring-teal-600/50"
                   />
                 </div>
               </div>
@@ -373,7 +373,7 @@ export default function ProfilePage() {
                   type="button"
                   variant="outline"
                   onClick={handleResetPassword}
-                  className="mt-4 border-purple-600/30 text-purple-600 dark:text-purple-400 hover:bg-purple-600/10"
+                  className="mt-4 border-teal-600/30 text-teal-600 dark:text-teal-400 hover:bg-teal-600/10"
                 >
                   Reset Password
                 </Button>
@@ -393,7 +393,7 @@ export default function ProfilePage() {
             <Button
               onClick={handleSave}
               disabled={!isFormModified()}
-              className="min-w-[84px] bg-purple-600 hover:bg-purple-700 text-white disabled:opacity-50 disabled:cursor-not-allowed"
+              className="min-w-[84px] bg-teal-600 hover:bg-teal-700 text-white disabled:opacity-50 disabled:cursor-not-allowed"
             >
               Save Changes
             </Button>

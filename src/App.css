@@ -1,0 +1,87 @@
+/* App-specific styles */
+
+/* Hero background glow */
+.hero-glow {
+  position: absolute;
+  width: 600px;
+  height: 600px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(13, 148, 136, 0.15) 0%, transparent 70%);
+  filter: blur(60px);
+  pointer-events: none;
+}
+
+/* Video container styling */
+.video-container {
+  position: relative;
+  border-radius: 1rem;
+  overflow: hidden;
+  box-shadow: 0 25px 50px -12px rgba(15, 23, 42, 0.15);
+}
+
+.dark .video-container {
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.4);
+}
+
+/* Feature card hover effect */
+.feature-card {
+  transition: all 0.3s ease;
+}
+
+.feature-card:hover {
+  transform: translateY(-4px);
+}
+
+/* Pricing card popular highlight */
+.pricing-popular {
+  position: relative;
+}
+
+.pricing-popular::before {
+  content: "";
+  position: absolute;
+  inset: -2px;
+  background: var(--primary-gradient);
+  opacity: 0.5;
+  border-radius: calc(var(--radius) + 2px);
+  z-index: -1;
+}
+
+/* Text gradient */
+.text-gradient {
+  background: linear-gradient(to right, rgb(var(--foreground)), rgb(var(--muted-foreground)));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* Button press effect */
+.btn-press:active {
+  transform: scale(0.95);
+}
+
+/* Smooth scroll snap for sections */
+section {
+  scroll-margin-top: 80px;
+}
+
+/* Testimonial card */
+.testimonial-card {
+  min-width: 350px;
+  max-width: 400px;
+}
+
+@media (max-width: 768px) {
+  .testimonial-card {
+    min-width: 300px;
+    max-width: 320px;
+  }
+}
+
+/* Footer brand text */
+.footer-brand {
+  font-size: clamp(4rem, 15vw, 12rem);
+  font-weight: 800;
+  line-height: 1;
+  letter-spacing: -0.05em;
+}

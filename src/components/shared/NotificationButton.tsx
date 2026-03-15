@@ -63,7 +63,7 @@ export default function NotificationButton() {
         >
           <Bell className="w-5 h-5" />
           {unreadCount > 0 && (
-            <span className="absolute -top-1 -right-1 flex h-5 w-5 items-center justify-center rounded-full bg-purple-600 text-[10px] font-bold text-white">
+            <span className="absolute -top-1 -right-1 flex h-5 w-5 items-center justify-center rounded-full bg-teal-600 text-[10px] font-bold text-white">
               {unreadCount > 9 ? "9+" : unreadCount}
             </span>
           )}
@@ -98,7 +98,7 @@ export default function NotificationButton() {
             ))}
             <DropdownMenuSeparator />
             <DropdownMenuItem
-              className="justify-center font-medium text-purple-600 dark:text-purple-400 cursor-pointer"
+              className="justify-center font-medium text-teal-600 dark:text-teal-400 cursor-pointer"
               onClick={() => navigate("/notifications")}
             >
               See all notifications

@@ -87,7 +87,7 @@ export default function ProjectsBreakdownPage() {
   if (isLoading) {
     return (
       <div className="flex flex-col items-center justify-center pt-20">
-        <Loader2 className="w-8 h-8 animate-spin text-purple-600" />
+        <Loader2 className="w-8 h-8 animate-spin text-teal-600" />
         <p className="text-neutral-500 dark:text-neutral-400 text-lg mt-4">Loading projects breakdown...</p>
       </div>
     );
@@ -139,7 +139,7 @@ export default function ProjectsBreakdownPage() {
           <Card>
             <CardContent className="p-4">
               <div className="flex items-center gap-2 mb-1">
-                <FolderKanban className="w-4 h-4 text-purple-600 dark:text-purple-400" />
+                <FolderKanban className="w-4 h-4 text-teal-600 dark:text-teal-400" />
                 <p className="text-xs text-neutral-500 dark:text-neutral-400">Projects</p>
               </div>
               <p className="text-2xl font-bold text-neutral-950 dark:text-white">{summary.totalProjects}</p>
@@ -179,10 +179,10 @@ export default function ProjectsBreakdownPage() {
           <Card>
             <CardContent className="p-4">
               <div className="flex items-center gap-2 mb-1">
-                <Clock className="w-4 h-4 text-purple-600 dark:text-purple-400" />
+                <Clock className="w-4 h-4 text-teal-600 dark:text-teal-400" />
                 <p className="text-xs text-neutral-500 dark:text-neutral-400">Comments</p>
               </div>
-              <p className="text-2xl font-bold text-purple-600 dark:text-purple-400">{summary.totalCommentSources}</p>
+              <p className="text-2xl font-bold text-teal-600 dark:text-teal-400">{summary.totalCommentSources}</p>
             </CardContent>
           </Card>
 
@@ -250,9 +250,9 @@ export default function ProjectsBreakdownPage() {
                       <p className="text-xs text-amber-600 dark:text-amber-400">Engagement</p>
                       <p className="text-lg font-semibold text-amber-700 dark:text-amber-300">{project.engagementLeads}</p>
                     </div>
-                    <div className="bg-purple-50 dark:bg-purple-900/20 rounded p-2">
-                      <p className="text-xs text-purple-600 dark:text-purple-400">Comments</p>
-                      <p className="text-lg font-semibold text-purple-700 dark:text-purple-300">{project.commentSources}</p>
+                    <div className="bg-teal-50 dark:bg-teal-900/20 rounded p-2">
+                      <p className="text-xs text-teal-600 dark:text-teal-400">Comments</p>
+                      <p className="text-lg font-semibold text-teal-700 dark:text-teal-300">{project.commentSources}</p>
                     </div>
                     <div className="bg-blue-50 dark:bg-blue-900/20 rounded p-2">
                       <p className="text-xs text-blue-600 dark:text-blue-400">Subreddits</p>
@@ -296,10 +296,10 @@ export default function ProjectsBreakdownPage() {
                               )}
                               {job.nextScheduledAt && (
                                 <div className="text-right flex items-center gap-1">
-                                  <Clock className="w-3 h-3 text-purple-600 dark:text-purple-400" />
+                                  <Clock className="w-3 h-3 text-teal-600 dark:text-teal-400" />
                                   <div>
                                     <p className="text-neutral-500 dark:text-neutral-400">Next run</p>
-                                    <p className="text-purple-600 dark:text-purple-400 font-medium">{formatDate(job.nextScheduledAt)}</p>
+                                    <p className="text-teal-600 dark:text-teal-400 font-medium">{formatDate(job.nextScheduledAt)}</p>
                                   </div>
                                 </div>
                               )}

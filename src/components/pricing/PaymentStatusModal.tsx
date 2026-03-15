@@ -61,12 +61,12 @@ export default function PaymentStatusModal({
       case "loading":
         return {
           icon: (
-            <Loader2 className="w-16 h-16 text-purple-600 mx-auto mb-4 animate-spin" />
+            <Loader2 className="w-16 h-16 text-teal-600 mx-auto mb-4 animate-spin" />
           ),
-          iconBg: "bg-purple-100",
+          iconBg: "bg-teal-100",
           defaultTitle: "Processing Payment",
           defaultMessage: "Please wait while we verify your payment...",
-          titleColor: "text-purple-700",
+          titleColor: "text-teal-700",
         };
     }
   };
@@ -96,7 +96,7 @@ export default function PaymentStatusModal({
 
         {status === "loading" ? (
           <div className="flex justify-center mt-6">
-            <div className="flex items-center gap-2 text-purple-600">
+            <div className="flex items-center gap-2 text-teal-600">
               <Loader2 className="w-4 h-4 animate-spin" />
               <span className="text-sm">Processing...</span>
             </div>
@@ -106,14 +106,14 @@ export default function PaymentStatusModal({
             {status === "success" && onContinue ? (
               <Button
                 onClick={onContinue}
-                className="w-full bg-gradient-to-r from-purple-600 to-purple-700 hover:from-purple-700 hover:to-purple-800 text-white py-6 rounded-xl text-base font-semibold"
+                className="w-full bg-gradient-to-r from-teal-600 to-teal-700 hover:from-teal-700 hover:to-teal-800 text-white py-6 rounded-xl text-base font-semibold"
               >
                 Go to Dashboard
               </Button>
             ) : status === "success" ? (
               <Button
                 onClick={onClose}
-                className="w-full bg-gradient-to-r from-purple-600 to-purple-700 hover:from-purple-700 hover:to-purple-800 text-white py-6 rounded-xl text-base font-semibold"
+                className="w-full bg-gradient-to-r from-teal-600 to-teal-700 hover:from-teal-700 hover:to-teal-800 text-white py-6 rounded-xl text-base font-semibold"
               >
                 Continue
               </Button>
@@ -121,7 +121,7 @@ export default function PaymentStatusModal({
               <>
                 <Button
                   onClick={onClose}
-                  className="w-full bg-gradient-to-r from-purple-600 to-purple-700 hover:from-purple-700 hover:to-purple-800 text-white py-6 rounded-xl text-base font-semibold"
+                  className="w-full bg-gradient-to-r from-teal-600 to-teal-700 hover:from-teal-700 hover:to-teal-800 text-white py-6 rounded-xl text-base font-semibold"
                 >
                   Try Again
                 </Button>

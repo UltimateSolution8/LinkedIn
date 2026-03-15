@@ -173,7 +173,7 @@ export default function AdminProjectDetailPage() {
   if (isLoadingProject) {
     return (
       <div className="flex flex-col items-center justify-center pt-20">
-        <Loader2 className="w-8 h-8 animate-spin text-purple-600" />
+        <Loader2 className="w-8 h-8 animate-spin text-teal-600" />
         <p className="text-neutral-500 dark:text-neutral-400 text-lg mt-4">Loading project...</p>
       </div>
     );
@@ -238,7 +238,7 @@ export default function AdminProjectDetailPage() {
                   href={project.projectUrl}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-purple-600 hover:text-purple-700 dark:text-purple-400 dark:hover:text-purple-300 transition-colors"
+                  className="text-teal-600 hover:text-teal-700 dark:text-teal-400 dark:hover:text-teal-300 transition-colors"
                 >
                   <ExternalLink className="w-5 h-5" />
                 </a>
@@ -282,7 +282,7 @@ export default function AdminProjectDetailPage() {
                 <Button
                   size="sm"
                   onClick={() => setIsEditModalOpen(true)}
-                  className="bg-purple-600 hover:bg-purple-700 text-white"
+                  className="bg-teal-600 hover:bg-teal-700 text-white"
                 >
                   <Pencil className="w-4 h-4 mr-2" />
                   Edit Configuration
@@ -401,7 +401,7 @@ export default function AdminProjectDetailPage() {
             <TabsContent value="all">
               {(isLoadingLeads || isLoadingPosts) ? (
                 <div className="flex flex-col items-center justify-center py-20">
-                  <Loader2 className="w-8 h-8 animate-spin text-purple-600" />
+                  <Loader2 className="w-8 h-8 animate-spin text-teal-600" />
                   <p className="text-neutral-500 dark:text-neutral-400 text-lg mt-4">Loading content...</p>
                 </div>
               ) : leads.length === 0 && posts.length === 0 ? (
@@ -461,7 +461,7 @@ export default function AdminProjectDetailPage() {
             <TabsContent value="leads">
               {isLoadingLeads ? (
                 <div className="flex flex-col items-center justify-center py-20">
-                  <Loader2 className="w-8 h-8 animate-spin text-purple-600" />
+                  <Loader2 className="w-8 h-8 animate-spin text-teal-600" />
                   <p className="text-neutral-500 dark:text-neutral-400 text-lg mt-4">Loading leads...</p>
                 </div>
               ) : leads.length === 0 ? (
@@ -510,7 +510,7 @@ export default function AdminProjectDetailPage() {
             <TabsContent value="posts">
               {isLoadingPosts ? (
                 <div className="flex flex-col items-center justify-center py-20">
-                  <Loader2 className="w-8 h-8 animate-spin text-purple-600" />
+                  <Loader2 className="w-8 h-8 animate-spin text-teal-600" />
                   <p className="text-neutral-500 dark:text-neutral-400 text-lg mt-4">Loading posts...</p>
                 </div>
               ) : posts.length === 0 ? (

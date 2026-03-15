@@ -75,7 +75,7 @@ export default function AdminUsersListPage() {
       <div className="container mx-auto p-8">
         <div className="flex items-center justify-center h-64">
           <div className="text-center">
-            <Loader2 className="w-8 h-8 animate-spin mx-auto mb-4 text-purple-600" />
+            <Loader2 className="w-8 h-8 animate-spin mx-auto mb-4 text-teal-600" />
             <p className="text-lg text-neutral-600 dark:text-neutral-400">
               Loading users...
             </p>
@@ -166,7 +166,7 @@ export default function AdminUsersListPage() {
                       </div>
                     </td>
                     <td className="py-4 px-4 text-center">
-                      <Badge className="bg-purple-600/10 dark:bg-purple-600/20 text-purple-600 dark:text-purple-400">
+                      <Badge className="bg-teal-600/10 dark:bg-teal-600/20 text-teal-600 dark:text-teal-400">
                         {user.projectCount}
                       </Badge>
                     </td>

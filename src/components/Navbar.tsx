@@ -45,7 +45,7 @@ const Navbar = () => {
             <Link to="/contactus" className="text-gray-600 hover:text-gray-900 transition">Contact Us</Link>
             {/* <a href="#dashboard" className="text-gray-600 hover:text-gray-900 transition">Dashboard</a> */}
             <Link to={`/request-demo`}>
-              <Button variant="outline" className="border-purple-600 text-purple-600 hover:bg-purple-50">
+              <Button variant="outline" className="border-teal-600 text-teal-600 hover:bg-teal-50">
                 Request Demo
               </Button>
             </Link>
@@ -79,7 +79,7 @@ const Navbar = () => {
               <Link to="/pricing" onClick={closeMenu} className="text-gray-600 hover:text-gray-900 block px-3 py-2 rounded-md text-base font-medium">Pricing</Link>
               <Link to="/contactus" onClick={closeMenu} className="text-gray-600 hover:text-gray-900 block px-3 py-2 rounded-md text-base font-medium">Contact Us</Link>
               <Link to={`/request-demo`} onClick={closeMenu}>
-                <Button variant="outline" className="w-full mt-2 border-purple-600 text-purple-600 hover:bg-purple-50">
+                <Button variant="outline" className="w-full mt-2 border-teal-600 text-teal-600 hover:bg-teal-50">
                   Request Demo
                 </Button>
               </Link>

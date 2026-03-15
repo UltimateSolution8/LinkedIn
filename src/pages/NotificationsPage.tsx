@@ -101,7 +101,7 @@ export default function NotificationsPage() {
     return (
       <div className="flex-1 flex items-center justify-center p-8 overflow-y-auto">
         <div className="text-center">
-          <Loader2 className="w-8 h-8 animate-spin mx-auto mb-4 text-purple-600" />
+          <Loader2 className="w-8 h-8 animate-spin mx-auto mb-4 text-teal-600" />
           <p className="text-lg text-neutral-600 dark:text-neutral-400">
             Loading notifications...
           </p>
@@ -143,7 +143,7 @@ export default function NotificationsPage() {
             <Button
               onClick={handleMarkAllAsRead}
               disabled={isMarkingRead}
-              className="bg-purple-600/20 dark:bg-purple-600/30 text-purple-600 dark:text-purple-400 hover:bg-purple-600/30 dark:hover:bg-purple-600/40"
+              className="bg-teal-600/20 dark:bg-teal-600/30 text-teal-600 dark:text-teal-400 hover:bg-teal-600/30 dark:hover:bg-teal-600/40"
             >
               {isMarkingRead ? (
                 <>
@@ -163,7 +163,7 @@ export default function NotificationsPage() {
         {/* Filter Tabs */}
         <div className="flex px-4 py-3">
           <div className="flex h-10 w-full items-center justify-center rounded-lg bg-neutral-200/50 dark:bg-neutral-800/50 p-1">
-            <label className="flex cursor-pointer h-full grow items-center justify-center overflow-hidden rounded-md px-2 has-[:checked]:bg-white dark:has-[:checked]:bg-neutral-950 has-[:checked]:shadow-sm has-[:checked]:text-purple-600 dark:has-[:checked]:text-purple-400 text-neutral-500 dark:text-neutral-400 text-sm font-medium leading-normal transition-colors">
+            <label className="flex cursor-pointer h-full grow items-center justify-center overflow-hidden rounded-md px-2 has-[:checked]:bg-white dark:has-[:checked]:bg-neutral-950 has-[:checked]:shadow-sm has-[:checked]:text-teal-600 dark:has-[:checked]:text-teal-400 text-neutral-500 dark:text-neutral-400 text-sm font-medium leading-normal transition-colors">
               <span className="truncate">All</span>
               <input
                 checked={activeFilter === "all"}
@@ -174,11 +174,11 @@ export default function NotificationsPage() {
                 value="all"
               />
             </label>
-            <label className="flex cursor-pointer h-full grow items-center justify-center overflow-hidden rounded-md px-2 has-[:checked]:bg-white dark:has-[:checked]:bg-neutral-950 has-[:checked]:shadow-sm has-[:checked]:text-purple-600 dark:has-[:checked]:text-purple-400 text-neutral-500 dark:text-neutral-400 text-sm font-medium leading-normal transition-colors">
+            <label className="flex cursor-pointer h-full grow items-center justify-center overflow-hidden rounded-md px-2 has-[:checked]:bg-white dark:has-[:checked]:bg-neutral-950 has-[:checked]:shadow-sm has-[:checked]:text-teal-600 dark:has-[:checked]:text-teal-400 text-neutral-500 dark:text-neutral-400 text-sm font-medium leading-normal transition-colors">
               <span className="truncate flex items-center gap-2">
                 Unread
                 {unreadCount > 0 && (
-                  <Badge className="bg-purple-600/20 dark:bg-purple-600/30 text-purple-600 dark:text-purple-400 hover:bg-purple-600/20">
+                  <Badge className="bg-teal-600/20 dark:bg-teal-600/30 text-teal-600 dark:text-teal-400 hover:bg-teal-600/20">
                     {unreadCount}
                   </Badge>
                 )}
@@ -199,7 +199,7 @@ export default function NotificationsPage() {
         <div className="flex flex-col gap-3 p-4">
           {filteredNotifications.length === 0 ? (
             <div className="flex flex-col items-center justify-center gap-4 text-center p-12 mt-8 bg-neutral-100/50 dark:bg-neutral-800/20 rounded-xl">
-              <div className="flex items-center justify-center size-16 bg-purple-600/20 dark:bg-purple-600/30 rounded-full text-purple-600 dark:text-purple-400">
+              <div className="flex items-center justify-center size-16 bg-teal-600/20 dark:bg-teal-600/30 rounded-full text-teal-600 dark:text-teal-400">
                 <BellOff className="w-8 h-8" />
               </div>
               <div className="flex flex-col">
@@ -224,12 +224,12 @@ export default function NotificationsPage() {
                   className={`w-2.5 h-2.5 rounded-full shrink-0 ${
                     notification.isRead
                       ? "bg-transparent"
-                      : "bg-purple-600 dark:bg-purple-500"
+                      : "bg-teal-600 dark:bg-teal-500"
                   }`}
                 />
 
                 {/* Icon */}
-                <div className="text-purple-600 dark:text-purple-400 flex items-center justify-center rounded-lg bg-purple-600/20 dark:bg-purple-600/30 shrink-0 size-12">
+                <div className="text-teal-600 dark:text-teal-400 flex items-center justify-center rounded-lg bg-teal-600/20 dark:bg-teal-600/30 shrink-0 size-12">
                   {getNotificationIcon(notification.type)}
                 </div>
 
@@ -240,7 +240,7 @@ export default function NotificationsPage() {
                       {notification.title}
                     </p>
                     {notification.project && (
-                      <Badge className="bg-purple-600/10 dark:bg-purple-600/20 text-purple-600 dark:text-purple-400 hover:bg-purple-600/10 text-xs">
+                      <Badge className="bg-teal-600/10 dark:bg-teal-600/20 text-teal-600 dark:text-teal-400 hover:bg-teal-600/10 text-xs">
                         {notification.project.projectName}
                       </Badge>
                     )}

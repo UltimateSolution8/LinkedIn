@@ -94,19 +94,19 @@ export default function ProductDescriptionWarningDialog({
                 </p>
                 <ul className="space-y-2 text-sm text-neutral-700 dark:text-neutral-300">
                   <li className="flex items-start gap-2">
-                    <span className="text-purple-600 dark:text-purple-400 mt-0.5">•</span>
+                    <span className="text-teal-600 dark:text-teal-400 mt-0.5">•</span>
                     <span>What specific services or products do you offer?</span>
                   </li>
                   <li className="flex items-start gap-2">
-                    <span className="text-purple-600 dark:text-purple-400 mt-0.5">•</span>
+                    <span className="text-teal-600 dark:text-teal-400 mt-0.5">•</span>
                     <span>Who are your primary customers or users?</span>
                   </li>
                   <li className="flex items-start gap-2">
-                    <span className="text-purple-600 dark:text-purple-400 mt-0.5">•</span>
+                    <span className="text-teal-600 dark:text-teal-400 mt-0.5">•</span>
                     <span>What problems does your solution solve?</span>
                   </li>
                   <li className="flex items-start gap-2">
-                    <span className="text-purple-600 dark:text-purple-400 mt-0.5">•</span>
+                    <span className="text-teal-600 dark:text-teal-400 mt-0.5">•</span>
                     <span>What makes your offering unique?</span>
                   </li>
                 </ul>
@@ -183,7 +183,7 @@ export default function ProductDescriptionWarningDialog({
           </Button>
           <Button
             onClick={handleContinue}
-            className="bg-purple-600 hover:bg-purple-700 text-white"
+            className="bg-teal-600 hover:bg-teal-700 text-white"
           >
             Continue with AI Generation
           </Button>

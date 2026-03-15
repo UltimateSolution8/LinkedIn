@@ -50,7 +50,7 @@ export default function AdminLeadCard({ lead }: AdminLeadCardProps) {
             {isComment ? (
               <MessageSquare className="w-4 h-4 text-blue-500 flex-shrink-0" />
             ) : (
-              <FileText className="w-4 h-4 text-purple-500 flex-shrink-0" />
+              <FileText className="w-4 h-4 text-teal-500 flex-shrink-0" />
             )}
             <Badge variant="outline" className="text-xs">
               r/{lead.subreddit}
@@ -79,7 +79,7 @@ export default function AdminLeadCard({ lead }: AdminLeadCardProps) {
                 href={`https://reddit.com/user/${username}`}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-purple-600 dark:text-purple-400 hover:underline flex items-center gap-1"
+                className="text-teal-600 dark:text-teal-400 hover:underline flex items-center gap-1"
               >
                 u/{username}
                 <ExternalLink className="w-3 h-3" />

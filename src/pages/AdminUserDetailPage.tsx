@@ -179,7 +179,7 @@ export default function AdminUserDetailPage() {
       <div className="container mx-auto p-8">
         <div className="flex items-center justify-center h-64">
           <div className="text-center">
-            <Loader2 className="w-8 h-8 animate-spin mx-auto mb-4 text-purple-600" />
+            <Loader2 className="w-8 h-8 animate-spin mx-auto mb-4 text-teal-600" />
             <p className="text-lg text-neutral-600 dark:text-neutral-400">
               Loading users...
             </p>
@@ -418,7 +418,7 @@ export default function AdminUserDetailPage() {
                                       className={`text-sm hover:underline mb-2 block ${
                                         isDisabled
                                           ? "text-neutral-500 dark:text-neutral-500"
-                                          : "text-purple-600 dark:text-purple-400"
+                                          : "text-teal-600 dark:text-teal-400"
                                       }`}
                                     >
                                       {project.projectUrl}
@@ -517,7 +517,7 @@ export default function AdminUserDetailPage() {
               </Button>
               <Button
                 onClick={handleEnablePaymentBypass}
-                className="flex-1 bg-purple-600 hover:bg-purple-700 text-white"
+                className="flex-1 bg-teal-600 hover:bg-teal-700 text-white"
                 disabled={!bypassEndDate}
               >
                 Enable Bypass

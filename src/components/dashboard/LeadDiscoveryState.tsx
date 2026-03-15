@@ -22,8 +22,8 @@ export default function LeadDiscoveryState({
       <div className="max-w-md w-full text-center space-y-6">
         {/* Icon */}
         <div className="flex justify-center">
-          <div className="w-16 h-16 rounded-full bg-purple-100 dark:bg-purple-900/50 border-2 border-purple-300 dark:border-purple-700 flex items-center justify-center">
-            <Search className="w-8 h-8 text-purple-600 dark:text-purple-400" />
+          <div className="w-16 h-16 rounded-full bg-teal-100 dark:bg-teal-900/50 border-2 border-teal-300 dark:border-teal-700 flex items-center justify-center">
+            <Search className="w-8 h-8 text-teal-600 dark:text-teal-400" />
           </div>
         </div>
 
@@ -32,7 +32,7 @@ export default function LeadDiscoveryState({
           <h2 className="text-2xl font-bold text-neutral-950 dark:text-white mb-2">
             <span className="inline-flex items-center gap-2">
               {title}
-              <Sparkles className="w-5 h-5 text-purple-600 dark:text-purple-400" />
+              <Sparkles className="w-5 h-5 text-teal-600 dark:text-teal-400" />
             </span>
           </h2>
           <p className="text-neutral-600 dark:text-neutral-400 text-base leading-relaxed">
@@ -41,7 +41,7 @@ export default function LeadDiscoveryState({
         </div>
 
         {/* Status */}
-        <div className="bg-purple-50 dark:bg-purple-950/30 border border-purple-200 dark:border-purple-800 rounded-lg p-4">
+        <div className="bg-teal-50 dark:bg-teal-950/30 border border-teal-200 dark:border-teal-800 rounded-lg p-4">
           <p className="text-sm text-neutral-700 dark:text-neutral-300">
             This may take a few minutes. We'll notify you when your results are ready.
           </p>
@@ -54,7 +54,7 @@ export default function LeadDiscoveryState({
             disabled={isRefreshing}
             variant="outline"
             size="lg"
-            className="inline-flex items-center gap-2 border-2 border-purple-300 dark:border-purple-700 text-purple-700 dark:text-purple-300 hover:bg-purple-50 dark:hover:bg-purple-950/50 font-medium px-6 py-5"
+            className="inline-flex items-center gap-2 border-2 border-teal-300 dark:border-teal-700 text-teal-700 dark:text-teal-300 hover:bg-teal-50 dark:hover:bg-teal-950/50 font-medium px-6 py-5"
           >
             {isRefreshing ? (
               <>

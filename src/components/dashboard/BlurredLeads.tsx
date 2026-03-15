@@ -33,7 +33,7 @@ export default function BlurredLeads({ plans, onChoosePlan, processing }: Blurre
                                     <div className="h-3 w-20 bg-neutral-100 dark:bg-neutral-800 rounded"></div>
                                 </div>
                             </div>
-                            <div className="h-6 w-16 bg-purple-100 dark:bg-purple-900/30 rounded-full"></div>
+                            <div className="h-6 w-16 bg-teal-100 dark:bg-teal-900/30 rounded-full"></div>
                         </div>
                         <div className="space-y-2">
                             <div className="h-4 w-full bg-neutral-100 dark:bg-neutral-800 rounded"></div>
@@ -46,7 +46,7 @@ export default function BlurredLeads({ plans, onChoosePlan, processing }: Blurre
             {/* Pricing Overlay */}
             <div className="absolute inset-0 z-10 flex flex-col items-center justify-start pt-12 px-4 bg-gradient-to-t from-white via-white/80 to-transparent dark:from-neutral-950 dark:via-neutral-950/80">
                 <div className="max-w-2xl w-full text-center mb-12">
-                    <div className="inline-flex items-center justify-center p-3 bg-purple-100 dark:bg-purple-900/30 text-purple-600 dark:text-purple-400 rounded-full mb-6">
+                    <div className="inline-flex items-center justify-center p-3 bg-teal-100 dark:bg-teal-900/30 text-teal-600 dark:text-teal-400 rounded-full mb-6">
                         <Lock className="w-6 h-6" />
                     </div>
                     <h2 className="text-3xl font-bold text-neutral-950 dark:text-white mb-4">

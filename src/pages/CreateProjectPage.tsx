@@ -179,7 +179,7 @@ export default function CreateProjectPage() {
           </div>
           <div className="rounded-full bg-neutral-200 dark:bg-neutral-800 h-2">
             <div
-              className="h-2 rounded-full bg-purple-600 transition-all duration-300"
+              className="h-2 rounded-full bg-teal-600 transition-all duration-300"
               style={{ width: `${progressPercentage}%` }}
             ></div>
           </div>

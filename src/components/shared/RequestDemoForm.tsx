@@ -156,7 +156,7 @@ export default function RequestDemoForm({ onSuccess, onCancel, showCancelButton 
             type="text"
             {...register("fullName")}
             placeholder="Enter your full name"
-            className="w-full border rounded-lg px-3 py-2 text-gray-900 focus:outline-none focus:ring-2 focus:ring-purple-500"
+            className="w-full border rounded-lg px-3 py-2 text-gray-900 focus:outline-none focus:ring-2 focus:ring-teal-500"
           />
           {errors.fullName && (
             <p className="text-sm text-red-500 mt-1">
@@ -174,7 +174,7 @@ export default function RequestDemoForm({ onSuccess, onCancel, showCancelButton 
             type="email"
             {...register("email")}
             placeholder="Enter your email address"
-            className="w-full border rounded-lg px-3 py-2 text-gray-900 focus:outline-none focus:ring-2 focus:ring-purple-500"
+            className="w-full border rounded-lg px-3 py-2 text-gray-900 focus:outline-none focus:ring-2 focus:ring-teal-500"
           />
           {errors.email && (
             <p className="text-sm text-red-500 mt-1">
@@ -203,7 +203,7 @@ export default function RequestDemoForm({ onSuccess, onCancel, showCancelButton 
               type="tel"
               {...register("phone")}
               placeholder="Enter your phone number"
-              className="flex-1 border rounded-lg px-3 py-2 text-gray-900 focus:outline-none focus:ring-2 focus:ring-purple-500"
+              className="flex-1 border rounded-lg px-3 py-2 text-gray-900 focus:outline-none focus:ring-2 focus:ring-teal-500"
             />
           </div>
           {errors.countryCode && (
@@ -226,7 +226,7 @@ export default function RequestDemoForm({ onSuccess, onCancel, showCancelButton 
           <select
             {...register("industry")}
             onChange={(e) => setSelectedIndustry(e.target.value)}
-            className="w-full border rounded-lg px-3 py-2 text-gray-900 focus:outline-none focus:ring-2 focus:ring-purple-500"
+            className="w-full border rounded-lg px-3 py-2 text-gray-900 focus:outline-none focus:ring-2 focus:ring-teal-500"
           >
             <option value="">Select your industry</option>
             <option value="technology">Technology & Software</option>
@@ -253,7 +253,7 @@ export default function RequestDemoForm({ onSuccess, onCancel, showCancelButton 
               type="text"
               {...register("otherIndustry")}
               placeholder="Enter your industry"
-              className="w-full border rounded-lg px-3 py-2 text-gray-900 focus:outline-none focus:ring-2 focus:ring-purple-500"
+              className="w-full border rounded-lg px-3 py-2 text-gray-900 focus:outline-none focus:ring-2 focus:ring-teal-500"
             />
           </div>
         )}
@@ -267,7 +267,7 @@ export default function RequestDemoForm({ onSuccess, onCancel, showCancelButton 
             {...register("insights")}
             placeholder="Tell us about your current challenges, requirements, or any questions..."
             rows={3}
-            className="w-full border rounded-lg px-3 py-2 text-gray-900 focus:outline-none focus:ring-2 focus:ring-purple-500 resize-none"
+            className="w-full border rounded-lg px-3 py-2 text-gray-900 focus:outline-none focus:ring-2 focus:ring-teal-500 resize-none"
           />
         </div>
 
@@ -285,7 +285,7 @@ export default function RequestDemoForm({ onSuccess, onCancel, showCancelButton 
           <button
             type="submit"
             disabled={isSubmitting}
-            className={`${showCancelButton ? 'w-1/2' : 'w-full'} py-2 rounded-lg bg-purple-600 text-white font-medium hover:bg-purple-700 disabled:opacity-60`}
+            className={`${showCancelButton ? 'w-1/2' : 'w-full'} py-2 rounded-lg bg-teal-600 text-white font-medium hover:bg-teal-700 disabled:opacity-60`}
           >
             {isSubmitting ? "Submitting..." : "Submit"}
           </button>
