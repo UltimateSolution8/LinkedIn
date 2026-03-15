@@ -345,6 +345,10 @@
   animation: cta-attention-pulse 1.45s ease-in-out infinite;
 }
 
+.logo-shaded {
+  filter: saturate(1.15) contrast(1.08) brightness(1.02) drop-shadow(0 2px 4px rgba(15, 118, 110, 0.2));
+}
+
 .dark .ribbon {
   background: linear-gradient(90deg, transparent, var(--teal-500), transparent);
   opacity: 0.08;
