@@ -11,6 +11,7 @@ import { Link } from "react-router-dom";
 import GoogleIcon from "@/components/auth/GoogleIcon";
 import { signin } from "@/lib/api/auth";
 import { getProjects } from "@/lib/api/projects";
+import { useAuth } from "@/contexts/AuthContext";
 
 const loginSchema = z.object({
   email: z.string().email("Please enter a valid email address"),
@@ -25,6 +26,7 @@ interface LoginFormProps {
 
 export default function LoginForm({ onSuccess }: LoginFormProps = {}) {
   const navigate = useNavigate();
+  const { setUser } = useAuth();
   const [isLoading, setIsLoading] = useState(false);
   const [apiError, setApiError] = useState<string | null>(null);
 
@@ -50,9 +52,9 @@ export default function LoginForm({ onSuccess }: LoginFormProps = {}) {
       localStorage.clear();
       sessionStorage.clear();
 
-      // Store user data in localStorage (access token is now in HTTP-only cookie)
+      // Update auth context with user data (also stores in localStorage)
       if (response.user) {
-        localStorage.setItem("user", JSON.stringify(response.user));
+        setUser(response.user);
       }
 
       // Check email verification first

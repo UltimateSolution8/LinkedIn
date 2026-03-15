@@ -11,6 +11,7 @@ import { Link } from "react-router-dom";
 import GoogleIcon from "@/components/auth/GoogleIcon";
 import { signup } from "@/lib/api/auth";
 import { getProjects } from "@/lib/api/projects";
+import { useAuth } from "@/contexts/AuthContext";
 
 const signupSchema = z.object({
   firstName: z.string().min(1, "First name is required"),
@@ -31,6 +32,7 @@ interface SignupFormProps {
 
 export default function SignupForm({ onSuccess }: SignupFormProps = {}) {
   const navigate = useNavigate();
+  const { setUser } = useAuth();
   const [isLoading, setIsLoading] = useState(false);
   const [apiError, setApiError] = useState<string | null>(null);
 
@@ -57,9 +59,9 @@ export default function SignupForm({ onSuccess }: SignupFormProps = {}) {
       // IMPORTANT: Clear any cached data from previous session first
       localStorage.clear();
 
-      // Store user data in localStorage (access token is now in HTTP-only cookie)
+      // Update auth context with user data (also stores in localStorage)
       if (response.user) {
-        localStorage.setItem("user", JSON.stringify(response.user));
+        setUser(response.user);
       }
 
       // If onSuccess callback is provided, call it instead of redirecting

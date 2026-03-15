@@ -66,6 +66,8 @@ export function ProjectProvider({ children }: { children: ReactNode }) {
   };
 
   useEffect(() => {
+    // Only fetch projects when this provider is mounted
+    // (which only happens on routes that need projects now)
     fetchProjects();
   }, []);
 

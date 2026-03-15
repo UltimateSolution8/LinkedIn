@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { getCurrentUser, type User } from '@/lib/api/auth'
+import { type User } from '@/lib/api/auth'
+import { useAuth } from '@/contexts/AuthContext'
 
 interface UseAuthGuardOptions {
   requiredRole?: 'admin' | 'user'
@@ -45,120 +46,42 @@ interface UseAuthGuardReturn {
 export function useAuthGuard(options: UseAuthGuardOptions = {}): UseAuthGuardReturn {
   const { requiredRole, redirectTo = '/login' } = options
   const navigate = useNavigate()
-  const [user, setUser] = useState<User | null>(null)
-  const [isLoading, setIsLoading] = useState(true)
+  const { user, isLoading: authLoading, isAuthenticated } = useAuth()
   const [isAuthorized, setIsAuthorized] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
   useEffect(() => {
-    let isMounted = true
+    // Wait for auth to finish loading
+    if (authLoading) return
 
-    const validateAuth = async () => {
-      if (!isMounted) return
+    // Check if user is authenticated
+    if (!isAuthenticated || !user) {
+      navigate(redirectTo)
+      return
+    }
 
-      setIsLoading(true)
-      setIsAuthorized(false)
-      setError(null)
-
-      try {
-        // Check if user exists in localStorage
-        let currentUser = getCurrentUser()
-
-        // If no user in localStorage, try to fetch from API (cookie-based auth)
-        if (!currentUser) {
-          try {
-            const RIXLY_API_BASE_URL = import.meta.env.VITE_RIXLY_API_BASE_URL
-            const response = await fetch(`${RIXLY_API_BASE_URL}/api/auth/me`, {
-              method: 'GET',
-              headers: {
-                'Content-Type': 'application/json',
-              },
-              credentials: 'include',
-            })
-
-            if (response.ok) {
-              const userData = await response.json()
-              const userToStore = userData.user || userData
-              localStorage.setItem('user', JSON.stringify(userToStore))
-              currentUser = userToStore
-            } else {
-              // No valid session
-              if (isMounted) {
-                navigate(redirectTo)
-              }
-              return
-            }
-          } catch (err) {
-            console.error('Error fetching user:', err)
-            if (isMounted) {
-              setError('Failed to authenticate')
-              navigate(redirectTo)
-            }
-            return
-          }
-        }
-
-        if (!isMounted) return
-
-        // Ensure we have a user at this point
-        if (!currentUser) {
-          setError('Failed to authenticate')
-          navigate(redirectTo)
-          return
-        }
-
-        // Validate role if required
-        if (requiredRole) {
-          if (currentUser.role !== requiredRole) {
-            setError(`Access denied. ${requiredRole} role required.`)
-            // Redirect based on role
-            if (requiredRole === 'admin') {
-              navigate('/dashboard')
-            } else {
-              navigate(redirectTo)
-            }
-            return
-          }
-        }
-
-        // User is authenticated and authorized
-        setUser(currentUser)
-        setIsAuthorized(true)
-      } catch (err) {
-        console.error('Auth validation error:', err)
-        if (isMounted) {
-          setError(err instanceof Error ? err.message : 'Authentication failed')
+    // Validate role if required
+    if (requiredRole) {
+      if (user.role !== requiredRole) {
+        setError(`Access denied. ${requiredRole} role required.`)
+        // Redirect based on role
+        if (requiredRole === 'admin') {
+          navigate('/dashboard')
+        } else {
           navigate(redirectTo)
         }
-      } finally {
-        if (isMounted) {
-          setIsLoading(false)
-        }
+        return
       }
     }
 
-    // Initial validation
-    validateAuth()
-
-    // Listen for storage changes (cross-tab logout detection)
-    const handleStorageChange = (e: StorageEvent) => {
-      if (e.key === 'user' || e.key === null) {
-        // User data changed - re-validate
-        validateAuth()
-      }
-    }
-
-    window.addEventListener('storage', handleStorageChange)
-
-    return () => {
-      isMounted = false
-      window.removeEventListener('storage', handleStorageChange)
-    }
-  }, [navigate, redirectTo, requiredRole])
+    // User is authenticated and authorized
+    setIsAuthorized(true)
+    setError(null)
+  }, [user, authLoading, isAuthenticated, requiredRole, redirectTo, navigate])
 
   return {
     user,
-    isLoading,
+    isLoading: authLoading,
     isAuthorized,
     error,
   }

@@ -4,10 +4,12 @@ import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import { Menu, X, Sun, Moon } from "lucide-react";
 import { Button } from "../ui/button";
+import { useAuth } from "@/contexts/AuthContext";
 
 export const Navbar = ({ isDark, toggleTheme, setView }) => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const { isAuthenticated, isLoading } = useAuth();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -91,32 +93,60 @@ export const Navbar = ({ isDark, toggleTheme, setView }) => {
                 <Moon className="w-5 h-5" />
               )}
             </button>
-            <Link to="/contactus">
-              <Button
-                variant="ghost"
-                className="font-medium"
-                data-testid="nav-contact"
-              >
-                Contact
-              </Button>
-            </Link>
-            <Link to="/login">
-              <Button
-                variant="ghost"
-                className="font-medium"
-                data-testid="nav-login"
-              >
-                Log in
-              </Button>
-            </Link>
-            <Link to="/signup">
-              <Button
-                className="rounded-full font-medium glow-primary glow-primary-hover btn-press"
-                data-testid="nav-get-started"
-              >
-                Get Started
-              </Button>
-            </Link>
+            {!isLoading && (
+              <>
+                {isAuthenticated ? (
+                  <>
+                    <Link to="/contactus">
+                      <Button
+                        variant="ghost"
+                        className="font-medium"
+                        data-testid="nav-contact"
+                      >
+                        Contact
+                      </Button>
+                    </Link>
+                    <Link to="/dashboard">
+                      <Button
+                        className="rounded-full font-medium glow-primary glow-primary-hover btn-press"
+                        data-testid="nav-dashboard"
+                      >
+                        Dashboard
+                      </Button>
+                    </Link>
+                  </>
+                ) : (
+                  <>
+                    <Link to="/contactus">
+                      <Button
+                        variant="ghost"
+                        className="font-medium"
+                        data-testid="nav-contact"
+                      >
+                        Contact
+                      </Button>
+                    </Link>
+                    <Link to="/login">
+                      <Button
+                        variant="ghost"
+                        className="font-medium"
+                        data-testid="nav-login"
+                      >
+                        Log in
+                      </Button>
+                    </Link>
+                    <Link to="/signup">
+                      <Button
+                        className="rounded-full font-medium glow-primary glow-primary-hover btn-press"
+                        data-testid="nav-get-started"
+                      >
+                        Get Started
+                      </Button>
+                    </Link>
+                  </>
+                )}
+              </>
+            )}
           </div>
 
           {/* Mobile Menu Button */}
@@ -184,23 +214,51 @@ export const Navbar = ({ isDark, toggleTheme, setView }) => {
                 )
               ))}
               <div className="flex flex-col gap-2 pt-4 border-t border-border/50">
-                <Link to="/contactus" onClick={() => setIsMobileMenuOpen(false)}>
-                  <Button
-                    variant="outline"
-                    className="w-full font-medium"
-                    data-testid="mobile-book-demo"
-                  >
-                    Contact
-                  </Button>
-                </Link>
-                <Link to="/login" onClick={() => setIsMobileMenuOpen(false)}>
-                  <Button
-                    className="w-full rounded-full font-medium glow-primary"
-                    data-testid="mobile-get-started"
-                  >
-                    Log in
-                  </Button>
-                </Link>
+                {!isLoading && (
+                  <>
+                    {isAuthenticated ? (
+                      <>
+                        <Link to="/contactus" onClick={() => setIsMobileMenuOpen(false)}>
+                          <Button
+                            variant="outline"
+                            className="w-full font-medium"
+                            data-testid="mobile-contact"
+                          >
+                            Contact
+                          </Button>
+                        </Link>
+                        <Link to="/dashboard" onClick={() => setIsMobileMenuOpen(false)}>
+                          <Button
+                            className="w-full rounded-full font-medium glow-primary"
+                            data-testid="mobile-dashboard"
+                          >
+                            Dashboard
+                          </Button>
+                        </Link>
+                      </>
+                    ) : (
+                      <>
+                        <Link to="/contactus" onClick={() => setIsMobileMenuOpen(false)}>
+                          <Button
+                            variant="outline"
+                            className="w-full font-medium"
+                            data-testid="mobile-book-demo"
+                          >
+                            Contact
+                          </Button>
+                        </Link>
+                        <Link to="/login" onClick={() => setIsMobileMenuOpen(false)}>
+                          <Button
+                            className="w-full rounded-full font-medium glow-primary"
+                            data-testid="mobile-get-started"
+                          >
+                            Log in
+                          </Button>
+                        </Link>
+                      </>
+                    )}
+                  </>
+                )}
               </div>
             </div>
           </motion.div>

@@ -419,3 +419,31 @@ export async function getDashboardData(projectId: string): Promise<DashboardData
 
   return responseData.data;
 }
+
+// Scanning Status Types
+export type ScrapingStage = 'idle' | 'validating_subreddits' | 'scoring_leads' | 'completed' | 'failed';
+
+export interface ScanningStatusData {
+  stage: ScrapingStage;
+  subreddits: string[];
+  subredditCount: number;
+}
+
+// Get scanning status for dashboard initial state
+export async function getScanningStatus(projectId: string): Promise<ScanningStatusData> {
+  const response = await fetch(`${RIXLY_API_BASE_URL}/api/projects/${projectId}/scanning-status`, {
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    credentials: "include",
+  });
+
+  const responseData = await response.json();
+
+  if (!response.ok) {
+    throw new Error(responseData.message || "Failed to fetch scanning status");
+  }
+
+  return responseData;
+}

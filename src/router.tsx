@@ -43,6 +43,7 @@ import SettingsView from '@/pages/app/SettingsView'
 import ProjectRouteGuard from '@/components/app/ProjectRouteGuard'
 import DashboardRedirect from '@/components/DashboardRedirect'
 import OnboardingPage from '@/pages/OnboardingPage'
+import ProjectProviderWrapper from '@/components/ProjectProviderWrapper'
 
 export default function AppRouter() {
   // Set default page title and meta description
@@ -94,17 +95,17 @@ export default function AppRouter() {
 
         {/* Dashboard Routes - OLD (Backward Compatibility) */}
         {/* Redirect old /dashboard to new /app/:projectId/dashboard structure */}
-        <Route path="/dashboard" element={<DashboardRedirect />} />
+        <Route path="/dashboard" element={<ProjectProviderWrapper><DashboardRedirect /></ProjectProviderWrapper>} />
 
         {/* App Routes - NEW (Route-Based Navigation) */}
         {/* Redirect /app to appropriate location */}
-        <Route path="/app" element={<DashboardRedirect />} />
+        <Route path="/app" element={<ProjectProviderWrapper><DashboardRedirect /></ProjectProviderWrapper>} />
 
         {/* Onboarding (no guard needed - for users with 0 projects) */}
         <Route path="/app/onboarding" element={<OnboardingPage />} />
 
         {/* App routes with project guard */}
-        <Route element={<ProjectRouteGuard><AppLayout /></ProjectRouteGuard>}>
+        <Route element={<ProjectProviderWrapper><ProjectRouteGuard><AppLayout /></ProjectRouteGuard></ProjectProviderWrapper>}>
           <Route path="/app/:projectId/dashboard" element={<DashboardView />} />
           <Route path="/app/:projectId/leads" element={<LeadsView />} />
           <Route path="/app/:projectId/opportunities" element={<OpportunitiesView />} />
@@ -119,12 +120,12 @@ export default function AppRouter() {
         </Route>
 
         {/* Create Project Routes */}
-        <Route element={<CreateProjectLayout />}>
+        <Route element={<ProjectProviderWrapper><CreateProjectLayout /></ProjectProviderWrapper>}>
           <Route path="/create-project" element={<CreateProjectPage />} />
         </Route>
 
         {/* Notifications Routes */}
-        <Route element={<NotificationsLayout />}>
+        <Route element={<ProjectProviderWrapper><NotificationsLayout /></ProjectProviderWrapper>}>
           <Route path="/notifications" element={<NotificationsPage />} />
         </Route>
 

@@ -1,10 +1,11 @@
 import { useParams } from "react-router-dom";
 import { useProject } from "@/contexts/ProjectContext";
 import { useDashboardData } from "@/hooks/useDashboardData";
+import { useScanningStatus } from "@/hooks/useScanningStatus";
 import EmptyProjectState from "@/components/dashboard/EmptyProjectState";
 import ScanningBanner from "@/components/dashboard/ScanningBanner";
 import KPICards from "@/components/dashboard/KPICards";
-import OnboardingStepper from "@/components/dashboard/OnboardingStepper";
+import ScanningProgressSteps from "@/components/dashboard/ScanningProgressSteps";
 import WhileYouWait from "@/components/dashboard/WhileYouWait";
 
 /**
@@ -25,6 +26,12 @@ export default function DashboardView() {
 
   // Fetch dashboard data with auto-polling
   const { data: dashboardData, isLoading: dashboardLoading, error } = useDashboardData({
+    projectId: projectId || "",
+    enabled: !!projectId
+  });
+
+  // Fetch scanning status for initial state
+  const { data: scanningStatus } = useScanningStatus({
     projectId: projectId || "",
     enabled: !!projectId
   });
@@ -65,6 +72,10 @@ export default function DashboardView() {
   const isScanning = dashboardData?.scanState === "scanning_empty" || dashboardData?.scanState === "scanning_partial";
   const scanProgress = dashboardData?.scanProgress || 0;
 
+  // Determine if we should show scanning progress steps (initial state)
+  const showScanningProgress = scanningStatus &&
+    (scanningStatus.stage == 'idle' || scanningStatus.stage === 'validating_subreddits' || scanningStatus.stage === 'scoring_leads');
+
   return (
     <div className="p-4 lg:p-8">
       {/* Scanning Banner - only show during scanning */}
@@ -77,14 +88,14 @@ export default function DashboardView() {
         <KPICards kpis={dashboardData.kpis} isScanning={isScanning} />
       )}
 
-      {/* Main Layout Grid - Onboarding Stepper + While You Wait */}
-      {isScanning && dashboardData && (
+      {/* Main Layout Grid - Scanning Progress Steps + While You Wait */}
+      {showScanningProgress && (
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8">
-          {/* LEFT COLUMN: Onboarding Stepper */}
+          {/* LEFT COLUMN: Scanning Progress Steps */}
           <div className="lg:col-span-7">
-            <OnboardingStepper
-              scanProgress={scanProgress}
-              subreddits={project?.keywords || []}
+            <ScanningProgressSteps
+              stage={scanningStatus.stage}
+              subreddits={scanningStatus.subreddits}
             />
           </div>
 
@@ -95,8 +106,8 @@ export default function DashboardView() {
         </div>
       )}
 
-      {/* TODO: Add complete state UI components in Story 005 */}
-      {!isScanning && dashboardData && (
+      {/* TODO: Add complete state UI components (Top Subreddits & Keywords) */}
+      {!showScanningProgress && dashboardData && (
         <div className="mt-8">
           <p className="text-neutral-500 text-center">
             Complete state dashboard coming soon...
