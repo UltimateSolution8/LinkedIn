@@ -66,18 +66,40 @@ export default function HomePage() {
   useEffect(() => {
     if (view !== "landing") return;
     if (getCurrentUser()) return;
-    if (localStorage.getItem("rixly_exit_intent_seen") === "1") return;
+    // Show once per browser tab session for anonymous visitors.
+    if (sessionStorage.getItem("rixly_exit_intent_seen") === "1") return;
 
-    const handleMouseOut = (event: MouseEvent) => {
-      if (event.clientY <= 8) {
-        setShowExitIntent(true);
-        localStorage.setItem("rixly_exit_intent_seen", "1");
-        document.removeEventListener("mouseout", handleMouseOut);
+    let lastY = window.innerHeight;
+
+    const openExitIntent = () => {
+      if (sessionStorage.getItem("rixly_exit_intent_seen") === "1") return;
+      setShowExitIntent(true);
+      sessionStorage.setItem("rixly_exit_intent_seen", "1");
+    };
+
+    // Primary signal: cursor leaves viewport near the top (common close/tab-switch behavior).
+    const handleMouseLeave = (event: MouseEvent) => {
+      if (event.clientY <= 12 && !event.relatedTarget) {
+        openExitIntent();
       }
     };
 
-    document.addEventListener("mouseout", handleMouseOut);
-    return () => document.removeEventListener("mouseout", handleMouseOut);
+    // Fallback signal: quick upward movement into browser chrome region.
+    const handleMouseMove = (event: MouseEvent) => {
+      const movingUpFast = lastY - event.clientY > 18;
+      if (event.clientY <= 18 && movingUpFast) {
+        openExitIntent();
+      }
+      lastY = event.clientY;
+    };
+
+    document.addEventListener("mouseleave", handleMouseLeave);
+    document.addEventListener("mousemove", handleMouseMove);
+
+    return () => {
+      document.removeEventListener("mouseleave", handleMouseLeave);
+      document.removeEventListener("mousemove", handleMouseMove);
+    };
   }, [view]);
 
   const toggleTheme = () => setIsDark(!isDark);
