@@ -1,6 +1,6 @@
 // @ts-nocheck
 import "@/App.css";
-import { useState, useEffect } from "react";
+import { useState, useEffect, lazy, Suspense } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 
 import { Navbar } from "@/components/landing-new/Navbar";
@@ -15,15 +15,15 @@ import { ROIComparisonTable } from "@/components/landing-new/ROIComparisonTable"
 import { FreeResourceSection } from "@/components/landing-new/FreeResourceSection";
 import { TestimonialsSection } from "@/components/landing-new/TestimonialsSection";
 import { PricingSection } from "@/components/landing-new/PricingSection";
-import { ResourcesSection } from "@/components/landing-new/ResourcesSection";
 import { LeadSourcesSection } from "@/components/landing-new/LeadSourcesSection";
 import { CTASection } from "@/components/landing-new/CTASection";
 import { FAQSection } from "@/components/landing-new/FAQSection";
 import { Footer } from "@/components/landing-new/Footer";
 import { CompanyLogos } from "@/components/landing-new/CompanyLogos";
-import AnalyticsDashboard from "@/components/landing-new/AnalyticsDashboard";
-import { ROIPage } from "@/components/landing-new/ROIPage";
 import { ScrollToTop } from "@/components/landing-new/ScrollToTop";
+
+const AnalyticsDashboard = lazy(() => import("@/components/landing-new/AnalyticsDashboard"));
+const ROIPage = lazy(() => import("@/components/landing-new/ROIPage").then((mod) => ({ default: mod.ROIPage })));
 
 export default function HomePage() {
   const [view, setView] = useState("landing");
@@ -83,17 +83,16 @@ export default function HomePage() {
             <Navbar isDark={isDark} toggleTheme={toggleTheme} setView={setView} />
             <HeroSection />
             <VideoSection />
+            <FreeResourceSection />
             <HowRixlyMergedSection />
             <ProblemSection />
             <FeaturesSection />
             <UseCasesSection />
             <ComplianceSection />
             <ROIComparisonTable />
-            <FreeResourceSection />
             <LeadSourcesSection />
             <PricingSection />
             <TestimonialsSection />
-            <ResourcesSection />
             <FAQSection />
             <CTASection />
             <Footer />
@@ -109,7 +108,9 @@ export default function HomePage() {
             exit={{ opacity: 0 }}
             transition={{ duration: 0.3 }}
           >
-            <AnalyticsDashboard onBack={() => setView("landing")} />
+            <Suspense fallback={null}>
+              <AnalyticsDashboard onBack={() => setView("landing")} />
+            </Suspense>
           </motion.div>
         )}
 
@@ -121,7 +122,9 @@ export default function HomePage() {
             exit={{ opacity: 0 }}
             transition={{ duration: 0.3 }}
           >
-            <ROIPage onBack={() => setView("landing")} />
+            <Suspense fallback={null}>
+              <ROIPage onBack={() => setView("landing")} />
+            </Suspense>
           </motion.div>
         )}
       </AnimatePresence>

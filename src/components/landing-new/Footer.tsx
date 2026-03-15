@@ -1,32 +1,31 @@
 // @ts-nocheck
 import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
-import { Zap, MessageSquare, Github } from "lucide-react";
+import { MessageSquare, Github } from "lucide-react";
 
 const footerLinks = {
   Product: [
     { label: "Features", href: "#features" },
     { label: "Pricing", href: "#pricing" },
-    { label: "Resources", href: "#resources" },
-    { label: "ROI", href: "#" },
+    { label: "Resources", href: "#free-resource" },
+    { label: "FAQs", href: "#faqs" },
   ],
   Company: [
-    { label: "About", href: "#about" },
-    { label: "Blog", href: "#" },
-    { label: "Careers", href: "#" },
+    { label: "About", href: "#hero" },
+    { label: "Blog", href: "/blogs" },
+    { label: "Founders Info", href: "/contactus" },
     { label: "Contact Us", href: "/contactus" },
   ],
   Resources: [
-    { label: "Documentation", href: "#" },
-    { label: "Help Center", href: "#" },
-    { label: "Free Guides", href: "#resources" },
+    { label: "Documentation", href: "#free-subreddits" },
+    { label: "Help Center", href: "#faqs" },
+    { label: "Free Guides", href: "#free-resource" },
     { label: "Request Demo", href: "/request-demo" },
   ],
   Legal: [
-    { label: "Privacy Policy", href: "/privacy" },
-    { label: "Terms of Service", href: "/terms" },
-    { label: "Refund Policy", href: "/cancelandrefund" },
-    { label: "Security", href: "#" },
+    { label: "Terms and Conditions", href: "/policies/terms" },
+    { label: "Cancellation and Refund Policy", href: "/policies/cancelandrefund" },
+    { label: "Privacy Policy", href: "/policies/privacy" },
   ],
 };
 
@@ -77,10 +76,8 @@ export const Footer = () => {
           {/* Brand */}
           <div className="col-span-2 md:col-span-1">
             <Link to="/" className="flex items-center gap-2 mb-4">
-              <div className="w-10 h-10 rounded-lg bg-primary-gradient flex items-center justify-center">
-                <Zap className="w-5 h-5 text-white" />
-              </div>
-              <span className="font-heading font-bold text-xl">Rixly</span>
+              <img src="/logo.png" alt="Rixly Logo" className="w-9 h-9 object-contain" />
+              <span className="font-heading font-bold text-xl">RIXLY</span>
             </Link>
             <p className="text-sm text-muted-foreground mb-6">
               AI-powered lead generation for modern businesses. Turn social conversations into qualified leads.
@@ -148,10 +145,7 @@ export const Footer = () => {
         {/* Bottom section */}
         <div className="flex flex-col md:flex-row justify-between items-center gap-4 pt-8 border-t border-border/50">
           <p className="text-sm text-muted-foreground">
-            © {new Date().getFullYear()} Rixly. All rights reserved.
-          </p>
-          <p className="text-sm text-muted-foreground">
-            Built by <span className="font-medium">Rixly Team</span>
+            © 2025-26 RIXLY. All rights reserved.
           </p>
         </div>
       </div>

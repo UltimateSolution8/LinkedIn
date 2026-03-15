@@ -1,5 +1,5 @@
 import { Routes, Route, Navigate } from 'react-router-dom'
-import { useEffect } from 'react'
+import { lazy, Suspense, useEffect } from 'react'
 
 // Layouts
 import HomeLayout from '@/layouts/HomeLayout'
@@ -33,6 +33,7 @@ import VerifyEmailPromptPage from '@/pages/verify-email-prompt/VerifyEmailPrompt
 import ForgotPasswordPage from '@/pages/forgot-password/ForgotPasswordPage'
 import ResetPasswordPage from '@/pages/reset-password/ResetPasswordPage'
 import AuthPricingPage from '@/pages/AuthPricingPage'
+const BlogPage = lazy(() => import('@/pages/BlogPage'))
 
 // App Views (New Route-Based Navigation)
 import DashboardView from '@/pages/app/DashboardView'
@@ -72,7 +73,8 @@ export default function AppRouter() {
         <Route path="/terms" element={<Navigate to="/policies/terms" replace />} />
         <Route path="/cancelandrefund" element={<Navigate to="/policies/cancelandrefund" replace />} />
         <Route path="/signup" element={<Navigate to="/login" replace />} />
-        <Route path="/blogs" element={<Navigate to="/" replace />} />
+        <Route path="/blogs" element={<Suspense fallback={null}><BlogPage /></Suspense>} />
+        <Route path="/blog/:slug" element={<Suspense fallback={null}><BlogPage /></Suspense>} />
 
         {/* Auth Routes */}
         <Route element={<AuthLayout />}>

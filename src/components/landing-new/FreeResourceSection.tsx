@@ -1,5 +1,5 @@
 // @ts-nocheck
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { Download, BookOpen, ArrowRight, CheckCircle, X } from "lucide-react";
 import { Button } from "../ui/button";
@@ -42,6 +42,19 @@ export const FreeResourceSection = () => {
   const [subredditsSubmitted, setSubredditsSubmitted] = useState(false);
   const [playbookErrors, setPlaybookErrors] = useState({});
   const [subredditsErrors, setSubredditsErrors] = useState({});
+
+  useEffect(() => {
+    const handleHashOpen = () => {
+      if (window.location.hash === "#free-subreddits") {
+        document.getElementById("free-resource")?.scrollIntoView({ behavior: "smooth", block: "start" });
+        setSubredditsModalOpen(true);
+      }
+    };
+
+    handleHashOpen();
+    window.addEventListener("hashchange", handleHashOpen);
+    return () => window.removeEventListener("hashchange", handleHashOpen);
+  }, []);
 
   const validateForm = (data) => {
     const errors = {};
@@ -349,9 +362,9 @@ export const FreeResourceSection = () => {
                       <Button
                         size="lg"
                         variant="outline"
-                        className="border-teal-600 text-teal-700 hover:bg-teal-50 rounded-full px-8 text-lg font-medium group w-full"
+                        className="cta-attention border-teal-600 text-teal-700 hover:bg-teal-50 rounded-full px-8 text-lg font-medium group w-full"
                       >
-                        Get 5 Subreddits Free
+                        Get 5 Subreddits for FREE
                         <ArrowRight className="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform" />
                       </Button>
                     </DialogTrigger>

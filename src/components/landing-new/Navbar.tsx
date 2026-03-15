@@ -1,6 +1,6 @@
 // @ts-nocheck
 import { useState, useEffect } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import { Menu, X, Sun, Moon } from "lucide-react";
 import { Button } from "../ui/button";
@@ -20,10 +20,10 @@ export const Navbar = ({ isDark, toggleTheme, setView }) => {
   const navLinks = [
     { href: "#features", label: "Features" },
     { href: "#testimonials", label: "Testimonials" },
-    { href: "#resources", label: "Resources" },
+    { href: "#free-resource", label: "Resources" },
     { href: "#pricing", label: "Pricing" },
-    { label: "ROI", onClick: () => setView("roi") },
-    { label: "Analytics", onClick: () => setView("dashboard") },
+    { label: "ROI", onClick: () => setView("roi"), hidden: true },
+    { label: "Analytics", onClick: () => setView("dashboard"), hidden: true },
     { to: "/blogs", label: "Blogs" },
   ];
 
@@ -41,20 +41,14 @@ export const Navbar = ({ isDark, toggleTheme, setView }) => {
       <div className="container mx-auto px-4 md:px-6 max-w-7xl">
         <div className="flex items-center justify-between h-20">
           {/* Logo */}
-          <a
-            href="#"
-            className="flex items-center gap-2 group"
-            data-testid="logo"
-          >
-            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-indigo-600 to-violet-700 flex items-center justify-center shadow-lg shadow-indigo-500/20 group-hover:scale-110 transition-transform duration-300">
-              <svg viewBox="0 0 24 24" fill="none" className="w-6 h-6 text-white" xmlns="http://www.w3.org/2000/svg">
-                <path d="M12 2L2 7L12 12L22 7L12 2Z" fill="white" fillOpacity="0.9"/>
-                <path d="M2 17L12 22L22 17" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                <path d="M2 12L12 17L22 12" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-              </svg>
-            </div>
+          <a href="#" className="flex items-center gap-2 group" data-testid="logo">
+            <img
+              src="/logo.png"
+              alt="Rixly Logo"
+              className="w-9 h-9 object-contain group-hover:scale-105 transition-transform duration-300"
+            />
             <span className="font-heading font-bold text-2xl tracking-tighter text-slate-900 dark:text-white">
-              Rixly
+              RIXLY
             </span>
           </a>
 
@@ -74,7 +68,7 @@ export const Navbar = ({ isDark, toggleTheme, setView }) => {
                 <button
                   key={link.label}
                   onClick={link.onClick || (() => document.getElementById(link.href.substring(1))?.scrollIntoView({ behavior: "smooth" }))}
-                  className="text-muted-foreground hover:text-primary transition-colors duration-200 font-medium"
+                  className={`text-muted-foreground hover:text-primary transition-colors duration-200 font-medium ${link.hidden ? "hidden" : ""}`}
                   data-testid={`nav-link-${link.label.toLowerCase()}`}
                 >
                   {link.label}
@@ -162,14 +156,14 @@ export const Navbar = ({ isDark, toggleTheme, setView }) => {
             exit={{ opacity: 0, height: 0 }}
             className="md:hidden py-4 border-t border-border/50"
           >
-            <div className="flex flex-col gap-4">
+            <div className="mx-1 rounded-2xl border border-border/70 bg-background/95 backdrop-blur-xl shadow-lg p-4 flex flex-col gap-3">
               {navLinks.map((link) => (
                 link.to ? (
                   <Link
                     key={link.label}
                     to={link.to}
                     onClick={() => setIsMobileMenuOpen(false)}
-                    className="text-left text-slate-900 dark:text-white hover:text-primary transition-colors duration-200 font-medium py-2"
+                    className="text-left text-slate-900 dark:text-white hover:text-primary transition-colors duration-200 font-semibold py-2.5 text-base"
                     data-testid={`mobile-nav-link-${link.label.toLowerCase()}`}
                   >
                     {link.label}
@@ -182,7 +176,7 @@ export const Navbar = ({ isDark, toggleTheme, setView }) => {
                       else document.getElementById(link.href.substring(1))?.scrollIntoView({ behavior: "smooth" });
                       setIsMobileMenuOpen(false);
                     }}
-                    className="text-left text-slate-900 dark:text-white hover:text-primary transition-colors duration-200 font-medium py-2"
+                    className={`text-left text-slate-900 dark:text-white hover:text-primary transition-colors duration-200 font-semibold py-2.5 text-base ${link.hidden ? "hidden" : ""}`}
                     data-testid={`mobile-nav-link-${link.label.toLowerCase()}`}
                   >
                     {link.label}
@@ -190,19 +184,23 @@ export const Navbar = ({ isDark, toggleTheme, setView }) => {
                 )
               ))}
               <div className="flex flex-col gap-2 pt-4 border-t border-border/50">
-                <Button
-                  variant="outline"
-                  className="w-full font-medium"
-                  data-testid="mobile-book-demo"
-                >
-                  Book a Demo
-                </Button>
-                <Button
-                  className="w-full rounded-full font-medium glow-primary"
-                  data-testid="mobile-get-started"
-                >
-                  Get Started
-                </Button>
+                <Link to="/contactus" onClick={() => setIsMobileMenuOpen(false)}>
+                  <Button
+                    variant="outline"
+                    className="w-full font-medium"
+                    data-testid="mobile-book-demo"
+                  >
+                    Contact
+                  </Button>
+                </Link>
+                <Link to="/login" onClick={() => setIsMobileMenuOpen(false)}>
+                  <Button
+                    className="w-full rounded-full font-medium glow-primary"
+                    data-testid="mobile-get-started"
+                  >
+                    Log in
+                  </Button>
+                </Link>
               </div>
             </div>
           </motion.div>
