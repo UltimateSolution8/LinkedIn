@@ -1,5 +1,7 @@
 import { useState, useEffect } from "react";
 import { getScanningStatus, ScanningStatusData } from "@/lib/api/projects";
+import { getSubscriptionStatusCached } from "@/lib/utils/subscription";
+import { SubscriptionStatus } from "@/lib/api/subscription";
 
 interface UseScanningStatusOptions {
   projectId: string;
@@ -12,11 +14,14 @@ interface UseScanningStatusReturn {
   isLoading: boolean;
   error: string | null;
   refetch: () => Promise<void>;
+  subscriptionStatus: SubscriptionStatus | null;
+  hasSubscriptionAccess: boolean;
 }
 
 /**
  * Custom hook to fetch scanning status with auto-refresh polling
  * Polls every 5 seconds during active scanning
+ * Checks subscription status before fetching scanning data
  */
 export function useScanningStatus({
   projectId,
@@ -26,14 +31,20 @@ export function useScanningStatus({
   const [data, setData] = useState<ScanningStatusData | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
+  const [subscriptionStatus, setSubscriptionStatus] = useState<SubscriptionStatus | null>(null);
+  const [hasSubscriptionAccess, setHasSubscriptionAccess] = useState<boolean>(false);
 
   const fetchData = async () => {
     if (!enabled || !projectId) return;
 
     try {
       setError(null);
-      const statusData = await getScanningStatus(projectId);
-      setData(statusData);
+
+      // Only fetch scanning status if user has subscription access
+      if (hasSubscriptionAccess) {
+        const statusData = await getScanningStatus(projectId);
+        setData(statusData);
+      }
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : "Failed to fetch scanning status";
       setError(errorMessage);
@@ -43,10 +54,35 @@ export function useScanningStatus({
     }
   };
 
-  // Initial fetch
+  // Check subscription status on mount
   useEffect(() => {
-    fetchData();
-  }, [projectId, enabled]);
+    const checkSubscription = async () => {
+      try {
+        const status = await getSubscriptionStatusCached();
+        setSubscriptionStatus(status);
+
+        // Check if user has access: active subscription, trial (authenticated), or can bypass
+        const hasAccess = status.hasActiveSubscription ||
+          status.subscription?.status === "active" ||
+          status.subscription?.status === "authenticated" ||
+          status.canBypass;
+
+        setHasSubscriptionAccess(hasAccess);
+      } catch (err) {
+        console.error("[useScanningStatus] Error checking subscription:", err);
+        setHasSubscriptionAccess(false);
+      }
+    };
+
+    checkSubscription();
+  }, []);
+
+  // Initial fetch (only after subscription check)
+  useEffect(() => {
+    if (subscriptionStatus !== null) {
+      fetchData();
+    }
+  }, [projectId, enabled, hasSubscriptionAccess, subscriptionStatus]);
 
   // Polling effect
   useEffect(() => {
@@ -68,6 +104,8 @@ export function useScanningStatus({
     data,
     isLoading,
     error,
-    refetch: fetchData
+    refetch: fetchData,
+    subscriptionStatus,
+    hasSubscriptionAccess
   };
 }

@@ -6,6 +6,10 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { useAuth } from "@/contexts/AuthContext";
+import { useState, useEffect } from "react";
+import { getSubscriptionStatusCached } from "@/lib/utils/subscription";
+import { getUserStatusLabel } from "@/lib/utils/subscriptionLabels";
+import { SubscriptionStatus } from "@/lib/api/subscription";
 
 interface NavItem {
   label: string;
@@ -23,6 +27,21 @@ export default function AppSidebar({ leadsCount = 0, opportunitiesCount = 0 }: A
   const { projectId } = useParams<{ projectId: string }>();
   const navigate = useNavigate();
   const { user: currentUser } = useAuth();
+  const [subscriptionStatus, setSubscriptionStatus] = useState<SubscriptionStatus | null>(null);
+
+  // Fetch subscription status on mount
+  useEffect(() => {
+    const fetchSubscription = async () => {
+      try {
+        const status = await getSubscriptionStatusCached();
+        setSubscriptionStatus(status);
+      } catch (error) {
+        console.error("Error fetching subscription status:", error);
+      }
+    };
+
+    fetchSubscription();
+  }, []);
 
   const navItems: NavItem[] = [
     {
@@ -135,7 +154,7 @@ export default function AppSidebar({ leadsCount = 0, opportunitiesCount = 0 }: A
                 {getUserFullName()}
               </p>
               <p className="text-xs text-neutral-500 dark:text-neutral-400 truncate">
-                Pro Plan
+                {getUserStatusLabel(subscriptionStatus)}
               </p>
             </div>
           </div>

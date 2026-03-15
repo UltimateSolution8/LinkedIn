@@ -1,15 +1,21 @@
 import { useParams } from "react-router-dom";
+import { useState } from "react";
 import { useProject } from "@/contexts/ProjectContext";
 import { useDashboardData } from "@/hooks/useDashboardData";
 import { useScanningStatus } from "@/hooks/useScanningStatus";
 import { useProjectStats } from "@/hooks/useProjectStats";
 import EmptyProjectState from "@/components/dashboard/EmptyProjectState";
 import ScanningBanner from "@/components/dashboard/ScanningBanner";
+import SubscriptionRequiredBanner from "@/components/dashboard/SubscriptionRequiredBanner";
 import KPICards from "@/components/dashboard/KPICards";
 import ScanningProgressSteps from "@/components/dashboard/ScanningProgressSteps";
 import WhileYouWait from "@/components/dashboard/WhileYouWait";
 import SubredditPerformanceChart from "@/components/dashboard/SubredditPerformanceChart";
 import KeywordPerformanceChart from "@/components/dashboard/KeywordPerformanceChart";
+import { getPricingPlans, type PricingPlan, createSubscription as createPricingSubscription, verifySubscriptionPayment, RazorpaySubscriptionResponse } from "@/lib/api/pricing";
+import { detectUserCurrency } from "@/lib/utils/geolocation";
+import { getSubscriptionStatusCached } from "@/lib/utils/subscription";
+import { useEffect } from "react";
 
 /**
  * DashboardView - Stats Dashboard
@@ -20,6 +26,7 @@ import KeywordPerformanceChart from "@/components/dashboard/KeywordPerformanceCh
  * - KPI cards (placeholders during scan)
  * - Onboarding stepper
  * - "While you wait" panel with tips
+ * - Subscription banner if no active subscription/trial
  */
 export default function DashboardView() {
   const { projectId } = useParams<{ projectId: string }>();
@@ -32,10 +39,18 @@ export default function DashboardView() {
   });
 
   // Fetch scanning status for initial state
-  const { data: scanningStatus } = useScanningStatus({
+  const {
+    data: scanningStatus,
+    hasSubscriptionAccess
+  } = useScanningStatus({
     projectId: projectId || "",
     enabled: !!projectId
   });
+
+  // State for pricing plans and payment processing
+  const [pricingPlans, setPricingPlans] = useState<PricingPlan[]>([]);
+  const [processingTrial, setProcessingTrial] = useState(false);
+  const [processingPayment, setProcessingPayment] = useState(false);
 
   // Fetch project stats (only when scanning is completed)
   const isCompleted = scanningStatus?.stage === 'completed';
@@ -43,6 +58,91 @@ export default function DashboardView() {
     projectId,
     isCompleted
   );
+
+  // Fetch pricing plans if user doesn't have subscription access
+  useEffect(() => {
+    const fetchPlans = async () => {
+      if (hasSubscriptionAccess === false) {
+        try {
+          const currency = await detectUserCurrency();
+          const fetchedPlans = await getPricingPlans(currency);
+          setPricingPlans(fetchedPlans);
+        } catch (err) {
+          console.error("Error fetching pricing plans:", err);
+        }
+      }
+    };
+
+    fetchPlans();
+  }, [hasSubscriptionAccess]);
+
+  const handleChoosePlan = async (plan: PricingPlan, isTrial: boolean) => {
+    try {
+      if (isTrial) {
+        setProcessingTrial(true);
+      } else {
+        setProcessingPayment(true);
+      }
+
+      const subResponse = await createPricingSubscription({
+        planId: plan.id,
+        isTrial
+      });
+
+      await initializeRazorpay(subResponse, plan);
+    } catch (error) {
+      console.error("Error initiating payment:", error);
+      if (isTrial) {
+        setProcessingTrial(false);
+      } else {
+        setProcessingPayment(false);
+      }
+    }
+  };
+
+  const initializeRazorpay = async (subscriptionData: RazorpaySubscriptionResponse, plan: PricingPlan) => {
+    const script = document.createElement("script");
+    script.src = "https://checkout.razorpay.com/v1/checkout.js";
+    script.async = true;
+    document.body.appendChild(script);
+
+    script.onload = () => {
+      const options = {
+        key: subscriptionData.keyId,
+        name: "Rixly",
+        description: `Payment for ${plan.name} plan`,
+        subscription_id: subscriptionData.subscription.vendorSubscriptionId,
+        handler: async (response: any) => {
+          try {
+            await verifySubscriptionPayment({
+              razorpaySubscriptionId: response.razorpay_subscription_id,
+              razorpayPaymentId: response.razorpay_payment_id,
+              razorpaySignature: response.razorpay_signature,
+            });
+
+            // Refresh subscription status
+            await getSubscriptionStatusCached(true);
+            // Reload the page to reflect new subscription status
+            window.location.reload();
+          } catch (error) {
+            console.error("Payment verification failed:", error);
+          } finally {
+            setProcessingTrial(false);
+            setProcessingPayment(false);
+          }
+        },
+        theme: { color: "#9333ea" },
+        modal: {
+          ondismiss: () => {
+            setProcessingTrial(false);
+            setProcessingPayment(false);
+          },
+        },
+      };
+      const rzp = new (window as any).Razorpay(options);
+      rzp.open();
+    };
+  };
 
   // Show empty state if user has no projects
   if (!projectsLoading && projects.length === 0) {
@@ -83,6 +183,20 @@ export default function DashboardView() {
   // Determine if we should show scanning progress steps (initial state)
   const showScanningProgress = scanningStatus &&
     (scanningStatus.stage == 'idle' || scanningStatus.stage === 'validating_subreddits' || scanningStatus.stage === 'scoring_leads');
+
+  // Show subscription banner if no access
+  if (!hasSubscriptionAccess && pricingPlans.length > 0) {
+    return (
+      <div className="p-4 lg:p-8">
+        <SubscriptionRequiredBanner
+          plans={pricingPlans}
+          onChoosePlan={handleChoosePlan}
+          processingTrial={processingTrial}
+          processingPayment={processingPayment}
+        />
+      </div>
+    );
+  }
 
   return (
     <div className="p-4 lg:p-8">

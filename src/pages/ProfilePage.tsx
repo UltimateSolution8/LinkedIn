@@ -17,6 +17,7 @@ import {
 import { getCurrentUser, type User } from "@/lib/api/auth";
 import { SubscriptionStatus, cancelSubscription } from "@/lib/api/subscription";
 import { getSubscriptionStatusCached } from "@/lib/utils/subscription";
+import { getDetailedStatusLabel } from "@/lib/utils/subscriptionLabels";
 import ChangePasswordDialog from "@/components/profile/ChangePasswordDialog";
 
 export default function ProfilePage() {
@@ -247,14 +248,19 @@ export default function ProfilePage() {
                       <Label className="text-neutral-950 dark:text-white">Current Subscription Status</Label>
                       <div className="flex items-center gap-2">
                         {subscriptionDetails.canBypass ? (
-                          <Badge className="bg-green-600 text-white">Whitelisted</Badge>
+                          <Badge className="bg-green-600 text-white">Premium User (Whitelisted)</Badge>
                         ) : subscriptionDetails.subscription?.status === "created" ? (
                           <Badge className="bg-yellow-600 text-white">Pending Verification</Badge>
-                        ) : subscriptionDetails.subscription ? (
-                          <Badge className="bg-green-600 text-white">Active</Badge>
+                        ) : subscriptionDetails.subscription?.status === "authenticated" || subscriptionDetails.isTrial ? (
+                          <Badge className="bg-blue-600 text-white">Trial User</Badge>
+                        ) : subscriptionDetails.subscription?.status === "active" ? (
+                          <Badge className="bg-green-600 text-white">Pro User</Badge>
                         ) : (
-                          <Badge className="bg-red-600 text-white">Inactive</Badge>
+                          <Badge className="bg-red-600 text-white">Free User</Badge>
                         )}
+                        <span className="text-sm text-neutral-600 dark:text-neutral-400">
+                          {getDetailedStatusLabel(subscriptionDetails)}
+                        </span>
                       </div>
                     </div>
 

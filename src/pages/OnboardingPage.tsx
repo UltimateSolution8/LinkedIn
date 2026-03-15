@@ -115,10 +115,7 @@ export default function OnboardingPage() {
           Create Project
         </Button>
 
-        {/* Note */}
-        <p className="mt-6 text-xs text-neutral-500 dark:text-neutral-400">
-          Note: Full onboarding experience will be available in Story 001A
-        </p>
+        
       </div>
       </div>
     </div>
