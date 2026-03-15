@@ -1,11 +1,12 @@
 
 import { NavLink, useParams, useNavigate } from "react-router-dom";
 import { LayoutDashboard, Flame, Target, Settings, Plus } from "lucide-react";
+import { LayoutDashboard, Flame, Target, Settings, Plus } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { getCurrentUser } from "@/lib/api/auth";
+import { useAuth } from "@/contexts/AuthContext";
 
 interface NavItem {
   label: string;
@@ -22,7 +23,7 @@ interface AppSidebarProps {
 export default function AppSidebar({ leadsCount = 0, opportunitiesCount = 0 }: AppSidebarProps) {
   const { projectId } = useParams<{ projectId: string }>();
   const navigate = useNavigate();
-  const currentUser = getCurrentUser();
+  const { user: currentUser } = useAuth();
 
   const navItems: NavItem[] = [
     {
@@ -66,7 +67,11 @@ export default function AppSidebar({ leadsCount = 0, opportunitiesCount = 0 }: A
     <aside className="hidden lg:flex lg:flex-col lg:w-64 lg:border-r lg:border-neutral-200 dark:lg:border-neutral-800 lg:bg-white dark:lg:bg-neutral-950">
       {/* Logo */}
       <div className="p-6 flex items-center gap-3">
-        <img src="/logo.png" alt="Rixly Logo" className="size-8 object-contain logo-shaded" />
+        <img
+          src="/logo.png"
+          alt="Rixly Logo"
+          className="w-8 h-8 object-contain logo-theme-tint"
+        />
         <h1 className="text-xl font-bold tracking-tight text-neutral-900 dark:text-white">Rixly</h1>
       </div>
 

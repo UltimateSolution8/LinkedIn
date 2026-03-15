@@ -1,9 +1,9 @@
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { User, LogOut } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -12,26 +12,24 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { logout, getCurrentUser, type User as UserType } from "@/lib/api/auth";
+import { useAuth } from "@/contexts/AuthContext";
 
 export default function UserProfileDropdown() {
   const navigate = useNavigate();
-  const [user, setUser] = useState<UserType | null>(null);
+  const { user, logout: authLogout } = useAuth();
   const [isLoggingOut, setIsLoggingOut] = useState(false);
-
-  useEffect(() => {
-    setUser(getCurrentUser());
-  }, []);
 
   const handleLogout = async () => {
     setIsLoggingOut(true);
-    await logout();
+    await authLogout();
     navigate("/login");
   };
 
   const getInitials = () => {
     if (!user) return "U";
-    return `${user.firstName[0]}${user.lastName[0]}`.toUpperCase();
+    const firstInitial = user.firstName?.[0] || "";
+    const lastInitial = user.lastName?.[0] || "";
+    return `${firstInitial}${lastInitial}`.toUpperCase() || "U";
   };
 
   return (
@@ -39,10 +37,6 @@ export default function UserProfileDropdown() {
       <DropdownMenuTrigger asChild>
         <Button variant="ghost" className="relative h-10 w-10 rounded-full p-0">
           <Avatar className="h-10 w-10">
-            <AvatarImage
-              src="https://lh3.googleusercontent.com/aida-public/AB6AXuBsnPGu5M6nFcPNR0KouOKeLAMoT_QLM3RLfwrXica398NguGKlrBYeLAGStadPyMyrPbTpFaZJtCdnhWnCtzOODPEFWmb60MS4P-ubvXQNWgvTATBFB6wfw0s7TOsIKIYq8Dr3GNzBaS5uV_n99hkhTkE8chwwsjpU265PVObaObAdfH6IKXj2Cct11GiqCzuHcwjpUnZI05lnaQHBpoz2uFJxQKcBn-vLN-A0o_cTN9XCTvyOgUbLxlZ_kHqeZbEPhS92pwRie6PD"
-              alt={user ? `${user.firstName} ${user.lastName}` : "User"}
-            />
             <AvatarFallback className="bg-teal-600 text-white">
               {getInitials()}
             </AvatarFallback>

@@ -10,13 +10,12 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { getCurrentUser } from "@/lib/api/auth";
-import { logout } from "@/lib/api/auth";
+import { useAuth } from "@/contexts/AuthContext";
 import ProjectSwitcher from "./ProjectSwitcher";
 
 export default function AppHeader() {
   const navigate = useNavigate();
-  const currentUser = getCurrentUser();
+  const { user: currentUser, logout: authLogout } = useAuth();
 
   const getUserInitials = (firstName: string, lastName: string) => {
     return `${firstName[0] || ''}${lastName[0] || ''}`.toUpperCase();
@@ -27,8 +26,8 @@ export default function AppHeader() {
     return `${currentUser.firstName} ${currentUser.lastName}`.trim();
   };
 
-  const handleLogout = () => {
-    logout();
+  const handleLogout = async () => {
+    await authLogout();
     navigate("/login");
   };
 
