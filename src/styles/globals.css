@@ -345,14 +345,6 @@
   animation: cta-attention-pulse 1.45s ease-in-out infinite;
 }
 
-.logo-theme-tint {
-  filter: brightness(0) saturate(100%) invert(33%) sepia(37%) saturate(1209%) hue-rotate(136deg) brightness(95%) contrast(90%);
-}
-
-.dark .logo-theme-tint {
-  filter: brightness(0) saturate(100%) invert(74%) sepia(24%) saturate(541%) hue-rotate(132deg) brightness(94%) contrast(90%);
-}
-
 .dark .ribbon {
   background: linear-gradient(90deg, transparent, var(--teal-500), transparent);
   opacity: 0.08;

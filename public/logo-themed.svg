@@ -1,0 +1,20 @@
+<svg width="64" height="64" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="rixlyGradientA" x1="8" y1="4" x2="56" y2="60" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#0EA5A4"/>
+      <stop offset="48%" stop-color="#1E868D"/>
+      <stop offset="100%" stop-color="#155E75"/>
+    </linearGradient>
+    <linearGradient id="rixlyGradientB" x1="12" y1="20" x2="52" y2="52" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#7DE1E0"/>
+      <stop offset="100%" stop-color="#0F766E"/>
+    </linearGradient>
+    <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="5" stdDeviation="4" flood-opacity="0.22" flood-color="#0F766E"/>
+    </filter>
+  </defs>
+  <rect x="4" y="4" width="56" height="56" rx="16" fill="url(#rixlyGradientA)" filter="url(#shadow)"/>
+  <path d="M32 11L10 21.5L32 32L54 21.5L32 11Z" fill="white" fill-opacity="0.97"/>
+  <path d="M10 36L32 47L54 36" stroke="url(#rixlyGradientB)" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M10 27.8L32 38.8L54 27.8" stroke="white" stroke-opacity="0.98" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>

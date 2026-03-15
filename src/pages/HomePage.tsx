@@ -21,6 +21,8 @@ import { FAQSection } from "@/components/landing-new/FAQSection";
 import { Footer } from "@/components/landing-new/Footer";
 import { CompanyLogos } from "@/components/landing-new/CompanyLogos";
 import { ScrollToTop } from "@/components/landing-new/ScrollToTop";
+import ExitIntentPlaybookDialog from "@/components/landing-new/ExitIntentPlaybookDialog";
+import { getCurrentUser } from "@/lib/api/auth";
 
 const AnalyticsDashboard = lazy(() => import("@/components/landing-new/AnalyticsDashboard"));
 const ROIPage = lazy(() => import("@/components/landing-new/ROIPage").then((mod) => ({ default: mod.ROIPage })));
@@ -32,6 +34,7 @@ export default function HomePage() {
     if (saved) return saved === "dark";
     return false;
   });
+  const [showExitIntent, setShowExitIntent] = useState(false);
 
   useEffect(() => {
     localStorage.setItem("theme", isDark ? "dark" : "light");
@@ -60,11 +63,29 @@ export default function HomePage() {
     };
   }, []);
 
+  useEffect(() => {
+    if (view !== "landing") return;
+    if (getCurrentUser()) return;
+    if (localStorage.getItem("rixly_exit_intent_seen") === "1") return;
+
+    const handleMouseOut = (event: MouseEvent) => {
+      if (event.clientY <= 8) {
+        setShowExitIntent(true);
+        localStorage.setItem("rixly_exit_intent_seen", "1");
+        document.removeEventListener("mouseout", handleMouseOut);
+      }
+    };
+
+    document.addEventListener("mouseout", handleMouseOut);
+    return () => document.removeEventListener("mouseout", handleMouseOut);
+  }, [view]);
+
   const toggleTheme = () => setIsDark(!isDark);
 
   return (
     <div className="min-h-screen bg-background text-foreground relative">
       <div className="fixed inset-0 pointer-events-none grain" />
+      <ExitIntentPlaybookDialog open={showExitIntent} onOpenChange={setShowExitIntent} />
 
       <AnimatePresence mode="wait">
         {view === "landing" && (

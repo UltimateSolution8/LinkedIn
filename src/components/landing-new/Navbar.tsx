@@ -43,9 +43,9 @@ export const Navbar = ({ isDark, toggleTheme, setView }) => {
           {/* Logo */}
           <a href="#" className="flex items-center gap-2 group" data-testid="logo">
             <img
-              src="/logo.png"
+              src="/logo-themed.svg"
               alt="Rixly Logo"
-              className="w-9 h-9 object-contain logo-theme-tint group-hover:scale-105 transition-transform duration-300"
+              className="w-9 h-9 object-contain group-hover:scale-105 transition-transform duration-300"
             />
             <span className="font-heading font-bold text-2xl tracking-tighter text-slate-900 dark:text-white">
               RIXLY

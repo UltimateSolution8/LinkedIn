@@ -1,6 +1,6 @@
 
 import { NavLink, useParams, useNavigate } from "react-router-dom";
-import { LayoutDashboard, Flame, Target, Settings, Plus, Rocket } from "lucide-react";
+import { LayoutDashboard, Flame, Target, Settings, Plus } from "lucide-react";
 import { cn } from "@/lib/utils";
 import ProjectSwitcher from "./ProjectSwitcher";
 import { Badge } from "@/components/ui/badge";
@@ -67,9 +67,7 @@ export default function AppSidebar({ leadsCount = 0, opportunitiesCount = 0 }: A
     <aside className="hidden lg:flex lg:flex-col lg:w-64 lg:border-r lg:border-neutral-200 dark:lg:border-neutral-800 lg:bg-white dark:lg:bg-neutral-950">
       {/* Logo */}
       <div className="p-6 flex items-center gap-3">
-        <div className="size-8 bg-primary rounded-lg flex items-center justify-center text-white">
-          <Rocket className="h-5 w-5" />
-        </div>
+        <img src="/logo-themed.svg" alt="Rixly Logo" className="size-8 object-contain" />
         <h1 className="text-xl font-bold tracking-tight text-neutral-900 dark:text-white">Rixly</h1>
       </div>
 
