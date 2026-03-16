@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { getScanningStatus, ScanningStatusData } from "@/lib/api/projects";
 import { getSubscriptionStatusCached } from "@/lib/utils/subscription";
 import { SubscriptionStatus } from "@/lib/api/subscription";
+import { getCurrentUser } from "@/lib/api/auth";
 
 interface UseScanningStatusOptions {
   projectId: string;
@@ -58,6 +59,15 @@ export function useScanningStatus({
   useEffect(() => {
     const checkSubscription = async () => {
       try {
+        // Admin bypass - no need to check subscription
+        const currentUser = getCurrentUser();
+        const isAdmin = currentUser?.role === 'admin';
+
+        if (isAdmin) {
+          setHasSubscriptionAccess(true);
+          return;
+        }
+
         const status = await getSubscriptionStatusCached();
         setSubscriptionStatus(status);
 

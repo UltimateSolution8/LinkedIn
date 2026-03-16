@@ -68,6 +68,12 @@ export default function DashboardPage() {
   useEffect(() => {
     const checkAccess = async () => {
       try {
+        // Admin bypass - no need to check subscription
+        if (isAdmin) {
+          setHasAccess(true);
+          return;
+        }
+
         const hasAccess = await checkSubscriptionAccess();
         setHasAccess(hasAccess);
 
@@ -92,7 +98,7 @@ export default function DashboardPage() {
     };
 
     checkAccess();
-  }, [searchParams, setSearchParams]);
+  }, [isAdmin, searchParams, setSearchParams]);
 
   const handleChoosePlan = async (plan: PricingPlan, isTrial: boolean) => {
     try {
