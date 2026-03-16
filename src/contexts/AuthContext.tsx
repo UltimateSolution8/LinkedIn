@@ -1,5 +1,5 @@
 import { createContext, useContext, useState, ReactNode, useEffect } from "react";
-import { getCurrentUser, logout as logoutApi, type User } from "@/lib/api/auth";
+import { getCurrentUser, getMe, logout as logoutApi, type User } from "@/lib/api/auth";
 
 interface AuthContextType {
   user: User | null;
@@ -17,9 +17,19 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   // Initialize authentication state on mount
   useEffect(() => {
-    const initAuth = () => {
+    const initAuth = async () => {
       try {
-        const currentUser = getCurrentUser();
+        let currentUser = getCurrentUser();
+
+        // If no user in localStorage, try fetching from server (in case of Google OAuth or cleared storage)
+        if (!currentUser) {
+          currentUser = await getMe();
+          if (currentUser) {
+            // Save to localStorage so it's available for next time
+            localStorage.setItem("user", JSON.stringify(currentUser));
+          }
+        }
+
         setUserState(currentUser);
       } catch (error) {
         console.error("Failed to initialize auth:", error);

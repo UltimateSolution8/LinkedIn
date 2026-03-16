@@ -1,4 +1,5 @@
 import { useNavigate } from "react-router-dom";
+import { useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import {
@@ -9,7 +10,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Plus } from "lucide-react";
-import { getCurrentUser, logout } from "@/lib/api/auth";
+import { useAuth } from "@/contexts/AuthContext";
 
 /**
  * Onboarding page for users with zero projects
@@ -17,7 +18,28 @@ import { getCurrentUser, logout } from "@/lib/api/auth";
  */
 export default function OnboardingPage() {
   const navigate = useNavigate();
-  const currentUser = getCurrentUser();
+  const { user: currentUser, isLoading, isAuthenticated, logout } = useAuth();
+
+  useEffect(() => {
+    if (!isLoading && !isAuthenticated) {
+      navigate("/login");
+    }
+  }, [isLoading, isAuthenticated, navigate]);
+
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center h-screen bg-neutral-50 dark:bg-neutral-900">
+        <div className="text-center">
+          <div className="inline-block h-8 w-8 animate-spin rounded-full border-4 border-solid border-primary border-r-transparent"></div>
+          <p className="mt-4 text-sm text-neutral-600 dark:text-neutral-400">Loading...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (!isAuthenticated || !currentUser) {
+    return null;
+  }
 
   const getUserInitials = (firstName: string, lastName: string) => {
     return `${firstName[0] || ''}${lastName[0] || ''}`.toUpperCase();
@@ -88,35 +110,35 @@ export default function OnboardingPage() {
 
       {/* Main Content */}
       <div className="flex-1 flex items-center justify-center p-4">
-      <div className="max-w-md w-full text-center">
-        {/* Icon */}
-        <div className="mb-6">
-          <div className="size-16 bg-primary/10 rounded-full flex items-center justify-center mx-auto">
-            <Plus className="h-8 w-8 text-primary" />
+        <div className="max-w-md w-full text-center">
+          {/* Icon */}
+          <div className="mb-6">
+            <div className="size-16 bg-primary/10 rounded-full flex items-center justify-center mx-auto">
+              <Plus className="h-8 w-8 text-primary" />
+            </div>
           </div>
+
+          {/* Content */}
+          <h1 className="text-2xl font-bold text-neutral-900 dark:text-white mb-3">
+            Create Your First Project
+          </h1>
+          <p className="text-neutral-600 dark:text-neutral-400 mb-8">
+            Get started with Rixly by creating your first project.
+            You'll be able to track leads, identify opportunities, and monitor Reddit activity.
+          </p>
+
+          {/* CTA Button */}
+          <Button
+            onClick={() => navigate("/create-project")}
+            className="w-full bg-primary hover:bg-primary/90 text-white font-semibold py-3"
+            size="lg"
+          >
+            <Plus className="h-5 w-5 mr-2" />
+            Create Project
+          </Button>
+
+
         </div>
-
-        {/* Content */}
-        <h1 className="text-2xl font-bold text-neutral-900 dark:text-white mb-3">
-          Create Your First Project
-        </h1>
-        <p className="text-neutral-600 dark:text-neutral-400 mb-8">
-          Get started with Rixly by creating your first project.
-          You'll be able to track leads, identify opportunities, and monitor Reddit activity.
-        </p>
-
-        {/* CTA Button */}
-        <Button
-          onClick={() => navigate("/create-project")}
-          className="w-full bg-primary hover:bg-primary/90 text-white font-semibold py-3"
-          size="lg"
-        >
-          <Plus className="h-5 w-5 mr-2" />
-          Create Project
-        </Button>
-
-        
-      </div>
       </div>
     </div>
   );

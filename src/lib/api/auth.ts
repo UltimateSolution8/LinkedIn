@@ -80,7 +80,7 @@ export async function signup(data: SignupRequest): Promise<SignupResponse> {
 
   let responseData;
   const contentType = response.headers.get("content-type");
-  
+
   try {
     if (contentType && contentType.includes("application/json")) {
       responseData = await response.json();
@@ -123,7 +123,7 @@ export async function signin(data: SigninRequest): Promise<SigninResponse> {
 
   let responseData;
   const contentType = response.headers.get("content-type");
-  
+
   try {
     if (contentType && contentType.includes("application/json")) {
       responseData = await response.json();
@@ -164,6 +164,44 @@ export async function logout(): Promise<void> {
   sessionStorage.clear();
   clearCurrencyCache();
   clearSubscriptionCache();
+}
+
+export async function getMe(): Promise<User | null> {
+  if (!RIXLY_API_BASE_URL) {
+    return null;
+  }
+
+  try {
+    const response = await fetch(`${RIXLY_API_BASE_URL}/api/auth/me`, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      credentials: "include",
+    });
+
+    if (!response.ok) {
+      return null;
+    }
+
+    const data = await response.json();
+
+    // Handle the case where the backend returns success: true and data: user
+    const userData = data.user || data.data || data;
+
+    if (userData && (userData.email || userData.emailId)) {
+      // Map emailId to email if needed
+      if (userData.emailId && !userData.email) {
+        userData.email = userData.emailId;
+      }
+      return userData as User;
+    }
+
+    return null;
+  } catch (error) {
+    console.error("Error fetching current user from server:", error);
+    return null;
+  }
 }
 
 export function getCurrentUser(): User | null {

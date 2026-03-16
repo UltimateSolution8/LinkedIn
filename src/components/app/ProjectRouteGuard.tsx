@@ -23,7 +23,12 @@ export default function ProjectRouteGuard({ children }: ProjectRouteGuardProps) 
       if (!project) {
         // Invalid projectId → redirect to first available project
         console.warn(`Invalid projectId: ${projectId}, redirecting to first project`);
-        // TODO: Show toast notification in Story 002
+
+        if (projects.length === 0) {
+          navigate("/app/onboarding", { replace: true });
+          return;
+        }
+
         const firstProjectId = projects[0]._id;
         navigate(`/app/${firstProjectId}/dashboard`, { replace: true });
         return;
@@ -33,6 +38,11 @@ export default function ProjectRouteGuard({ children }: ProjectRouteGuardProps) 
       setSelectedProjectId(projectId);
     } else {
       // No projectId in URL → redirect to first project
+      if (projects.length === 0) {
+        navigate("/app/onboarding", { replace: true });
+        return;
+      }
+
       const firstProjectId = projects[0]._id;
       navigate(`/app/${firstProjectId}/dashboard`, { replace: true });
     }
