@@ -345,11 +345,10 @@ export default function LeadsPage({ projectId, mode, onCountsRefresh }: LeadsPag
             return (
               <button
                 key={tag}
-                className={`px-3 py-1.5 rounded-full text-xs font-semibold border ${
-                  active
-                    ? "bg-teal-100 border-teal-400 text-teal-800 dark:bg-teal-900/30 dark:text-teal-300 dark:border-teal-700"
-                    : "bg-white dark:bg-neutral-900 border-neutral-200 dark:border-neutral-700 text-neutral-600 dark:text-neutral-300"
-                }`}
+                className={`px-3 py-1.5 rounded-full text-xs font-semibold border ${active
+                  ? "bg-teal-100 border-teal-400 text-teal-800 dark:bg-teal-900/30 dark:text-teal-300 dark:border-teal-700"
+                  : "bg-white dark:bg-neutral-900 border-neutral-200 dark:border-neutral-700 text-neutral-600 dark:text-neutral-300"
+                  }`}
                 onClick={() => onToggleTag(tag)}
               >
                 {tag}
@@ -358,11 +357,10 @@ export default function LeadsPage({ projectId, mode, onCountsRefresh }: LeadsPag
           })}
 
           <button
-            className={`px-3 py-1.5 rounded-full text-xs font-semibold border inline-flex items-center gap-1 ${
-              starredOnly
-                ? "bg-teal-100 border-teal-400 text-teal-800 dark:bg-teal-900/30 dark:text-teal-300 dark:border-teal-700"
-                : "bg-white dark:bg-neutral-900 border-neutral-200 dark:border-neutral-700 text-neutral-600 dark:text-neutral-300"
-            }`}
+            className={`px-3 py-1.5 rounded-full text-xs font-semibold border inline-flex items-center gap-1 ${starredOnly
+              ? "bg-teal-100 border-teal-400 text-teal-800 dark:bg-teal-900/30 dark:text-teal-300 dark:border-teal-700"
+              : "bg-white dark:bg-neutral-900 border-neutral-200 dark:border-neutral-700 text-neutral-600 dark:text-neutral-300"
+              }`}
             onClick={() => setStarredOnly((current) => !current)}
           >
             <Star className="w-3.5 h-3.5" />
@@ -370,11 +368,10 @@ export default function LeadsPage({ projectId, mode, onCountsRefresh }: LeadsPag
           </button>
 
           <button
-            className={`px-3 py-1.5 rounded-full text-xs font-semibold border inline-flex items-center gap-1 ${
-              followUpOnly
-                ? "bg-teal-100 border-teal-400 text-teal-800 dark:bg-teal-900/30 dark:text-teal-300 dark:border-teal-700"
-                : "bg-white dark:bg-neutral-900 border-neutral-200 dark:border-neutral-700 text-neutral-600 dark:text-neutral-300"
-            }`}
+            className={`px-3 py-1.5 rounded-full text-xs font-semibold border inline-flex items-center gap-1 ${followUpOnly
+              ? "bg-teal-100 border-teal-400 text-teal-800 dark:bg-teal-900/30 dark:text-teal-300 dark:border-teal-700"
+              : "bg-white dark:bg-neutral-900 border-neutral-200 dark:border-neutral-700 text-neutral-600 dark:text-neutral-300"
+              }`}
             onClick={() => setFollowUpOnly((current) => !current)}
           >
             <CalendarClock className="w-3.5 h-3.5" />
@@ -449,16 +446,15 @@ export default function LeadsPage({ projectId, mode, onCountsRefresh }: LeadsPag
             return (
               <article
                 key={lead.leadId}
-                className={`rounded-xl border bg-white dark:bg-neutral-950 transition-all cursor-pointer ${
-                  expanded
-                    ? "border-teal-500 shadow-sm"
-                    : "border-neutral-200 dark:border-neutral-800 hover:border-teal-300"
-                }`}
+                className={`rounded-xl border bg-white dark:bg-neutral-950 transition-all cursor-pointer ${expanded
+                  ? "border-teal-500 shadow-sm"
+                  : "border-neutral-200 dark:border-neutral-800 hover:border-teal-300"
+                  }`}
                 onClick={() => setExpandedLeadId((current) => (current === lead.leadId ? null : lead.leadId))}
               >
                 <div className="p-4 flex items-start gap-3">
                   <div className={`w-12 h-12 rounded-full border-2 ${scoreColor} flex items-center justify-center font-bold text-sm`}>
-                    {Math.round((lead.score ?? 0) * 10)}
+                    {lead.score?.toFixed(1) || 0}
                   </div>
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center justify-between gap-3">

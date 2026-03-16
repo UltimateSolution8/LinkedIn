@@ -117,7 +117,7 @@ export default function LeadDetailDrawer({
                 <Badge className="bg-teal-100 text-teal-700 dark:bg-teal-900/30 dark:text-teal-300 border-transparent">
                   r/{lead.subreddit}
                 </Badge>
-                <Badge variant="outline">{lead.score ?? 0}/10</Badge>
+                <Badge variant="outline">{(lead.score ?? 0).toFixed(1)}</Badge>
               </div>
             )}
           </SheetHeader>

@@ -100,7 +100,7 @@ export default function PostCard({
   };
 
   const config = leadTypeConfig[leadType] ?? leadTypeConfig.ENGAGEMENT;
-  const LeadIcon =  config.icon;
+  const LeadIcon = config.icon;
 
   // Status configuration
   const statusConfig = {
@@ -231,9 +231,8 @@ export default function PostCard({
         </a>
         <div className="flex flex-col items-end gap-1 flex-shrink-0">
           {rating > 0 && (
-            <div className="flex items-center gap-1.5 bg-teal-50 dark:bg-teal-900/20 px-2 py-1 rounded-md border border-teal-100 dark:border-teal-800/50">
-              <Star className="w-4 h-4 fill-teal-500 text-teal-500" />
-              <span className="font-bold text-teal-700 dark:text-teal-400 text-sm">{rating}/10</span>
+            <div className="w-10 h-10 rounded-full border-2 border-teal-500 flex items-center justify-center font-bold text-sm text-teal-700 dark:text-teal-400 flex-shrink-0">
+              {rating.toFixed(1)}
             </div>
           )}
         </div>

@@ -105,11 +105,10 @@ export default function LeadCard({
             <div className="flex items-center gap-2 mb-2">
               <Badge
                 variant={source === "comment" ? "default" : "secondary"}
-                className={`text-xs font-semibold ${
-                  source === "comment"
-                    ? "bg-teal-100 text-teal-700 dark:bg-teal-900/30 dark:text-teal-400"
-                    : "bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400"
-                }`}
+                className={`text-xs font-semibold ${source === "comment"
+                  ? "bg-teal-100 text-teal-700 dark:bg-teal-900/30 dark:text-teal-400"
+                  : "bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400"
+                  }`}
               >
                 {source === "comment" ? (
                   <><MessageSquare className="w-3 h-3 mr-1" /> Comment</>
@@ -136,9 +135,8 @@ export default function LeadCard({
             </div>
           </div>
           {rating > 0 && (
-            <div className="flex items-center gap-1.5 bg-teal-50 dark:bg-teal-900/20 px-2 py-1 rounded-md border border-teal-100 dark:border-teal-800/50">
-              <Star className="w-4 h-4 fill-teal-500 text-teal-500" />
-              <span className="font-bold text-teal-700 dark:text-teal-400 text-sm">{rating}/10</span>
+            <div className="w-10 h-10 rounded-full border-2 border-teal-500 flex items-center justify-center font-bold text-sm text-teal-700 dark:text-teal-400 flex-shrink-0">
+              {rating.toFixed(1)}
             </div>
           )}
         </div>
