@@ -5,26 +5,26 @@ const RIXLY_API_BASE_URL = import.meta.env.VITE_RIXLY_API_BASE_URL;
  */
 
 export interface LLMCostSummary {
-  total_calls: number | string;
-  total_input_tokens: number | string;
-  total_output_tokens: number | string;
-  total_tokens: number | string;
-  total_cost_usd: number | string;
-  avg_latency_ms: number | string;
-  success_count: number | string;
-  error_count: number | string;
+  total_calls: number;
+  total_input_tokens: number;
+  total_output_tokens: number;
+  total_tokens: number;
+  total_cost_usd: number;
+  avg_latency_ms: number;
+  success_count: number;
+  error_count: number;
 }
 
 export interface LLMCostByOperation {
   operation_type: string;
-  call_count: number | string;
-  total_input_tokens: number | string;
-  total_output_tokens: number | string;
-  total_tokens: number | string;
-  total_cost_usd: number | string;
-  avg_latency_ms: number | string;
-  success_count: number | string;
-  error_count: number | string;
+  call_count: number;
+  total_input_tokens: number;
+  total_output_tokens: number;
+  total_tokens: number;
+  total_cost_usd: number;
+  avg_latency_ms: number;
+  success_count: number;
+  error_count: number;
 }
 
 export interface LLMCostByProvider {

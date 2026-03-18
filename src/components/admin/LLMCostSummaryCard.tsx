@@ -66,8 +66,8 @@ export default function LLMCostSummaryCard() {
     if (!currentMonthCost || !lastMonthCost) {
       return null;
     }
-    const current = parseFloat(currentMonthCost.total_cost_usd as string);
-    const last = parseFloat(lastMonthCost.total_cost_usd as string);
+    const current = currentMonthCost.total_cost_usd;
+    const last = lastMonthCost.total_cost_usd;
     if (last === 0) return null;
     return ((current - last) / last) * 100;
   };
@@ -106,7 +106,7 @@ export default function LLMCostSummaryCard() {
             <div className="flex items-baseline gap-2 mb-4">
               <DollarSign className="w-6 h-6 text-teal-600" />
               <span className="text-3xl font-bold text-neutral-950 dark:text-white">
-                {formatCurrency(parseFloat(currentMonthCost.total_cost_usd as string))}
+                {formatCurrency(currentMonthCost.total_cost_usd)}
               </span>
               {percentageChange !== null && (
                 <div className={`flex items-center gap-1 text-sm ${
@@ -148,7 +148,7 @@ export default function LLMCostSummaryCard() {
                 <div className="flex items-center justify-between text-sm">
                   <span className="text-neutral-600 dark:text-neutral-400">Last month:</span>
                   <span className="font-medium text-neutral-950 dark:text-white">
-                    {formatCurrency(parseFloat(lastMonthCost.total_cost_usd as string))}
+                    {formatCurrency(lastMonthCost.total_cost_usd)}
                   </span>
                 </div>
               </div>

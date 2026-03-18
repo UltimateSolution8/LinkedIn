@@ -238,7 +238,7 @@ export default function AdminLLMCostsPage() {
                 <div className="flex items-center gap-2">
                   <DollarSign className="w-5 h-5 text-teal-600" />
                   <span className="text-2xl font-bold text-neutral-950 dark:text-white">
-                    {formatCurrency(parseFloat(summary.total_cost_usd as string))}
+                    {formatCurrency(summary.total_cost_usd)}
                   </span>
                 </div>
               </CardContent>
@@ -290,7 +290,7 @@ export default function AdminLLMCostsPage() {
               </CardHeader>
               <CardContent>
                 <div className="text-2xl font-bold text-neutral-950 dark:text-white">
-                  {parseFloat(summary.avg_latency_ms).toFixed(0)}ms
+                  {summary.avg_latency_ms.toFixed(0)}ms
                 </div>
                 <p className="text-xs text-neutral-500 dark:text-neutral-400 mt-1">
                   Per API call
@@ -329,10 +329,10 @@ export default function AdminLLMCostsPage() {
                         </div>
                         <div className="text-right">
                           <div className="font-bold text-neutral-950 dark:text-white">
-                            {formatCurrency(parseFloat(op.total_cost_usd as string))}
+                            {formatCurrency(op.total_cost_usd)}
                           </div>
                           <div className="text-xs text-neutral-500 dark:text-neutral-400">
-                            {((parseFloat(op.total_cost_usd as string) / parseFloat(summary.total_cost_usd as string)) * 100).toFixed(1)}%
+                            {((op.total_cost_usd / summary.total_cost_usd) * 100).toFixed(1)}%
                           </div>
                         </div>
                       </div>
@@ -370,10 +370,10 @@ export default function AdminLLMCostsPage() {
                         </div>
                         <div className="text-right">
                           <div className="font-bold text-neutral-950 dark:text-white">
-                            {formatCurrency(parseFloat(provider.total_cost_usd))}
+                            {formatCurrency(provider.total_cost_usd)}
                           </div>
                           <div className="text-xs text-neutral-500 dark:text-neutral-400">
-                            {((parseFloat(provider.total_cost_usd) / parseFloat(summary.total_cost_usd as string)) * 100).toFixed(1)}%
+                            {((provider.total_cost_usd / summary.total_cost_usd) * 100).toFixed(1)}%
                           </div>
                         </div>
                       </div>
@@ -415,7 +415,7 @@ export default function AdminLLMCostsPage() {
                         </div>
                       </div>
                       <div className="font-semibold text-neutral-950 dark:text-white">
-                        {formatCurrency(parseFloat(day.total_cost_usd))}
+                        {formatCurrency(day.total_cost_usd)}
                       </div>
                     </div>
                   ))}
