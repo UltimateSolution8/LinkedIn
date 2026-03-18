@@ -6,7 +6,7 @@ import { Calendar, ArrowRight, Search, Clock, ChevronLeft, ChevronRight, Loader2
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
-import { getPosts, getCategories, getFeaturedPost } from "@/lib/sanity";
+import { getPosts, getCategories } from "@/lib/sanity";
 
 // Sample fallback posts - used when Sanity is not configured
 const samplePosts = [
@@ -211,7 +211,6 @@ export default function BlogPage() {
   const [currentPage, setCurrentPage] = useState(1);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [sanityConfigured, setSanityConfigured] = useState(false);
   const [expandedPost, setExpandedPost] = useState(null);
   
   const postsPerPage = 6;
@@ -219,50 +218,67 @@ export default function BlogPage() {
   // Check if Sanity is configured and fetch data
   useEffect(() => {
     async function fetchData() {
+      const projectId = import.meta.env.VITE_SANITY_PROJECT_ID;
+      const hasSanityConfig = !!projectId && projectId !== "your-project-id";
+
       try {
-        const projectId = import.meta.env.VITE_SANITY_PROJECT_ID;
-        
-        if (projectId && projectId !== "your-project-id") {
-          setSanityConfigured(true);
-          
-          // Fetch posts and categories from Sanity
-          const [postsData, categoriesData, featuredData] = await Promise.all([
-            getPosts(),
-            getCategories(),
-            getFeaturedPost()
-          ]);
-          
-          // Transform Sanity data to match our format
-          const transformedPosts = postsData.map((post, index) => ({
-            id: post._id || index + 1,
-            slug: post.slug?.current || `post-${index}`,
-            title: post.title,
-            excerpt: post.excerpt,
-            coverImage: post.featuredImage?.asset?.url || post.coverImage?.asset?.url || samplePosts[0]?.coverImage || "",
-            author: post.author || { name: "Unknown Author", avatar: "" },
-            publishedAt: post.publishedAt || new Date().toISOString(),
-            readTime: post.readTime ? `${post.readTime} min read` : "5 min read",
-            category: post.category?.title || "Uncategorized",
-            featured: post.featured || false,
-            body: post.body || "",
-          }));
-          
-          // Transform categories
-          const transformedCategories = ["All", ...categoriesData.map(cat => cat.title)];
-          
-          setPosts(transformedPosts);
-          setCategories(transformedCategories.length > 1 ? transformedCategories : defaultCategories);
+        if (!hasSanityConfig) {
+          // Use sample data if Sanity is not configured in this environment.
+          setPosts(samplePosts);
+          setCategories(defaultCategories);
+          return;
+        }
+
+        // Fetch posts from Sanity first (required).
+        const postsData = await getPosts();
+
+        // Fetch categories separately (optional). A category query failure should not hide all posts.
+        let categoriesData = [];
+        try {
+          categoriesData = await getCategories();
+        } catch (categoryError) {
+          console.warn("Sanity categories fetch failed; deriving categories from posts.", categoryError);
+        }
+
+        const transformedPosts = (postsData || []).map((post, index) => ({
+          id: post._id || index + 1,
+          slug: post.slug || `post-${index}`,
+          title: post.title,
+          excerpt: post.excerpt,
+          coverImage: post.coverImageUrl || samplePosts[0]?.coverImage || "",
+          author: {
+            name: post.author?.name || "Unknown Author",
+            avatar: post.author?.avatarUrl || "",
+          },
+          publishedAt: post.publishedAt || new Date().toISOString(),
+          readTime: post.readTime ? `${post.readTime} min read` : "5 min read",
+          category: post.category || "Uncategorized",
+          featured: !!post.featured,
+          body: post.body || "",
+        }));
+
+        const categoryFromPosts = Array.from(
+          new Set(transformedPosts.map((post) => post.category).filter(Boolean))
+        ).sort((a, b) => a.localeCompare(b));
+        const categoryFromSanity = (categoriesData || []).map((cat) => cat.title).filter(Boolean);
+        const mergedCategories = Array.from(
+          new Set([...categoryFromSanity, ...categoryFromPosts])
+        );
+
+        setPosts(transformedPosts);
+        setCategories(["All", ...(mergedCategories.length > 0 ? mergedCategories : defaultCategories.slice(1))]);
+      } catch (err) {
+        console.error("Error fetching from Sanity:", err);
+        setError("Failed to load blog posts from Sanity.");
+
+        if (hasSanityConfig) {
+          // Keep state truthful when Sanity is configured but unavailable.
+          setPosts([]);
+          setCategories(["All"]);
         } else {
-          // Use sample data if Sanity is not configured
           setPosts(samplePosts);
           setCategories(defaultCategories);
         }
-      } catch (err) {
-        console.error("Error fetching from Sanity:", err);
-        setError("Failed to load blog posts. Showing sample content.");
-        // Fallback to sample data on error
-        setPosts(samplePosts);
-        setCategories(defaultCategories);
       } finally {
         setLoading(false);
       }

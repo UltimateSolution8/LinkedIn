@@ -6,17 +6,22 @@ export const sanityClient = createClient({
   projectId: import.meta.env.VITE_SANITY_PROJECT_ID || "9iae1qca",
   dataset: import.meta.env.VITE_SANITY_DATASET || "production",
   apiVersion: "2024-01-01",
-  useCdn: true,
+  // Prefer fresh content so newly published admin posts appear immediately.
+  useCdn: (import.meta.env.VITE_SANITY_USE_CDN || "false") === "true",
+  perspective: "published",
 });
 
 export async function getPosts() {
-  const query = `*[_type == "post"] | order(publishedAt desc) {
+  const query = `*[
+    _type in ["post", "blog", "blogPost"] &&
+    defined(slug.current)
+  ] | order(coalesce(publishedAt, _createdAt) desc) {
     _id,
     title,
-    slug,
+    "slug": slug.current,
     excerpt,
-    coverImage,
-    "author": author->{name, avatar},
+    "coverImageUrl": coverImage.asset->url,
+    "author": author->{name, "avatarUrl": avatar.asset->url},
     publishedAt,
     "readTime": round(length(pt::text(body)) / 5 / 180 ),
     "category": category->title,
@@ -26,13 +31,16 @@ export async function getPosts() {
 }
 
 export async function getPost(slug) {
-  const query = `*[_type == "post" && slug.current == $slug][0] {
+  const query = `*[
+    _type in ["post", "blog", "blogPost"] &&
+    slug.current == $slug
+  ][0] {
     _id,
     title,
-    slug,
+    "slug": slug.current,
     excerpt,
-    coverImage,
-    "author": author->{name, avatar, bio},
+    "coverImageUrl": coverImage.asset->url,
+    "author": author->{name, "avatarUrl": avatar.asset->url, bio},
     publishedAt,
     "readTime": round(length(pt::text(body)) / 5 / 180 ),
     "category": category->{title, slug},
@@ -52,13 +60,17 @@ export async function getCategories() {
 }
 
 export async function getFeaturedPost() {
-  const query = `*[_type == "post" && featured == true][0] {
+  const query = `*[
+    _type in ["post", "blog", "blogPost"] &&
+    featured == true &&
+    defined(slug.current)
+  ][0] {
     _id,
     title,
-    slug,
+    "slug": slug.current,
     excerpt,
-    coverImage,
-    "author": author->{name, avatar},
+    "coverImageUrl": coverImage.asset->url,
+    "author": author->{name, "avatarUrl": avatar.asset->url},
     publishedAt,
     "readTime": round(length(pt::text(body)) / 5 / 180 ),
     "category": category->title
