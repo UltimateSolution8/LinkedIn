@@ -5,6 +5,8 @@ import { Check } from "lucide-react";
 import { Button } from "../ui/button";
 import { Badge } from "../ui/badge";
 import { detectUserCurrency } from "@/lib/utils/geolocation";
+import { useNavigate } from "react-router-dom";
+import { useAuth } from "@/contexts/AuthContext";
 
 const basePlans = [
   {
@@ -65,6 +67,8 @@ const basePlans = [
 
 export const PricingSection = () => {
   const [currency, setCurrency] = useState<"USD" | "INR">("USD");
+  const navigate = useNavigate();
+  const { isAuthenticated } = useAuth();
 
   useEffect(() => {
     let mounted = true;
@@ -124,11 +128,10 @@ export const PricingSection = () => {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.5, delay: index * 0.1 }}
-              className={`relative rounded-2xl border bg-card p-8 ${
-                plan.popular
-                  ? "pricing-popular border-primary/50"
-                  : "border-border/50"
-              }`}
+              className={`relative rounded-2xl border bg-card p-8 ${plan.popular
+                ? "pricing-popular border-primary/50"
+                : "border-border/50"
+                }`}
               data-testid={`pricing-card-${plan.name.toLowerCase()}`}
             >
               {plan.popular && (
@@ -165,13 +168,23 @@ export const PricingSection = () => {
               </ul>
 
               <Button
-                className={`w-full rounded-full font-medium btn-press ${
-                  plan.popular
-                    ? "glow-primary glow-primary-hover"
-                    : ""
-                }`}
+                className={`w-full rounded-full font-medium btn-press ${plan.popular
+                  ? "glow-primary glow-primary-hover"
+                  : ""
+                  }`}
                 variant={plan.popular ? "default" : "outline"}
-                data-testid={`pricing-cta-${plan.name.toLowerCase()}`}
+                onClick={() => {
+                  if (plan.cta === "Buy now") {
+                    if (isAuthenticated) {
+                      navigate("/app/onboarding");
+                    } else {
+                      navigate("/login");
+                    }
+                  } else {
+                    // For "Book a Demo" - handle appropriately if needed
+                    // or just leave as is if not part of this task
+                  }
+                }}
               >
                 {plan.cta}
               </Button>
