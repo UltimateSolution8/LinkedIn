@@ -12,6 +12,7 @@ export interface PricingPlan {
   highlightLabel?: string;
   isIntroductory?: boolean;
   buttonText?: string;
+  authorizationCharge?: number; // Authorization charge amount for trial subscriptions
 }
 
 export interface PricingResponse {

@@ -1,6 +1,8 @@
 import { AlertCircle, Sparkles, TrendingUp, Users, Clock } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { type PricingPlan } from "@/lib/api/pricing";
+import { useState } from "react";
+import TrialConfirmationDialog from "./TrialConfirmationDialog";
 
 interface SubscriptionRequiredBannerProps {
   plans: PricingPlan[];
@@ -16,8 +18,18 @@ export default function SubscriptionRequiredBanner({
   processingPayment = false
 }: SubscriptionRequiredBannerProps) {
   const plan = plans[0]; // Use first plan
+  const [showTrialDialog, setShowTrialDialog] = useState(false);
 
   if (!plan) return null;
+
+  const handleTrialClick = () => {
+    setShowTrialDialog(true);
+  };
+
+  const handleTrialConfirm = () => {
+    setShowTrialDialog(false);
+    onChoosePlan(plan, true);
+  };
 
   const missedOpportunities = [
     { icon: Users, text: "Qualified leads ready to engage" },
@@ -71,7 +83,7 @@ export default function SubscriptionRequiredBanner({
         {/* CTAs */}
         <div className="flex flex-col sm:flex-row gap-4 mb-4">
           <Button
-            onClick={() => onChoosePlan(plan, true)}
+            onClick={handleTrialClick}
             disabled={processingTrial || processingPayment}
             size="lg"
             className="w-full sm:flex-1 bg-gradient-to-r from-orange-600 to-red-600 hover:from-orange-700 hover:to-red-700 text-white font-bold px-8 py-7 rounded-xl shadow-xl shadow-orange-600/40 hover:shadow-orange-600/60 transition-all text-lg"
@@ -117,6 +129,15 @@ export default function SubscriptionRequiredBanner({
           </p>
         </div>
       </div>
+
+      {/* Trial Confirmation Dialog */}
+      <TrialConfirmationDialog
+        open={showTrialDialog}
+        onOpenChange={setShowTrialDialog}
+        onConfirm={handleTrialConfirm}
+        plan={plan}
+        isProcessing={processingTrial}
+      />
     </div>
   );
 }
