@@ -1,5 +1,6 @@
 import { Outlet } from 'react-router-dom'
 import { useAuthGuard } from '@/hooks/useAuthGuard'
+import AdminHeader from '@/components/admin/AdminHeader'
 
 export default function AdminLayout() {
   const { isLoading, isAuthorized } = useAuthGuard({
@@ -21,6 +22,7 @@ export default function AdminLayout() {
 
   return (
     <div className="min-h-screen bg-neutral-50 dark:bg-neutral-950">
+      <AdminHeader />
       <Outlet />
     </div>
   )
