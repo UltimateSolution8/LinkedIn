@@ -301,8 +301,8 @@ export default function PricingPage() {
         {
           id: "business-growth",
           name: "Business Growth",
-          currentPrice: 16.99,
-          originalPrice: 50,
+          currentPrice: 39,
+          originalPrice: 79,
           currency: "USD",
           currencySymbol: "$",
           features: [
@@ -328,8 +328,8 @@ export default function PricingPage() {
         {
           id: "business-growth",
           name: "Business Growth",
-          currentPrice: 1500,
-          originalPrice: 4500,
+          currentPrice: 1999,
+          originalPrice: 3999,
           currency: "INR",
           currencySymbol: "₹",
           features: [

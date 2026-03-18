@@ -15,6 +15,7 @@ import {
   enableProject,
   disableAllUserProjects,
   enableAllUserProjects,
+  softDeleteUser,
   type AdminUser
 } from "@/lib/api/admin";
 
@@ -163,6 +164,26 @@ export default function AdminUserDetailPage() {
     } catch (err) {
       console.error("Error enabling all user projects:", err);
       alert("Failed to enable all user projects");
+    }
+  };
+
+  const handleSoftDeleteUser = async (targetUser: AdminUser) => {
+    const confirmed = confirm(
+      `Soft delete ${targetUser.firstName} ${targetUser.lastName}? They will not be able to login and all their projects will be disabled.`
+    );
+    if (!confirmed) return;
+
+    try {
+      await softDeleteUser(targetUser.userId);
+      const userData = await getAdminUsers();
+      setUsers(userData);
+      alert("User deleted successfully");
+      if (userId) {
+        navigate("/admin/users");
+      }
+    } catch (err) {
+      console.error("Error deleting user:", err);
+      alert("Failed to delete user");
     }
   };
 
@@ -375,6 +396,17 @@ export default function AdminUserDetailPage() {
                         )}
                       </div>
                     )}
+
+                    <div className="mt-4">
+                      <Button
+                        onClick={() => handleSoftDeleteUser(user)}
+                        variant="outline"
+                        className="w-full border-red-300 dark:border-red-700 text-red-700 dark:text-red-300 hover:bg-red-50 dark:hover:bg-red-900/20"
+                      >
+                        <Ban className="w-4 h-4 mr-2" />
+                        Soft Delete User
+                      </Button>
+                    </div>
 
                     {/* Projects Section */}
                     {!user.projects || user.projects.length === 0 ? (

@@ -253,6 +253,11 @@ export interface UpdatePaymentBypassResponse {
   message: string;
 }
 
+export interface SoftDeleteUserResponse {
+  success: boolean;
+  message: string;
+}
+
 /**
  * Update payment bypass for a user (admin only)
  * Enable with end date: { enabled: true, until: "2025-12-31T23:59:59Z" }
@@ -289,6 +294,38 @@ export async function updatePaymentBypass(data: UpdatePaymentBypassRequest): Pro
     return responseData;
   } catch (error) {
     console.error("Error updating payment bypass:", error);
+    throw error;
+  }
+}
+
+/**
+ * Soft-delete user (admin only)
+ */
+export async function softDeleteUser(userId: number): Promise<SoftDeleteUserResponse> {
+  if (!RIXLY_API_BASE_URL) {
+    throw new Error(
+      "API base URL is not configured. Please set VITE_RIXLY_API_BASE_URL in your .env file."
+    );
+  }
+
+  try {
+    const response = await fetch(`${RIXLY_API_BASE_URL}/api/admin/users/${userId}/soft-delete`, {
+      method: "PATCH",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      credentials: "include",
+    });
+
+    const responseData: SoftDeleteUserResponse = await response.json();
+
+    if (!response.ok) {
+      throw new Error(responseData.message || "Failed to delete user");
+    }
+
+    return responseData;
+  } catch (error) {
+    console.error("Error soft-deleting user:", error);
     throw error;
   }
 }

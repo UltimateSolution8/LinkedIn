@@ -25,6 +25,7 @@ import {
 } from "@/lib/api/leads";
 import { useScanStatus } from "@/hooks/useScanStatus";
 import LeadDetailDrawer from "./LeadDetailDrawer";
+import GenerateCommentDialog from "@/components/dashboard/GenerateCommentDialog";
 
 interface LeadsPageProps {
   projectId: string;
@@ -77,6 +78,7 @@ export default function LeadsPage({ projectId, mode, onCountsRefresh }: LeadsPag
   const [error, setError] = useState<string | null>(null);
   const [expandedLeadId, setExpandedLeadId] = useState<number | null>(null);
   const [drawerLead, setDrawerLead] = useState<Lead | null>(null);
+  const [commentLead, setCommentLead] = useState<Lead | null>(null);
   const [actionError, setActionError] = useState<string | null>(null);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
 
@@ -533,6 +535,18 @@ export default function LeadsPage({ projectId, mode, onCountsRefresh }: LeadsPag
                     </div>
 
                     <div className="flex flex-wrap items-center gap-2">
+                      {lead.type === "ENGAGEMENT" && (
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          onClick={(event) => {
+                            event.stopPropagation();
+                            setCommentLead(lead);
+                          }}
+                        >
+                          Generate Comment
+                        </Button>
+                      )}
                       <Button
                         size="sm"
                         onClick={(event) => {
@@ -605,6 +619,15 @@ export default function LeadsPage({ projectId, mode, onCountsRefresh }: LeadsPag
         onSetFollowUp={onSetFollowUp}
         onMarkContacted={onMarkContacted}
         onArchive={onArchive}
+      />
+
+      <GenerateCommentDialog
+        isOpen={!!commentLead}
+        onOpenChange={(open) => {
+          if (!open) setCommentLead(null);
+        }}
+        leadId={commentLead ? String(commentLead.leadId) : ""}
+        postTitle={commentLead?.title ?? ""}
       />
 
       {scan.newLeadsSince > 0 && (

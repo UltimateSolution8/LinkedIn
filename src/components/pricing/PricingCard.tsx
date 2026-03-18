@@ -11,6 +11,16 @@ interface PricingCardProps {
 }
 
 export default function PricingCard({ plan, onChoosePlan, processing = false }: PricingCardProps) {
+    const formatAmount = (amount: number) => {
+        if (plan.currency === "INR") {
+            return new Intl.NumberFormat("en-IN", { maximumFractionDigits: 0 }).format(amount);
+        }
+        if (Number.isInteger(amount)) {
+            return amount.toString();
+        }
+        return amount.toFixed(2);
+    };
+
     // Hardcoded features that override plan.features
     const hardcodedFeatures = [
         "UNLIMITED *100* Posts to view",
@@ -36,10 +46,10 @@ export default function PricingCard({ plan, onChoosePlan, processing = false }: 
                     <div className="flex items-baseline gap-3 mb-2">
                         <span className="text-4xl sm:text-5xl font-bold text-gray-900">
                             {plan.currencySymbol}
-                            {plan.currency === "USD" ? "16.99" : "1,500"}
+                            {formatAmount(plan.currentPrice)}
                         </span>
                         <span className="text-2xl text-gray-400 line-through">
-                            {plan.currencySymbol} {plan.currency === "USD" ? "50" : "4,500"}
+                            {plan.currencySymbol} {formatAmount(plan.originalPrice)}
                         </span>
                     </div>
 

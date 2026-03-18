@@ -3,8 +3,10 @@ import { motion } from "framer-motion";
 import { ArrowRight, Sparkles, TrendingUp, Users } from "lucide-react";
 import { Button } from "../ui/button";
 import { Badge } from "../ui/badge";
+import { useNavigate } from "react-router-dom";
 
 export const HeroSection = () => {
+  const navigate = useNavigate();
   const stats = [
     { icon: Users, value: "10K+", label: "Active Users" },
     { icon: TrendingUp, value: "3x", label: "More Leads" },
@@ -110,9 +112,7 @@ export const HeroSection = () => {
                       size="lg"
                       className="rounded-full font-medium text-lg px-8 glow-primary glow-primary-hover btn-press bg-primary-gradient border-none text-white shadow-[0_10px_30px_rgba(30,134,141,0.3)]"
                       data-testid="hero-get-started"
-                      onClick={() =>
-                        document.getElementById("pricing")?.scrollIntoView({ behavior: "smooth" })
-                      }
+                      onClick={() => navigate("/login")}
                     >
                       Start Finding Leads
                     </Button>

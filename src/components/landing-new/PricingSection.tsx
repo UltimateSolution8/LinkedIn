@@ -1,13 +1,16 @@
 // @ts-nocheck
+import { useEffect, useMemo, useState } from "react";
 import { motion } from "framer-motion";
 import { Check } from "lucide-react";
 import { Button } from "../ui/button";
 import { Badge } from "../ui/badge";
+import { detectUserCurrency } from "@/lib/utils/geolocation";
 
-const plans = [
+const basePlans = [
   {
     name: "Starter",
-    price: "$49",
+    usdPrice: "$39",
+    inrPrice: "₹1,999",
     period: "/month",
     description: "Perfect for small teams getting started with lead gen.",
     features: [
@@ -24,7 +27,8 @@ const plans = [
   },
   {
     name: "Growth",
-    price: "$149",
+    usdPrice: "$79",
+    inrPrice: "₹3,999",
     period: "/month",
     description: "For growing teams that need more power and features.",
     features: [
@@ -41,7 +45,8 @@ const plans = [
   },
   {
     name: "Enterprise",
-    price: "Custom",
+    usdPrice: "Custom",
+    inrPrice: "Custom",
     period: "",
     description: "For large teams with advanced needs and compliance.",
     features: [
@@ -59,6 +64,33 @@ const plans = [
 ];
 
 export const PricingSection = () => {
+  const [currency, setCurrency] = useState<"USD" | "INR">("USD");
+
+  useEffect(() => {
+    let mounted = true;
+    const hydrateCurrency = async () => {
+      try {
+        const detected = await detectUserCurrency();
+        if (mounted) setCurrency(detected);
+      } catch {
+        if (mounted) setCurrency("USD");
+      }
+    };
+    void hydrateCurrency();
+    return () => {
+      mounted = false;
+    };
+  }, []);
+
+  const plans = useMemo(
+    () =>
+      basePlans.map((plan) => ({
+        ...plan,
+        price: currency === "INR" ? plan.inrPrice : plan.usdPrice,
+      })),
+    [currency]
+  );
+
   return (
     <section
       id="pricing"

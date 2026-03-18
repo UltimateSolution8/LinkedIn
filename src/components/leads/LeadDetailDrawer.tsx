@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { getLeadDetails, type Lead, type LeadDetailsResponse } from "@/lib/api/leads";
+import GenerateCommentDialog from "@/components/dashboard/GenerateCommentDialog";
 
 interface LeadDetailDrawerProps {
   open: boolean;
@@ -38,6 +39,7 @@ export default function LeadDetailDrawer({
   const [replyText, setReplyText] = useState("");
   const [replyTone, setReplyTone] = useState<"casual" | "professional" | "friendly">("friendly");
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isCommentDialogOpen, setIsCommentDialogOpen] = useState(false);
 
   useEffect(() => {
     if (!open || !lead) return;
@@ -277,6 +279,16 @@ export default function LeadDetailDrawer({
               </div>
 
               <div className="flex flex-wrap gap-2">
+                {lead.type === "ENGAGEMENT" && (
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    onClick={() => setIsCommentDialogOpen(true)}
+                    disabled={isSubmitting}
+                  >
+                    Generate Comment
+                  </Button>
+                )}
                 <Button size="sm" onClick={onSubmitContacted} disabled={isSubmitting}>
                   <CheckCircle2 className="w-4 h-4" />
                   Mark Contacted
@@ -290,6 +302,13 @@ export default function LeadDetailDrawer({
           )}
         </div>
       </SheetContent>
+
+      <GenerateCommentDialog
+        isOpen={isCommentDialogOpen}
+        onOpenChange={setIsCommentDialogOpen}
+        leadId={lead ? String(lead.leadId) : ""}
+        postTitle={lead?.title ?? ""}
+      />
     </Sheet>
   );
 }
