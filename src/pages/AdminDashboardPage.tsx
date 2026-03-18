@@ -21,6 +21,7 @@ import StatCard from "@/components/admin/StatCard";
 import TodaysLeadsTable from "@/components/admin/TodaysLeadsTable";
 import JobRunTable from "@/components/admin/JobRunTable";
 import NextJobTimer from "@/components/admin/NextJobTimer";
+import LLMCostSummaryCard from "@/components/admin/LLMCostSummaryCard";
 
 export default function AdminDashboardPage() {
   const navigate = useNavigate();
@@ -215,6 +216,11 @@ export default function AdminDashboardPage() {
           icon={Play}
           isLoading={isLoadingStats}
         />
+      </div>
+
+      {/* LLM Cost Summary */}
+      <div className="mb-8">
+        <LLMCostSummaryCard />
       </div>
 
       {/* Today's Leads Section */}
