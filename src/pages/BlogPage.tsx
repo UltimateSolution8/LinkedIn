@@ -8,6 +8,8 @@ import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { getPosts, getCategories } from "@/lib/sanity";
 
+const RIXLY_API_BASE_URL = import.meta.env.VITE_RIXLY_API_BASE_URL || "";
+
 // Sample fallback posts - used when Sanity is not configured
 const samplePosts = [
   {
@@ -220,6 +222,10 @@ export default function BlogPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [expandedPost, setExpandedPost] = useState(null);
+  const [newsletterEmail, setNewsletterEmail] = useState("");
+  const [newsletterLoading, setNewsletterLoading] = useState(false);
+  const [newsletterMessage, setNewsletterMessage] = useState("");
+  const [newsletterError, setNewsletterError] = useState("");
   
   const postsPerPage = 6;
   const normalizeSlug = (value) => String(value || "").replace(/^\/+/, "").trim();
@@ -334,6 +340,53 @@ export default function BlogPage() {
     setExpandedPost(post);
     navigate(`/blog/${normalizedSlug}`);
     window.scrollTo({ top: 0, behavior: "smooth" });
+  };
+
+  const handleNewsletterSubscribe = async (event) => {
+    event.preventDefault();
+
+    const email = newsletterEmail.trim().toLowerCase();
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      setNewsletterError("Please enter a valid email address");
+      setNewsletterMessage("");
+      return;
+    }
+
+    if (!RIXLY_API_BASE_URL) {
+      setNewsletterError("Newsletter service is not configured.");
+      setNewsletterMessage("");
+      return;
+    }
+
+    setNewsletterLoading(true);
+    setNewsletterError("");
+    setNewsletterMessage("");
+    try {
+      const response = await fetch(`${RIXLY_API_BASE_URL}/api/public/newsletter`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        credentials: "include",
+        body: JSON.stringify({
+          email,
+          source: "blog_newsletter",
+        }),
+      });
+
+      const payload = await response.json().catch(() => ({}));
+      if (!response.ok) {
+        throw new Error(payload?.message || "Failed to subscribe");
+      }
+
+      setNewsletterMessage("Subscribed successfully. We’ll keep you updated.");
+      setNewsletterEmail("");
+    } catch (subscribeError) {
+      setNewsletterError(subscribeError instanceof Error ? subscribeError.message : "Failed to subscribe");
+    } finally {
+      setNewsletterLoading(false);
+    }
   };
 
   const renderPostContent = (body, excerpt) => {
@@ -790,16 +843,28 @@ export default function BlogPage() {
           <p className="text-teal-100 max-w-2xl mx-auto mb-6">
             Subscribe to our newsletter and get the latest articles, tips, and strategies delivered straight to your inbox.
           </p>
-          <div className="flex flex-col sm:flex-row gap-4 justify-center max-w-md mx-auto">
+          <form onSubmit={handleNewsletterSubscribe} className="flex flex-col sm:flex-row gap-4 justify-center max-w-md mx-auto">
             <Input
               type="email"
               placeholder="Enter your email"
+              value={newsletterEmail}
+              onChange={(event) => setNewsletterEmail(event.target.value)}
               className="h-12 bg-white/10 border-white/20 text-white placeholder:text-white/60 backdrop-blur-sm"
             />
-            <Button className="h-12 bg-white text-primary hover:bg-white/90 font-medium px-8">
-              Subscribe
+            <Button
+              type="submit"
+              disabled={newsletterLoading}
+              className="h-12 bg-white text-primary hover:bg-white/90 font-medium px-8 disabled:opacity-70"
+            >
+              {newsletterLoading ? "Subscribing..." : "Subscribe"}
             </Button>
-          </div>
+          </form>
+          {newsletterMessage && (
+            <p className="mt-4 text-sm text-teal-100">{newsletterMessage}</p>
+          )}
+          {newsletterError && (
+            <p className="mt-4 text-sm text-red-100">{newsletterError}</p>
+          )}
         </motion.div>
       </div>
     </div>
