@@ -1,4 +1,4 @@
-import { useParams } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 import { useState } from "react";
 import { useProject } from "@/contexts/ProjectContext";
 import { useDashboardData } from "@/hooks/useDashboardData";
@@ -16,6 +16,17 @@ import { getPricingPlans, type PricingPlan, createSubscription as createPricingS
 import { detectUserCurrency } from "@/lib/utils/geolocation";
 import { getSubscriptionStatusCached } from "@/lib/utils/subscription";
 import { useEffect } from "react";
+import { Button } from "@/components/ui/button";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { useDashboardSiteTour } from "@/hooks/useDashboardSiteTour";
+import DashboardSiteTour from "@/components/tour/DashboardSiteTour";
 
 /**
  * DashboardView - Stats Dashboard
@@ -31,6 +42,14 @@ import { useEffect } from "react";
 export default function DashboardView() {
   const { projectId } = useParams<{ projectId: string }>();
   const { projects, isLoading: projectsLoading } = useProject();
+  const {
+    shouldAutoPrompt,
+    markPromptSeen,
+    markNotNow,
+    markDontShowAgain,
+    markTourDismissed,
+    markTourCompleted,
+  } = useDashboardSiteTour();
 
   // Fetch dashboard data with auto-polling
   const { data: dashboardData, isLoading: dashboardLoading, error } = useDashboardData({
@@ -51,6 +70,8 @@ export default function DashboardView() {
   const [pricingPlans, setPricingPlans] = useState<PricingPlan[]>([]);
   const [processingTrial, setProcessingTrial] = useState(false);
   const [processingPayment, setProcessingPayment] = useState(false);
+  const [isTourPromptOpen, setIsTourPromptOpen] = useState(false);
+  const [isTourOpen, setIsTourOpen] = useState(false);
 
   // Fetch project stats (only when scanning is completed)
   const isCompleted = scanningStatus?.stage === 'completed';
@@ -75,6 +96,12 @@ export default function DashboardView() {
 
     fetchPlans();
   }, [hasSubscriptionAccess]);
+
+  useEffect(() => {
+    if (shouldAutoPrompt) {
+      setIsTourPromptOpen(true);
+    }
+  }, [shouldAutoPrompt]);
 
   const handleChoosePlan = async (plan: PricingPlan, isTrial: boolean) => {
     try {
@@ -144,6 +171,21 @@ export default function DashboardView() {
     };
   };
 
+  const startTour = () => {
+    markPromptSeen();
+    setIsTourPromptOpen(false);
+    setIsTourOpen(true);
+  };
+
+  const handleTourClose = (completed: boolean) => {
+    setIsTourOpen(false);
+    if (completed) {
+      markTourCompleted();
+    } else {
+      markTourDismissed();
+    }
+  };
+
   // Show empty state if user has no projects
   if (!projectsLoading && projects.length === 0) {
     return (
@@ -200,6 +242,32 @@ export default function DashboardView() {
 
   return (
     <div className="p-4 lg:p-8">
+      <div
+        data-tour="dashboard"
+        className="mb-6 p-4 lg:p-5 rounded-xl border border-neutral-200 dark:border-neutral-800 bg-white dark:bg-neutral-900"
+      >
+        <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+          <div>
+            <h1 className="text-xl lg:text-2xl font-semibold text-neutral-900 dark:text-white">Dashboard overview</h1>
+            <p className="text-sm text-neutral-600 dark:text-neutral-400">Track performance and move quickly across key workflows.</p>
+          </div>
+          <div className="flex flex-wrap items-center gap-2">
+            <Button asChild variant="outline" className="rounded-lg" data-tour="leads">
+              <Link to={`/app/${projectId}/leads`}>Leads</Link>
+            </Button>
+            <Button asChild variant="outline" className="rounded-lg" data-tour="opportunities">
+              <Link to={`/app/${projectId}/opportunities`}>Opportunities</Link>
+            </Button>
+            <Button asChild variant="outline" className="rounded-lg" data-tour="settings">
+              <Link to={`/app/${projectId}/settings`}>Settings</Link>
+            </Button>
+            <Button onClick={startTour} className="rounded-lg bg-primary hover:bg-primary/90 text-white">
+              Take a site tour
+            </Button>
+          </div>
+        </div>
+      </div>
+
       {/* Scanning Banner - only show during scanning */}
       {isScanning && dashboardData && (
         <ScanningBanner scanProgress={scanProgress} />
@@ -260,6 +328,42 @@ export default function DashboardView() {
           )}
         </div>
       )}
+
+      <Dialog open={isTourPromptOpen} onOpenChange={setIsTourPromptOpen}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>Quick dashboard tour</DialogTitle>
+            <DialogDescription>
+              See a short walkthrough of Dashboard, Leads, Opportunities, and Settings.
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter className="flex-col gap-2 sm:flex-row sm:justify-end">
+            <Button
+              variant="outline"
+              onClick={() => {
+                markDontShowAgain();
+                setIsTourPromptOpen(false);
+              }}
+            >
+              Don&apos;t show again
+            </Button>
+            <Button
+              variant="ghost"
+              onClick={() => {
+                markNotNow();
+                setIsTourPromptOpen(false);
+              }}
+            >
+              Not now
+            </Button>
+            <Button onClick={startTour} className="bg-primary hover:bg-primary/90 text-white">
+              Take a site tour
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      <DashboardSiteTour isOpen={isTourOpen} onClose={handleTourClose} />
     </div>
   );
 }
