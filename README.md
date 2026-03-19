@@ -35,3 +35,19 @@ The easiest way to deploy your Next.js app is to use the [Vercel Platform](https
 
 Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
 
+## Sanity CORS Allowlist
+
+To allow local/staging/production frontend origins to query Sanity directly:
+
+```bash
+SANITY_AUTH_TOKEN=your_sanity_token npm run sanity:cors:allowlist
+```
+
+Optional overrides:
+
+```bash
+SANITY_PROJECT_ID=9iae1qca \
+SANITY_CORS_ORIGINS="http://localhost:3000,https://staging.rixly.com,https://rixly.com" \
+SANITY_AUTH_TOKEN=your_sanity_token \
+npm run sanity:cors:allowlist
+```

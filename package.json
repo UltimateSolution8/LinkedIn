@@ -7,7 +7,8 @@
     "dev": "vite",
     "build": "tsc && vite build",
     "preview": "vite preview",
-    "lint": "eslint src --ext ts,tsx"
+    "lint": "eslint src --ext ts,tsx",
+    "sanity:cors:allowlist": "node scripts/sanity-cors-allowlist.mjs"
   },
   "dependencies": {
     "@formspree/react": "^3.0.0",

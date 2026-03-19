@@ -2,6 +2,8 @@
 import { createClient } from "@sanity/client";
 import imageUrlBuilder from "@sanity/image-url";
 
+const RIXLY_API_BASE_URL = import.meta.env.VITE_RIXLY_API_BASE_URL || "";
+
 export const sanityClient = createClient({
   projectId: import.meta.env.VITE_SANITY_PROJECT_ID || "9iae1qca",
   dataset: import.meta.env.VITE_SANITY_DATASET || "production",
@@ -11,7 +13,29 @@ export const sanityClient = createClient({
   perspective: "published",
 });
 
+async function fetchFromBackend(endpoint: string) {
+  if (!RIXLY_API_BASE_URL) return null;
+
+  try {
+    const response = await fetch(`${RIXLY_API_BASE_URL}/api/public/${endpoint}`, {
+      credentials: "include",
+    });
+
+    if (!response.ok) return null;
+    const payload = await response.json();
+    return payload?.data ?? null;
+  } catch (error) {
+    console.warn(`Backend proxy fetch failed for ${endpoint}:`, error);
+    return null;
+  }
+}
+
 export async function getPosts() {
+  const proxied = await fetchFromBackend("blog-posts");
+  if (Array.isArray(proxied)) {
+    return proxied;
+  }
+
   const query = `*[
     _type in ["post", "blog", "blogPost"] &&
     defined(slug.current)
@@ -51,6 +75,11 @@ export async function getPost(slug) {
 }
 
 export async function getCategories() {
+  const proxied = await fetchFromBackend("blog-categories");
+  if (Array.isArray(proxied)) {
+    return proxied;
+  }
+
   const query = `*[_type == "category"] | order(title asc) {
     _id,
     title,
