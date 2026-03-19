@@ -12,7 +12,6 @@ import AppLayout from '@/layouts/AppLayout'
 
 // Pages
 import HomePage from '@/pages/HomePage'
-import PricingPage from '@/pages/PricingPage'
 import ContactUsPage from '@/pages/ContactUsPage'
 import RequestDemoPage from '@/pages/RequestDemoPage'
 import PrivacyPolicyPage from '@/pages/policies/PrivacyPolicyPage'
@@ -59,7 +58,7 @@ export default function AppRouter() {
 
         {/* Public Routes with Home Layout */}
         <Route element={<HomeLayout />}>
-          <Route path="/pricing" element={<PricingPage />} />
+          <Route path="/pricing" element={<Navigate to="/#pricing" replace />} />
           <Route path="/contactus" element={<ContactUsPage />} />
           <Route path="/request-demo" element={<RequestDemoPage />} />
           <Route path="/policies/privacy" element={<PrivacyPolicyPage />} />

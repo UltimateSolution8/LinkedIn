@@ -1,10 +1,11 @@
 // @ts-nocheck
 import { useEffect, useMemo, useState } from "react";
 import { motion } from "framer-motion";
-import { Check } from "lucide-react";
+import { Check, Loader2 } from "lucide-react";
 import { Button } from "../ui/button";
 import { Badge } from "../ui/badge";
 import { detectUserCurrency } from "@/lib/utils/geolocation";
+import { getPricingPlans, type PricingPlan } from "@/lib/api/pricing";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 
@@ -67,33 +68,78 @@ const basePlans = [
 
 export const PricingSection = () => {
   const [currency, setCurrency] = useState<"USD" | "INR">("USD");
+  const [apiPlans, setApiPlans] = useState<PricingPlan[]>([]);
+  const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
   const { isAuthenticated } = useAuth();
 
   useEffect(() => {
     let mounted = true;
-    const hydrateCurrency = async () => {
+    const initializePricing = async () => {
       try {
         const detected = await detectUserCurrency();
         if (mounted) setCurrency(detected);
-      } catch {
-        if (mounted) setCurrency("USD");
+
+        // Fetch plans from API
+        const fetchedPlans = await getPricingPlans(detected);
+        if (mounted) setApiPlans(fetchedPlans);
+      } catch (error) {
+        console.error("Error fetching pricing:", error);
+        // Will use fallback basePlans
+      } finally {
+        if (mounted) setLoading(false);
       }
     };
-    void hydrateCurrency();
+    void initializePricing();
     return () => {
       mounted = false;
     };
   }, []);
 
-  const plans = useMemo(
-    () =>
-      basePlans.map((plan) => ({
-        ...plan,
-        price: currency === "INR" ? plan.inrPrice : plan.usdPrice,
-      })),
-    [currency]
-  );
+  const formatPrice = (price: number) => {
+    if (currency === "INR") {
+      // Format INR with Indian number system (e.g., 1,999 or 99,999)
+      return new Intl.NumberFormat("en-IN", {
+        maximumFractionDigits: 0,
+        minimumFractionDigits: 0
+      }).format(price);
+    }
+    // Format USD nicely
+    return Number.isInteger(price) ? price.toLocaleString('en-US') : price.toFixed(2);
+  };
+
+  const plans = useMemo(() => {
+    // If we have API plans, merge them with base plan features
+    if (apiPlans.length > 0) {
+      // Map API plans to display format, using basePlans for features (first two plans)
+      const apiBasedPlans = apiPlans.map((apiPlan, index) => {
+        const basePlan = basePlans[index] || basePlans[0]; // fallback to first plan
+        return {
+          name: apiPlan.name,
+          price: `${apiPlan.currencySymbol}${formatPrice(apiPlan.currentPrice)}`,
+          period: `/${apiPlan.interval}`,
+          description: apiPlan.description || basePlan.description,
+          features: basePlan.features, // Keep hardcoded features
+          cta: basePlan.cta,
+          popular: basePlan.popular,
+        };
+      });
+
+      // Always add the Enterprise custom plan as the third option
+      const enterprisePlan = {
+        ...basePlans[2], // Enterprise is always the third plan
+        price: currency === "INR" ? basePlans[2].inrPrice : basePlans[2].usdPrice,
+      };
+
+      return [...apiBasedPlans, enterprisePlan];
+    }
+
+    // Fallback to base plans with currency formatting
+    return basePlans.map((plan) => ({
+      ...plan,
+      price: currency === "INR" ? plan.inrPrice : plan.usdPrice,
+    }));
+  }, [apiPlans, currency]);
 
   return (
     <section
@@ -120,52 +166,58 @@ export const PricingSection = () => {
           </p>
         </motion.div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8">
-          {plans.map((plan, index) => (
-            <motion.div
-              key={plan.name}
-              initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.5, delay: index * 0.1 }}
-              className={`relative rounded-2xl border bg-card p-8 ${plan.popular
-                ? "pricing-popular border-primary/50"
-                : "border-border/50"
+        {loading ? (
+          <div className="flex justify-center items-center py-20">
+            <Loader2 className="w-8 h-8 animate-spin text-primary" />
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8">
+            {plans.map((plan, index) => (
+              <motion.div
+                key={plan.name}
+                initial={{ opacity: 0, y: 30 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.5, delay: index * 0.1 }}
+                className={`relative rounded-2xl border bg-card p-8 ${
+                  plan.popular
+                    ? "pricing-popular border-primary/50"
+                    : "border-border/50"
                 }`}
-              data-testid={`pricing-card-${plan.name.toLowerCase()}`}
-            >
-              {plan.popular && (
-                <Badge className="absolute -top-3 left-1/2 -translate-x-1/2 bg-primary text-primary-foreground px-4">
-                  Most Popular
-                </Badge>
-              )}
+                data-testid={`pricing-card-${plan.name.toLowerCase()}`}
+              >
+                {plan.popular && (
+                  <Badge className="absolute -top-3 left-1/2 -translate-x-1/2 bg-primary text-primary-foreground px-4">
+                    Most Popular
+                  </Badge>
+                )}
 
-              <div className="mb-6">
-                <h3 className="font-heading font-semibold text-xl mb-2">
-                  {plan.name}
-                </h3>
-                <p className="text-sm text-muted-foreground">
-                  {plan.description}
-                </p>
-              </div>
+                <div className="mb-6">
+                  <h3 className="font-heading font-semibold text-xl mb-2">
+                    {plan.name}
+                  </h3>
+                  <p className="text-sm text-muted-foreground">
+                    {plan.description}
+                  </p>
+                </div>
 
-              <div className="mb-6">
-                <span className="font-heading text-5xl font-bold">
-                  {plan.price}
-                </span>
-                <span className="text-muted-foreground">{plan.period}</span>
-              </div>
+                <div className="mb-6">
+                  <span className="font-heading text-5xl font-bold">
+                    {plan.price}
+                  </span>
+                  <span className="text-muted-foreground">{plan.period}</span>
+                </div>
 
-              <ul className="space-y-3 mb-8">
-                {plan.features.map((feature) => (
-                  <li key={feature} className="flex items-start gap-3">
-                    <div className="w-5 h-5 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0 mt-0.5">
-                      <Check className="w-3 h-3 text-primary" />
-                    </div>
-                    <span className="text-sm">{feature}</span>
-                  </li>
-                ))}
-              </ul>
+                <ul className="space-y-3 mb-8">
+                  {plan.features.map((feature) => (
+                    <li key={feature} className="flex items-start gap-3">
+                      <div className="w-5 h-5 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0 mt-0.5">
+                        <Check className="w-3 h-3 text-primary" />
+                      </div>
+                      <span className="text-sm">{feature}</span>
+                    </li>
+                  ))}
+                </ul>
 
               <Button
                 className={`w-full rounded-full font-medium btn-press ${plan.popular

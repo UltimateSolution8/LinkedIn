@@ -21,6 +21,20 @@ export default function PricingCard({ plan, onChoosePlan, processing = false }: 
         return amount.toFixed(2);
     };
 
+    // Calculate discount percentage if originalPrice is available
+    const discountPercentage = plan.originalPrice
+        ? Math.round(((plan.originalPrice - plan.currentPrice) / plan.originalPrice) * 100)
+        : null;
+
+    // Format interval display (e.g., "per month", "per 3 months", "per year")
+    const getIntervalDisplay = () => {
+        if (!plan.interval) return "";
+        const intervalText = plan.intervalCount > 1
+            ? `${plan.intervalCount} ${plan.interval}s`
+            : plan.interval;
+        return `per ${intervalText}`;
+    };
+
     // Hardcoded features that override plan.features
     const hardcodedFeatures = [
         "UNLIMITED *100* Posts to view",
@@ -43,21 +57,30 @@ export default function PricingCard({ plan, onChoosePlan, processing = false }: 
 
                 {/* Pricing Section */}
                 <div className="mb-3">
-                    <div className="flex items-baseline gap-3 mb-2">
+                    <div className="flex items-baseline gap-2 mb-2">
                         <span className="text-4xl sm:text-5xl font-bold text-gray-900">
                             {plan.currencySymbol}
                             {formatAmount(plan.currentPrice)}
                         </span>
-                        <span className="text-2xl text-gray-400 line-through">
-                            {plan.currencySymbol} {formatAmount(plan.originalPrice)}
-                        </span>
+                        {plan.interval && (
+                            <span className="text-base text-gray-600">
+                                {getIntervalDisplay()}
+                            </span>
+                        )}
+                        {plan.originalPrice && (
+                            <span className="text-2xl text-gray-400 line-through ml-1">
+                                {plan.currencySymbol}{formatAmount(plan.originalPrice)}
+                            </span>
+                        )}
                     </div>
 
                     {/* Subtitle - Offer Info */}
-                    <div className="space-y-0.5">
-                        <p className="text-xs font-medium text-teal-600 uppercase tracking-wide">Introductory Offer for Limited Period</p>
-                        <p className="text-sm font-bold text-orange-600">Flat 67% off</p>
-                    </div>
+                    {plan.isIntroductory && discountPercentage && (
+                        <div className="space-y-0.5">
+                            <p className="text-xs font-medium text-teal-600 uppercase tracking-wide">Introductory Offer for Limited Period</p>
+                            <p className="text-sm font-bold text-orange-600">Flat {discountPercentage}% off</p>
+                        </div>
+                    )}
                 </div>
 
                 {/* Highlight Feature */}

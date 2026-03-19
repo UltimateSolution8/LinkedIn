@@ -3,10 +3,13 @@ const RIXLY_API_BASE_URL = import.meta.env.VITE_RIXLY_API_BASE_URL;
 export interface PricingPlan {
   id: string;
   name: string;
+  description?: string;
   currentPrice: number;
-  originalPrice: number;
+  originalPrice?: number; // Optional, for frontend compatibility
   currency: string;
   currencySymbol: string;
+  interval: string; // "month", "year", etc.
+  intervalCount: number; // 1, 3, 6, 12, etc.
   features: string[];
   highlightNumber?: number;
   highlightLabel?: string;
@@ -16,6 +19,7 @@ export interface PricingPlan {
 }
 
 export interface PricingResponse {
+  success: boolean;
   plans: PricingPlan[];
   message?: string;
 }
@@ -62,7 +66,7 @@ export interface SubscriptionPaymentVerificationResponse {
  */
 export async function getPricingPlans(currency: string = "USD"): Promise<PricingPlan[]> {
   try {
-    const response = await fetch(`${RIXLY_API_BASE_URL}/api/pricing/plans?currency=${currency}`, {
+    const response = await fetch(`${RIXLY_API_BASE_URL}/api/pricing/plans?currency=INR`, {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
@@ -71,7 +75,7 @@ export async function getPricingPlans(currency: string = "USD"): Promise<Pricing
 
     const responseData: PricingResponse = await response.json();
 
-    if (!response.ok) {
+    if (!response.ok || !responseData.success) {
       throw new Error(responseData.message || "Failed to fetch pricing plans");
     }
 
