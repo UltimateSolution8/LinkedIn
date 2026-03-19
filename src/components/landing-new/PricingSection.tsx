@@ -1,4 +1,3 @@
-// @ts-nocheck
 import { useEffect, useMemo, useState } from "react";
 import { motion } from "framer-motion";
 import { Check, Loader2 } from "lucide-react";
@@ -243,6 +242,7 @@ export const PricingSection = () => {
             </motion.div>
           ))}
         </div>
+        )}
       </div>
     </section>
   );

@@ -299,7 +299,7 @@ export default function PricingPage() {
     if (currency === "USD") {
       return [
         {
-          id: "business-growth-fallback",
+          id: "business-growth",
           name: "Business Growth",
           currentPrice: 39,
           originalPrice: 79,
@@ -317,7 +317,7 @@ export default function PricingPage() {
     } else {
       return [
         {
-          id: "business-growth-fallback",
+          id: "business-growth",
           name: "Business Growth",
           currentPrice: 1999,
           originalPrice: 3999,

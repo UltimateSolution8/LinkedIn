@@ -313,6 +313,8 @@ export default function AuthPricingPage() {
           originalPrice: 79,
           currency: "USD",
           currencySymbol: "$",
+          interval: "month",
+          intervalCount: 1,
           features: [
             "Introductory Offer for Limited Period",
             "Flat 67% off",
@@ -340,6 +342,8 @@ export default function AuthPricingPage() {
           originalPrice: 3999,
           currency: "INR",
           currencySymbol: "₹",
+          interval: "month",
+          intervalCount: 1,
           features: [
             "Introductory Offer for Limited Period",
             "Flat 67% off",

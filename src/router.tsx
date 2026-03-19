@@ -101,8 +101,8 @@ export default function AppRouter() {
         {/* Redirect /app to appropriate location */}
         <Route path="/app" element={<ProjectProviderWrapper><DashboardRedirect /></ProjectProviderWrapper>} />
 
-        {/* Onboarding (no guard needed - for users with 0 projects) */}
-        <Route path="/app/onboarding" element={<OnboardingPage />} />
+        {/* Onboarding (redirects to dashboard if user has projects) */}
+        <Route path="/app/onboarding" element={<ProjectProviderWrapper><OnboardingPage /></ProjectProviderWrapper>} />
 
         {/* App routes with project guard */}
         <Route element={<ProjectProviderWrapper><ProjectRouteGuard><AppLayout /></ProjectRouteGuard></ProjectProviderWrapper>}>

@@ -11,6 +11,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Plus } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
+import { useProject } from "@/contexts/ProjectContext";
 
 /**
  * Onboarding page for users with zero projects
@@ -18,15 +19,25 @@ import { useAuth } from "@/contexts/AuthContext";
  */
 export default function OnboardingPage() {
   const navigate = useNavigate();
-  const { user: currentUser, isLoading, isAuthenticated, logout } = useAuth();
+  const { user: currentUser, isLoading: authLoading, isAuthenticated, logout } = useAuth();
+  const { projects, isLoading: projectsLoading } = useProject();
 
+  // Redirect if not authenticated
   useEffect(() => {
-    if (!isLoading && !isAuthenticated) {
+    if (!authLoading && !isAuthenticated) {
       navigate("/login");
     }
-  }, [isLoading, isAuthenticated, navigate]);
+  }, [authLoading, isAuthenticated, navigate]);
 
-  if (isLoading) {
+  // Redirect if user has projects
+  useEffect(() => {
+    if (!projectsLoading && !authLoading && isAuthenticated && projects.length > 0) {
+      const firstProjectId = projects[0]._id;
+      navigate(`/app/${firstProjectId}/dashboard`, { replace: true });
+    }
+  }, [projectsLoading, authLoading, isAuthenticated, projects, navigate]);
+
+  if (authLoading || projectsLoading) {
     return (
       <div className="flex items-center justify-center h-screen bg-neutral-50 dark:bg-neutral-900">
         <div className="text-center">

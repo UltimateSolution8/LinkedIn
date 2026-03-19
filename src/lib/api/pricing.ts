@@ -66,7 +66,7 @@ export interface SubscriptionPaymentVerificationResponse {
  */
 export async function getPricingPlans(currency: string = "USD"): Promise<PricingPlan[]> {
   try {
-    const response = await fetch(`${RIXLY_API_BASE_URL}/api/pricing/plans?currency=INR`, {
+    const response = await fetch(`${RIXLY_API_BASE_URL}/api/pricing/plans?currency=${currency}`, {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
