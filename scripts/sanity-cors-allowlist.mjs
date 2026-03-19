@@ -17,10 +17,11 @@ const defaultOrigins = [
   "http://localhost:3000",
   "http://localhost:5173",
   "http://127.0.0.1:4173",
-  "https://staging.rixly.com",
-  "https://rixly.com",
-  "https://www.rixly.com",
+  "https://staging.userixly.com",
+  "https://userixly.com",
+  "https://www.userixly.com",
 ];
+const allowCredentials = (process.env.SANITY_CORS_ALLOW_CREDENTIALS || "false").toLowerCase() === "true";
 
 const origins = (process.env.SANITY_CORS_ORIGINS || defaultOrigins.join(","))
   .split(",")
@@ -68,7 +69,7 @@ async function run() {
       method: "POST",
       body: JSON.stringify({
         origin,
-        allowCredentials: true,
+        allowCredentials,
       }),
     });
 

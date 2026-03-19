@@ -47,7 +47,7 @@ Optional overrides:
 
 ```bash
 SANITY_PROJECT_ID=9iae1qca \
-SANITY_CORS_ORIGINS="http://localhost:3000,https://staging.rixly.com,https://rixly.com" \
+SANITY_CORS_ORIGINS="http://localhost:3000,https://staging.userixly.com,https://userixly.com,https://www.userixly.com" \
 SANITY_AUTH_TOKEN=your_sanity_token \
 npm run sanity:cors:allowlist
 ```
