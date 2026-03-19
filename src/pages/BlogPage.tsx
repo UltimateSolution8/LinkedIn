@@ -200,6 +200,14 @@ const samplePosts = [
 ];
 
 const defaultCategories = ["All", "Lead Generation", "AI & Automation", "Sales", "Marketing", "Strategy"];
+const fallbackCoverImages = [
+  "https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=1200&auto=format&fit=crop&q=70",
+  "https://images.unsplash.com/photo-1553877522-43269d4ea984?w=1200&auto=format&fit=crop&q=70",
+  "https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?w=1200&auto=format&fit=crop&q=70",
+  "https://images.unsplash.com/photo-1552664730-d307ca884978?w=1200&auto=format&fit=crop&q=70",
+  "https://images.unsplash.com/photo-1551434678-e076c223a692?w=1200&auto=format&fit=crop&q=70",
+  "https://images.unsplash.com/photo-1559136555-9303baea8ebd?w=1200&auto=format&fit=crop&q=70",
+];
 
 export default function BlogPage() {
   const { slug } = useParams();
@@ -239,7 +247,7 @@ export default function BlogPage() {
             slug: normalizedSlug,
           title: post.title,
           excerpt: post.excerpt,
-          coverImage: post.coverImageUrl || samplePosts[0]?.coverImage || "",
+          coverImage: post.coverImageUrl || fallbackCoverImages[index % fallbackCoverImages.length],
           author: {
             name: post.author?.name || "Unknown Author",
             avatar: post.author?.avatarUrl || "",
@@ -328,6 +336,108 @@ export default function BlogPage() {
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
+  const renderPostContent = (body, excerpt) => {
+    if (typeof body === "string" && body.trim().length > 0) {
+      return (
+        <div
+          className="prose prose-lg max-w-none dark:prose-invert"
+          dangerouslySetInnerHTML={{ __html: body }}
+        />
+      );
+    }
+
+    if (Array.isArray(body) && body.length > 0) {
+      const nodes = [];
+      let listType = null;
+      let listItems = [];
+      let listIndex = 0;
+
+      const flushList = () => {
+        if (!listType || listItems.length === 0) return;
+        if (listType === "ol") {
+          nodes.push(
+            <ol key={`ol-${listIndex}`} className="list-decimal pl-6 my-4 space-y-2">
+              {listItems}
+            </ol>
+          );
+        } else {
+          nodes.push(
+            <ul key={`ul-${listIndex}`} className="list-disc pl-6 my-4 space-y-2">
+              {listItems}
+            </ul>
+          );
+        }
+        listType = null;
+        listItems = [];
+        listIndex += 1;
+      };
+
+      body.forEach((block, index) => {
+        if (block?._type !== "block") return;
+        const text = (block.children || [])
+          .map((child) => child?.text || "")
+          .join("")
+          .trim();
+        if (!text) return;
+
+        if (block.listItem) {
+          const currentListType = block.listItem === "number" ? "ol" : "ul";
+          if (listType && listType !== currentListType) flushList();
+          listType = currentListType;
+          listItems.push(<li key={`li-${index}`}>{text}</li>);
+          return;
+        }
+
+        flushList();
+
+        if (block.style === "h2") {
+          nodes.push(
+            <h2 key={`h2-${index}`} className="text-2xl font-bold mt-10 mb-4">
+              {text}
+            </h2>
+          );
+          return;
+        }
+
+        if (block.style === "h3") {
+          nodes.push(
+            <h3 key={`h3-${index}`} className="text-xl font-semibold mt-8 mb-3">
+              {text}
+            </h3>
+          );
+          return;
+        }
+
+        if (block.style === "blockquote") {
+          nodes.push(
+            <blockquote key={`quote-${index}`} className="border-l-4 border-primary/40 pl-4 italic my-4 text-slate-700 dark:text-slate-300">
+              {text}
+            </blockquote>
+          );
+          return;
+        }
+
+        nodes.push(
+          <p key={`p-${index}`} className="my-4 leading-8 text-slate-700 dark:text-slate-300">
+            {text}
+          </p>
+        );
+      });
+
+      flushList();
+
+      if (nodes.length > 0) {
+        return <div className="prose prose-lg max-w-none dark:prose-invert">{nodes}</div>;
+      }
+    }
+
+    return (
+      <div className="prose prose-lg max-w-none dark:prose-invert">
+        <p>{excerpt || ""}</p>
+      </div>
+    );
+  };
+
   if (loading) {
     return (
       <div className="min-h-screen bg-slate-50 dark:bg-slate-900 flex items-center justify-center">
@@ -396,10 +506,7 @@ export default function BlogPage() {
             </div>
             
             {/* Blog Content */}
-            <div 
-              className="prose prose-lg max-w-none dark:prose-invert"
-              dangerouslySetInnerHTML={{ __html: expandedPost.body || expandedPost.excerpt }}
-            />
+            {renderPostContent(expandedPost.body, expandedPost.excerpt)}
             
             {/* CTA */}
             <div className="mt-12 pt-8 border-t">
