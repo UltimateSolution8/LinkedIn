@@ -214,22 +214,14 @@ export default function BlogPage() {
   const [expandedPost, setExpandedPost] = useState(null);
   
   const postsPerPage = 6;
+  const normalizeSlug = (value) => String(value || "").replace(/^\/+/, "").trim();
 
   // Check if Sanity is configured and fetch data
   useEffect(() => {
     async function fetchData() {
-      const projectId = import.meta.env.VITE_SANITY_PROJECT_ID;
-      const hasSanityConfig = !!projectId && projectId !== "your-project-id";
-
       try {
-        if (!hasSanityConfig) {
-          // Use sample data if Sanity is not configured in this environment.
-          setPosts(samplePosts);
-          setCategories(defaultCategories);
-          return;
-        }
-
         // Fetch posts from Sanity first (required).
+        // sanityClient already includes safe project/dataset fallbacks.
         const postsData = await getPosts();
 
         // Fetch categories separately (optional). A category query failure should not hide all posts.
@@ -240,9 +232,11 @@ export default function BlogPage() {
           console.warn("Sanity categories fetch failed; deriving categories from posts.", categoryError);
         }
 
-        const transformedPosts = (postsData || []).map((post, index) => ({
-          id: post._id || index + 1,
-          slug: post.slug || `post-${index}`,
+        const transformedPosts = (postsData || []).map((post, index) => {
+          const normalizedSlug = normalizeSlug(post.slug || `post-${index}`);
+          return {
+            id: post._id || index + 1,
+            slug: normalizedSlug,
           title: post.title,
           excerpt: post.excerpt,
           coverImage: post.coverImageUrl || samplePosts[0]?.coverImage || "",
@@ -255,7 +249,8 @@ export default function BlogPage() {
           category: post.category || "Uncategorized",
           featured: !!post.featured,
           body: post.body || "",
-        }));
+          };
+        }).filter((post) => post.slug.length > 0 && post.title);
 
         const categoryFromPosts = Array.from(
           new Set(transformedPosts.map((post) => post.category).filter(Boolean))
@@ -265,20 +260,22 @@ export default function BlogPage() {
           new Set([...categoryFromSanity, ...categoryFromPosts])
         );
 
+        if (transformedPosts.length === 0) {
+          console.warn("Sanity returned no publishable posts. Falling back to sample content.");
+          setPosts(samplePosts);
+          setCategories(defaultCategories);
+          return;
+        }
+
         setPosts(transformedPosts);
         setCategories(["All", ...(mergedCategories.length > 0 ? mergedCategories : defaultCategories.slice(1))]);
       } catch (err) {
         console.error("Error fetching from Sanity:", err);
-        setError("Failed to load blog posts from Sanity.");
+        setError("Failed to load blog posts from Sanity. Showing fallback content.");
 
-        if (hasSanityConfig) {
-          // Keep state truthful when Sanity is configured but unavailable.
-          setPosts([]);
-          setCategories(["All"]);
-        } else {
-          setPosts(samplePosts);
-          setCategories(defaultCategories);
-        }
+        // Always provide visible content fallback on runtime/API failures.
+        setPosts(samplePosts);
+        setCategories(defaultCategories);
       } finally {
         setLoading(false);
       }
@@ -290,7 +287,8 @@ export default function BlogPage() {
   // Handle slug parameter from URL
   useEffect(() => {
     if (slug && posts.length > 0) {
-      const post = posts.find(p => p.slug === slug);
+      const normalizedSlug = normalizeSlug(slug);
+      const post = posts.find(p => normalizeSlug(p.slug) === normalizedSlug);
       if (post) {
         setExpandedPost(post);
       }
@@ -323,9 +321,10 @@ export default function BlogPage() {
   };
 
   const openPost = (post) => {
-    if (!post?.slug) return;
+    const normalizedSlug = normalizeSlug(post?.slug);
+    if (!normalizedSlug) return;
     setExpandedPost(post);
-    navigate(`/blog/${post.slug}`);
+    navigate(`/blog/${normalizedSlug}`);
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
 

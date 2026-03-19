@@ -535,18 +535,16 @@ export default function LeadsPage({ projectId, mode, onCountsRefresh }: LeadsPag
                     </div>
 
                     <div className="flex flex-wrap items-center gap-2">
-                      {lead.type === "ENGAGEMENT" && (
-                        <Button
-                          size="sm"
-                          variant="outline"
-                          onClick={(event) => {
-                            event.stopPropagation();
-                            setCommentLead(lead);
-                          }}
-                        >
-                          Generate Comment
-                        </Button>
-                      )}
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        onClick={(event) => {
+                          event.stopPropagation();
+                          setCommentLead(lead);
+                        }}
+                      >
+                        Generate Comment
+                      </Button>
                       <Button
                         size="sm"
                         onClick={(event) => {

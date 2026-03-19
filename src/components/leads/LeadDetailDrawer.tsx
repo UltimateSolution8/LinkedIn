@@ -279,16 +279,14 @@ export default function LeadDetailDrawer({
               </div>
 
               <div className="flex flex-wrap gap-2">
-                {lead.type === "ENGAGEMENT" && (
-                  <Button
-                    size="sm"
-                    variant="outline"
-                    onClick={() => setIsCommentDialogOpen(true)}
-                    disabled={isSubmitting}
-                  >
-                    Generate Comment
-                  </Button>
-                )}
+                <Button
+                  size="sm"
+                  variant="outline"
+                  onClick={() => setIsCommentDialogOpen(true)}
+                  disabled={isSubmitting}
+                >
+                  Generate Comment
+                </Button>
                 <Button size="sm" onClick={onSubmitContacted} disabled={isSubmitting}>
                   <CheckCircle2 className="w-4 h-4" />
                   Mark Contacted

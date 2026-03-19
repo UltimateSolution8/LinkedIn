@@ -169,7 +169,7 @@ export default function AdminUserDetailPage() {
 
   const handleSoftDeleteUser = async (targetUser: AdminUser) => {
     const confirmed = confirm(
-      `Soft delete ${targetUser.firstName} ${targetUser.lastName}? They will not be able to login and all their projects will be disabled.`
+      `Delete ${targetUser.firstName} ${targetUser.lastName}? They will not be able to login and all their projects will be disabled.`
     );
     if (!confirmed) return;
 
@@ -404,7 +404,7 @@ export default function AdminUserDetailPage() {
                         className="w-full border-red-300 dark:border-red-700 text-red-700 dark:text-red-300 hover:bg-red-50 dark:hover:bg-red-900/20"
                       >
                         <Ban className="w-4 h-4 mr-2" />
-                        Soft Delete User
+                        Delete User
                       </Button>
                     </div>
 
