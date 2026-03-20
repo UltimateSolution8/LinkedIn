@@ -65,6 +65,7 @@ export function useScanningStatus({
 
         if (isAdmin) {
           setHasSubscriptionAccess(true);
+          setIsLoading(false);
           return;
         }
 
@@ -81,16 +82,20 @@ export function useScanningStatus({
       } catch (err) {
         console.error("[useScanningStatus] Error checking subscription:", err);
         setHasSubscriptionAccess(false);
+        setIsLoading(false);
       }
     };
 
     checkSubscription();
   }, []);
 
-  // Initial fetch (only after subscription check)
+  // Initial fetch (fetch scanning status once we have subscription access)
   useEffect(() => {
-    if (subscriptionStatus !== null) {
+    if (hasSubscriptionAccess) {
       fetchData();
+    } else if (subscriptionStatus !== null) {
+      // Subscription check is done but user doesn't have access
+      setIsLoading(false);
     }
   }, [projectId, enabled, hasSubscriptionAccess, subscriptionStatus]);
 

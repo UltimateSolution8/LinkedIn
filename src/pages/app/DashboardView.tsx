@@ -299,33 +299,33 @@ export default function DashboardView() {
       {/* Top Subreddits & Keywords - Show when scanning is completed */}
       {isCompleted && !showScanningProgress && (
         <div className="mt-8">
-          {statsLoading ? (
-            <div className="flex items-center justify-center h-32">
-              <p className="text-neutral-500 text-sm">Loading analytics...</p>
-            </div>
-          ) : projectStats ? (
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-              {/* Top Subreddits */}
-              <div className="bg-white dark:bg-neutral-800 rounded-lg p-6 shadow-sm border border-neutral-200 dark:border-neutral-700">
-                <h3 className="text-lg font-semibold text-neutral-900 dark:text-white mb-4">
-                  Top Subreddits
-                </h3>
-                <SubredditPerformanceChart data={projectStats.topSubreddits} />
+            {statsLoading ? (
+              <div className="flex items-center justify-center h-32">
+                <p className="text-neutral-500 text-sm">Loading analytics...</p>
               </div>
+            ) : projectStats ? (
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                {/* Top Subreddits */}
+                <div className="bg-white dark:bg-neutral-800 rounded-lg p-6 shadow-sm border border-neutral-200 dark:border-neutral-700">
+                  <h3 className="text-lg font-semibold text-neutral-900 dark:text-white mb-4">
+                    Top Subreddits
+                  </h3>
+                  <SubredditPerformanceChart data={projectStats.topSubreddits} />
+                </div>
 
-              {/* Top Keywords */}
-              <div className="bg-white dark:bg-neutral-800 rounded-lg p-6 shadow-sm border border-neutral-200 dark:border-neutral-700">
-                <h3 className="text-lg font-semibold text-neutral-900 dark:text-white mb-4">
-                  Top Keywords
-                </h3>
-                <KeywordPerformanceChart data={projectStats.topKeywords} />
+                {/* Top Keywords */}
+                <div className="bg-white dark:bg-neutral-800 rounded-lg p-6 shadow-sm border border-neutral-200 dark:border-neutral-700">
+                  <h3 className="text-lg font-semibold text-neutral-900 dark:text-white mb-4">
+                    Top Keywords
+                  </h3>
+                  <KeywordPerformanceChart data={projectStats.topKeywords} />
+                </div>
               </div>
-            </div>
-          ) : (
-            <div className="flex items-center justify-center h-32">
-              <p className="text-neutral-500 text-sm">No analytics data available yet</p>
-            </div>
-          )}
+            ) : (
+              <div className="flex items-center justify-center h-32">
+                <p className="text-neutral-500 text-sm">No analytics data available yet</p>
+              </div>
+            )}
         </div>
       )}
 
