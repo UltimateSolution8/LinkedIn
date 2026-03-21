@@ -4,6 +4,7 @@ import { ArrowRight, CheckCircle } from "lucide-react";
 import { Button } from "../ui/button";
 import { Input } from "../ui/input";
 import { Label } from "../ui/label";
+import { submitLeadCapture } from "@/lib/api/leadCapture";
 import {
   Dialog,
   DialogContent,
@@ -31,6 +32,8 @@ export default function LinkedInEarlyAccessDialog({
     companyName: "",
   });
   const [errors, setErrors] = useState({});
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitError, setSubmitError] = useState("");
 
   const validateForm = () => {
     const nextErrors: Record<string, string> = {};
@@ -42,7 +45,7 @@ export default function LinkedInEarlyAccessDialog({
     return nextErrors;
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     const nextErrors = validateForm();
     if (Object.keys(nextErrors).length > 0) {
@@ -50,7 +53,22 @@ export default function LinkedInEarlyAccessDialog({
       return;
     }
     setErrors({});
-    setSubmitted(true);
+    setSubmitError("");
+    setIsSubmitting(true);
+    try {
+      await submitLeadCapture({
+        name: formData.name,
+        email: formData.email,
+        mobile: formData.mobile,
+        companyName: formData.companyName,
+        source: "linkedin_early_access",
+      });
+      setSubmitted(true);
+    } catch (error) {
+      setSubmitError(error instanceof Error ? error.message : "Failed to submit. Please try again.");
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const updateField = (key, value) => {
@@ -69,6 +87,8 @@ export default function LinkedInEarlyAccessDialog({
       mobile: "",
       companyName: "",
     });
+    setSubmitError("");
+    setIsSubmitting(false);
   };
 
   return (
@@ -141,9 +161,10 @@ export default function LinkedInEarlyAccessDialog({
                 />
                 {errors.companyName && <p className="text-xs text-red-500">{errors.companyName}</p>}
               </div>
-              <Button type="submit" className="w-full bg-primary hover:bg-primary/90">
-                Submit Early Access Request
+              <Button type="submit" disabled={isSubmitting} className="w-full bg-primary hover:bg-primary/90">
+                {isSubmitting ? "Submitting..." : "Submit Early Access Request"}
               </Button>
+              {submitError && <p className="text-sm text-red-500">{submitError}</p>}
             </form>
           </>
         ) : (

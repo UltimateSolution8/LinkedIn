@@ -3,12 +3,12 @@ import { useState, useEffect } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { motion } from "framer-motion";
 import { Calendar, ArrowRight, Search, Clock, ChevronLeft, ChevronRight, Loader2 } from "lucide-react";
+import { PortableText } from "@portabletext/react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
-import { getPosts, getCategories } from "@/lib/sanity";
-
-const RIXLY_API_BASE_URL = import.meta.env.VITE_RIXLY_API_BASE_URL || "";
+import { getPosts, getCategories, urlFor } from "@/lib/sanity";
+import { submitLeadCapture } from "@/lib/api/leadCapture";
 
 // Sample fallback posts - used when Sanity is not configured
 const samplePosts = [
@@ -211,6 +211,66 @@ const fallbackCoverImages = [
   "https://images.unsplash.com/photo-1559136555-9303baea8ebd?w=1200&auto=format&fit=crop&q=70",
 ];
 
+function resolveSanityImageUrl(imageCandidate) {
+  if (!imageCandidate) return "";
+  if (typeof imageCandidate === "string") return imageCandidate;
+  if (imageCandidate?.asset?.url) return imageCandidate.asset.url;
+  if (imageCandidate?.asset?._ref) {
+    try {
+      return urlFor(imageCandidate).width(1600).fit("max").auto("format").url();
+    } catch {
+      return "";
+    }
+  }
+  return "";
+}
+
+const portableComponents = {
+  types: {
+    image: ({ value }) => {
+      const imageUrl = resolveSanityImageUrl(value);
+      if (!imageUrl) return null;
+      return (
+        <figure className="my-8">
+          <img
+            src={imageUrl}
+            alt={value?.alt || "Blog image"}
+            className="w-full rounded-xl border border-slate-200/60 dark:border-slate-700/60"
+            loading="lazy"
+          />
+          {value?.alt ? <figcaption className="mt-2 text-sm text-slate-500">{value.alt}</figcaption> : null}
+        </figure>
+      );
+    },
+  },
+  block: {
+    normal: ({ children }) => <p className="my-4 leading-8 text-slate-700 dark:text-slate-300">{children}</p>,
+    h2: ({ children }) => <h2 className="text-2xl font-bold mt-10 mb-4">{children}</h2>,
+    h3: ({ children }) => <h3 className="text-xl font-semibold mt-8 mb-3">{children}</h3>,
+    blockquote: ({ children }) => (
+      <blockquote className="border-l-4 border-primary/40 pl-4 italic my-5 text-slate-700 dark:text-slate-300">
+        {children}
+      </blockquote>
+    ),
+  },
+  list: {
+    bullet: ({ children }) => <ul className="list-disc pl-6 my-4 space-y-2">{children}</ul>,
+    number: ({ children }) => <ol className="list-decimal pl-6 my-4 space-y-2">{children}</ol>,
+  },
+  marks: {
+    link: ({ value, children }) => (
+      <a
+        href={value?.href}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="text-primary underline underline-offset-2 hover:text-primary/80"
+      >
+        {children}
+      </a>
+    ),
+  },
+};
+
 export default function BlogPage() {
   const { slug } = useParams();
   const navigate = useNavigate();
@@ -248,21 +308,39 @@ export default function BlogPage() {
 
         const transformedPosts = (postsData || []).map((post, index) => {
           const normalizedSlug = normalizeSlug(post.slug || `post-${index}`);
+          const coverImage =
+            resolveSanityImageUrl(post.coverImageUrl) ||
+            resolveSanityImageUrl(post.coverImage) ||
+            fallbackCoverImages[index % fallbackCoverImages.length];
+
+          const body = post.body ?? null;
+          const excerpt =
+            post.excerpt ||
+            (Array.isArray(body)
+              ? body
+                  .filter((item) => item?._type === "block")
+                  .flatMap((item) => item.children || [])
+                  .map((child) => child?.text || "")
+                  .join(" ")
+                  .trim()
+                  .slice(0, 220)
+              : "");
+
           return {
             id: post._id || index + 1,
             slug: normalizedSlug,
           title: post.title,
-          excerpt: post.excerpt,
-          coverImage: post.coverImageUrl || fallbackCoverImages[index % fallbackCoverImages.length],
+          excerpt,
+          coverImage,
           author: {
             name: post.author?.name || "Unknown Author",
             avatar: post.author?.avatarUrl || "",
           },
           publishedAt: post.publishedAt || new Date().toISOString(),
-          readTime: post.readTime ? `${post.readTime} min read` : "5 min read",
+          readTime: post.readTime ? `${Math.max(1, Math.round(post.readTime))} min read` : "5 min read",
           category: post.category || "Uncategorized",
           featured: !!post.featured,
-          body: post.body || "",
+          body,
           };
         }).filter((post) => post.slug.length > 0 && post.title);
 
@@ -353,32 +431,18 @@ export default function BlogPage() {
       return;
     }
 
-    if (!RIXLY_API_BASE_URL) {
-      setNewsletterError("Newsletter service is not configured.");
-      setNewsletterMessage("");
-      return;
-    }
-
     setNewsletterLoading(true);
     setNewsletterError("");
     setNewsletterMessage("");
     try {
-      const response = await fetch(`${RIXLY_API_BASE_URL}/api/public/newsletter`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        credentials: "include",
-        body: JSON.stringify({
-          email,
-          source: "blog_newsletter",
-        }),
+      await submitLeadCapture({
+        name: "Newsletter Subscriber",
+        email,
+        mobile: "0000000000",
+        companyName: "N/A",
+        source: "blog_newsletter",
+        extraDetails: "Signup captured from blog newsletter form",
       });
-
-      const payload = await response.json().catch(() => ({}));
-      if (!response.ok) {
-        throw new Error(payload?.message || "Failed to subscribe");
-      }
 
       setNewsletterMessage("Subscribed successfully. We’ll keep you updated.");
       setNewsletterEmail("");
@@ -391,6 +455,13 @@ export default function BlogPage() {
 
   const renderPostContent = (body, excerpt) => {
     if (typeof body === "string" && body.trim().length > 0) {
+      if (body.includes("[object Object]")) {
+        return (
+          <div className="prose prose-lg max-w-none dark:prose-invert">
+            <p>{excerpt || ""}</p>
+          </div>
+        );
+      }
       return (
         <div
           className="prose prose-lg max-w-none dark:prose-invert"
@@ -400,88 +471,11 @@ export default function BlogPage() {
     }
 
     if (Array.isArray(body) && body.length > 0) {
-      const nodes = [];
-      let listType = null;
-      let listItems = [];
-      let listIndex = 0;
-
-      const flushList = () => {
-        if (!listType || listItems.length === 0) return;
-        if (listType === "ol") {
-          nodes.push(
-            <ol key={`ol-${listIndex}`} className="list-decimal pl-6 my-4 space-y-2">
-              {listItems}
-            </ol>
-          );
-        } else {
-          nodes.push(
-            <ul key={`ul-${listIndex}`} className="list-disc pl-6 my-4 space-y-2">
-              {listItems}
-            </ul>
-          );
-        }
-        listType = null;
-        listItems = [];
-        listIndex += 1;
-      };
-
-      body.forEach((block, index) => {
-        if (block?._type !== "block") return;
-        const text = (block.children || [])
-          .map((child) => child?.text || "")
-          .join("")
-          .trim();
-        if (!text) return;
-
-        if (block.listItem) {
-          const currentListType = block.listItem === "number" ? "ol" : "ul";
-          if (listType && listType !== currentListType) flushList();
-          listType = currentListType;
-          listItems.push(<li key={`li-${index}`}>{text}</li>);
-          return;
-        }
-
-        flushList();
-
-        if (block.style === "h2") {
-          nodes.push(
-            <h2 key={`h2-${index}`} className="text-2xl font-bold mt-10 mb-4">
-              {text}
-            </h2>
-          );
-          return;
-        }
-
-        if (block.style === "h3") {
-          nodes.push(
-            <h3 key={`h3-${index}`} className="text-xl font-semibold mt-8 mb-3">
-              {text}
-            </h3>
-          );
-          return;
-        }
-
-        if (block.style === "blockquote") {
-          nodes.push(
-            <blockquote key={`quote-${index}`} className="border-l-4 border-primary/40 pl-4 italic my-4 text-slate-700 dark:text-slate-300">
-              {text}
-            </blockquote>
-          );
-          return;
-        }
-
-        nodes.push(
-          <p key={`p-${index}`} className="my-4 leading-8 text-slate-700 dark:text-slate-300">
-            {text}
-          </p>
-        );
-      });
-
-      flushList();
-
-      if (nodes.length > 0) {
-        return <div className="prose prose-lg max-w-none dark:prose-invert">{nodes}</div>;
-      }
+      return (
+        <div className="prose prose-lg max-w-none dark:prose-invert">
+          <PortableText value={body} components={portableComponents} />
+        </div>
+      );
     }
 
     return (

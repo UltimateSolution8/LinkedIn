@@ -1,4 +1,4 @@
-import { Dispatch, SetStateAction, useEffect, useMemo, useRef, useState } from "react";
+import { Dispatch, SetStateAction, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import Tour, { StepType } from "@reactour/tour";
 
 interface DashboardSiteTourProps {
@@ -24,6 +24,13 @@ export default function DashboardSiteTour({ isOpen, onClose }: DashboardSiteTour
   const [currentStep, setCurrentStep] = useState(0);
   const [disabledActions, setDisabledActions] = useState(false);
   const completedRef = useRef(false);
+  const hasClosedRef = useRef(false);
+
+  const safeClose = useCallback((completed: boolean) => {
+    if (hasClosedRef.current) return;
+    hasClosedRef.current = true;
+    onClose(completed);
+  }, [onClose]);
 
   const baseSteps = useMemo<TourStepConfig[]>(
     () => [
@@ -66,18 +73,19 @@ export default function DashboardSiteTour({ isOpen, onClose }: DashboardSiteTour
       }));
 
     completedRef.current = false;
+    hasClosedRef.current = false;
     setCurrentStep(0);
     setSteps(availableSteps);
 
     if (availableSteps.length === 0) {
-      onClose(false);
+      safeClose(false);
     }
-  }, [baseSteps, isOpen, onClose]);
+  }, [baseSteps, isOpen, safeClose]);
 
   const handleSetIsOpen: Dispatch<SetStateAction<boolean>> = (value) => {
     const nextValue = typeof value === "function" ? value(isOpen) : value;
     if (!nextValue) {
-      onClose(completedRef.current);
+      safeClose(completedRef.current);
     }
   };
 
@@ -138,14 +146,14 @@ export default function DashboardSiteTour({ isOpen, onClose }: DashboardSiteTour
           <Button onClick={() => setCurrentStep((prev) => Math.max(prev - 1, 0))}>Back</Button>
         ) : null
       }
-      nextButton={({ Button, currentStep, stepsLength, setCurrentStep, setIsOpen }) => {
+      nextButton={({ Button, currentStep, stepsLength, setCurrentStep }) => {
         const isLast = currentStep === stepsLength - 1;
         return (
           <Button
             onClick={() => {
               if (isLast) {
                 completedRef.current = true;
-                setIsOpen(false);
+                safeClose(true);
                 return;
               }
               setCurrentStep((prev) => Math.min(prev + 1, stepsLength - 1));

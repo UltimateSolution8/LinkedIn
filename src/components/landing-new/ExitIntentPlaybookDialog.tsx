@@ -1,9 +1,10 @@
 // @ts-nocheck
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { CheckCircle, Download } from "lucide-react";
 import { Button } from "../ui/button";
 import { Input } from "../ui/input";
 import { Label } from "../ui/label";
+import { submitLeadCapture } from "@/lib/api/leadCapture";
 import {
   Dialog,
   DialogContent,
@@ -26,6 +27,23 @@ export default function ExitIntentPlaybookDialog({ open, onOpenChange }: ExitInt
     mobile: "",
     companyName: "",
   });
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitError, setSubmitError] = useState("");
+
+  useEffect(() => {
+    if (!open) {
+      setSubmitted(false);
+      setErrors({});
+      setSubmitError("");
+      setIsSubmitting(false);
+      setFormData({
+        name: "",
+        email: "",
+        mobile: "",
+        companyName: "",
+      });
+    }
+  }, [open]);
 
   const validateForm = () => {
     const nextErrors: Record<string, string> = {};
@@ -44,7 +62,7 @@ export default function ExitIntentPlaybookDialog({ open, onOpenChange }: ExitInt
     }
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     const nextErrors = validateForm();
     if (Object.keys(nextErrors).length > 0) {
@@ -52,7 +70,22 @@ export default function ExitIntentPlaybookDialog({ open, onOpenChange }: ExitInt
       return;
     }
     setErrors({});
-    setSubmitted(true);
+    setSubmitError("");
+    setIsSubmitting(true);
+    try {
+      await submitLeadCapture({
+        name: formData.name,
+        email: formData.email,
+        mobile: formData.mobile,
+        companyName: formData.companyName,
+        source: "exit_intent_playbook",
+      });
+      setSubmitted(true);
+    } catch (error) {
+      setSubmitError(error instanceof Error ? error.message : "Failed to submit. Please try again.");
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const handleDownload = () => {
@@ -123,9 +156,10 @@ export default function ExitIntentPlaybookDialog({ open, onOpenChange }: ExitInt
                 />
                 {errors.companyName && <p className="text-xs text-red-500">{errors.companyName}</p>}
               </div>
-              <Button type="submit" className="w-full bg-primary hover:bg-primary/90">
-                Unlock Playbook
+              <Button type="submit" disabled={isSubmitting} className="w-full bg-primary hover:bg-primary/90">
+                {isSubmitting ? "Submitting..." : "Unlock Playbook"}
               </Button>
+              {submitError && <p className="text-sm text-red-500">{submitError}</p>}
             </form>
           </>
         ) : (

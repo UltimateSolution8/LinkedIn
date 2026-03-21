@@ -5,6 +5,7 @@ import { Download, BookOpen, ArrowRight, CheckCircle, X } from "lucide-react";
 import { Button } from "../ui/button";
 import { Input } from "../ui/input";
 import { Label } from "../ui/label";
+import { submitLeadCapture } from "@/lib/api/leadCapture";
 import {
   Dialog,
   DialogContent,
@@ -42,6 +43,10 @@ export const FreeResourceSection = () => {
   const [subredditsSubmitted, setSubredditsSubmitted] = useState(false);
   const [playbookErrors, setPlaybookErrors] = useState({});
   const [subredditsErrors, setSubredditsErrors] = useState({});
+  const [isPlaybookSubmitting, setIsPlaybookSubmitting] = useState(false);
+  const [isSubredditsSubmitting, setIsSubredditsSubmitting] = useState(false);
+  const [playbookSubmitError, setPlaybookSubmitError] = useState("");
+  const [subredditsSubmitError, setSubredditsSubmitError] = useState("");
 
   useEffect(() => {
     const handleHashOpen = () => {
@@ -66,7 +71,7 @@ export const FreeResourceSection = () => {
     return errors;
   };
 
-  const handlePlaybookSubmit = (e) => {
+  const handlePlaybookSubmit = async (e) => {
     e.preventDefault();
     const errors = validateForm(playbookFormData);
     if (Object.keys(errors).length > 0) {
@@ -74,10 +79,25 @@ export const FreeResourceSection = () => {
       return;
     }
     setPlaybookErrors({});
-    setPlaybookSubmitted(true);
+    setPlaybookSubmitError("");
+    setIsPlaybookSubmitting(true);
+    try {
+      await submitLeadCapture({
+        name: playbookFormData.name,
+        email: playbookFormData.email,
+        mobile: playbookFormData.mobile,
+        companyName: playbookFormData.companyName,
+        source: "playbook_download",
+      });
+      setPlaybookSubmitted(true);
+    } catch (error) {
+      setPlaybookSubmitError(error instanceof Error ? error.message : "Failed to submit. Please try again.");
+    } finally {
+      setIsPlaybookSubmitting(false);
+    }
   };
 
-  const handleSubredditsSubmit = (e) => {
+  const handleSubredditsSubmit = async (e) => {
     e.preventDefault();
     const errors = validateForm(subredditsFormData);
     if (Object.keys(errors).length > 0) {
@@ -85,12 +105,27 @@ export const FreeResourceSection = () => {
       return;
     }
     setSubredditsErrors({});
-    setSubredditsSubmitted(true);
+    setSubredditsSubmitError("");
+    setIsSubredditsSubmitting(true);
+    try {
+      await submitLeadCapture({
+        name: subredditsFormData.name,
+        email: subredditsFormData.email,
+        mobile: subredditsFormData.mobile,
+        companyName: subredditsFormData.companyName,
+        source: "free_subreddits",
+      });
+      setSubredditsSubmitted(true);
+    } catch (error) {
+      setSubredditsSubmitError(error instanceof Error ? error.message : "Failed to submit. Please try again.");
+    } finally {
+      setIsSubredditsSubmitting(false);
+    }
   };
 
   const handlePlaybookDownload = () => {
     const link = document.createElement("a");
-    link.href = "../Rixly_Reddit_LeadGen_Playbook.pdf";
+    link.href = "/Rixly_Reddit_LeadGen_Playbook.pdf";
     link.download = "Rixly_Reddit_LeadGen_Playbook.pdf";
     document.body.appendChild(link);
     link.click();
@@ -116,12 +151,16 @@ export const FreeResourceSection = () => {
     setPlaybookFormData({ name: "", email: "", mobile: "", companyName: "" });
     setPlaybookSubmitted(false);
     setPlaybookErrors({});
+    setPlaybookSubmitError("");
+    setIsPlaybookSubmitting(false);
   };
 
   const resetSubredditsForm = () => {
     setSubredditsFormData({ name: "", email: "", mobile: "", companyName: "" });
     setSubredditsSubmitted(false);
     setSubredditsErrors({});
+    setSubredditsSubmitError("");
+    setIsSubredditsSubmitting(false);
   };
 
   return (
@@ -326,10 +365,14 @@ export const FreeResourceSection = () => {
                             </div>
                             <Button
                               type="submit"
+                              disabled={isPlaybookSubmitting}
                               className="w-full bg-teal-600 hover:bg-teal-700"
                             >
-                              Submit & Download
+                              {isPlaybookSubmitting ? "Submitting..." : "Submit & Download"}
                             </Button>
+                            {playbookSubmitError && (
+                              <p className="text-sm text-red-500">{playbookSubmitError}</p>
+                            )}
                           </form>
                         </>
                       ) : (
@@ -434,10 +477,14 @@ export const FreeResourceSection = () => {
                             </div>
                             <Button
                               type="submit"
+                              disabled={isSubredditsSubmitting}
                               className="w-full bg-teal-600 hover:bg-teal-700"
                             >
-                              Submit & Get Subreddits
+                              {isSubredditsSubmitting ? "Submitting..." : "Submit & Get Subreddits"}
                             </Button>
+                            {subredditsSubmitError && (
+                              <p className="text-sm text-red-500">{subredditsSubmitError}</p>
+                            )}
                           </form>
                         </>
                       ) : (

@@ -3,6 +3,7 @@ import { createClient } from "@sanity/client";
 import imageUrlBuilder from "@sanity/image-url";
 
 const RIXLY_API_BASE_URL = import.meta.env.VITE_RIXLY_API_BASE_URL || "";
+const USE_BACKEND_PROXY = (import.meta.env.VITE_SANITY_USE_BACKEND_PROXY || "false") === "true";
 
 export const sanityClient = createClient({
   projectId: import.meta.env.VITE_SANITY_PROJECT_ID || "9iae1qca",
@@ -14,7 +15,7 @@ export const sanityClient = createClient({
 });
 
 async function fetchFromBackend(endpoint: string) {
-  if (!RIXLY_API_BASE_URL) return null;
+  if (!USE_BACKEND_PROXY || !RIXLY_API_BASE_URL) return null;
 
   try {
     const response = await fetch(`${RIXLY_API_BASE_URL}/api/public/${endpoint}`, {
@@ -44,12 +45,14 @@ export async function getPosts() {
     title,
     "slug": slug.current,
     excerpt,
-    "coverImageUrl": coalesce(coverImage.asset->url, mainImage.asset->url),
+    "coverImageUrl": coalesce(featuredImage.asset->url, coverImage.asset->url, mainImage.asset->url, image.asset->url),
+    "coverImage": coalesce(featuredImage, coverImage, mainImage, image),
     "author": author->{name, "avatarUrl": avatar.asset->url},
     publishedAt,
     "readTime": round(length(pt::text(body)) / 5 / 180 ),
     "category": category->title,
-    featured
+    featured,
+    body
   }`;
   return sanityClient.fetch(query);
 }
@@ -63,7 +66,8 @@ export async function getPost(slug) {
     title,
     "slug": slug.current,
     excerpt,
-    "coverImageUrl": coalesce(coverImage.asset->url, mainImage.asset->url),
+    "coverImageUrl": coalesce(featuredImage.asset->url, coverImage.asset->url, mainImage.asset->url, image.asset->url),
+    "coverImage": coalesce(featuredImage, coverImage, mainImage, image),
     "author": author->{name, "avatarUrl": avatar.asset->url, bio},
     publishedAt,
     "readTime": round(length(pt::text(body)) / 5 / 180 ),
@@ -98,7 +102,8 @@ export async function getFeaturedPost() {
     title,
     "slug": slug.current,
     excerpt,
-    "coverImageUrl": coalesce(coverImage.asset->url, mainImage.asset->url),
+    "coverImageUrl": coalesce(featuredImage.asset->url, coverImage.asset->url, mainImage.asset->url, image.asset->url),
+    "coverImage": coalesce(featuredImage, coverImage, mainImage, image),
     "author": author->{name, "avatarUrl": avatar.asset->url},
     publishedAt,
     "readTime": round(length(pt::text(body)) / 5 / 180 ),
