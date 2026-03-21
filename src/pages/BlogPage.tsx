@@ -329,18 +329,18 @@ export default function BlogPage() {
           return {
             id: post._id || index + 1,
             slug: normalizedSlug,
-          title: post.title,
-          excerpt,
-          coverImage,
-          author: {
-            name: post.author?.name || "Unknown Author",
-            avatar: post.author?.avatarUrl || "",
-          },
-          publishedAt: post.publishedAt || new Date().toISOString(),
-          readTime: post.readTime ? `${Math.max(1, Math.round(post.readTime))} min read` : "5 min read",
-          category: post.category || "Uncategorized",
-          featured: !!post.featured,
-          body,
+            title: post.title,
+            excerpt,
+            coverImage,
+            author: {
+              name: post.author?.name || "Unknown Author",
+              avatar: post.author?.avatarUrl || "",
+            },
+            publishedAt: post.publishedAt || new Date().toISOString(),
+            readTime: post.readTime ? `${Math.max(1, Math.round(post.readTime))} min read` : "5 min read",
+            category: post.category || "Uncategorized",
+            featured: !!post.featured,
+            body,
           };
         }).filter((post) => post.slug.length > 0 && post.title);
 
