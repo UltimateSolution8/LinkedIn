@@ -96,7 +96,7 @@ export default function SubscriptionRequiredBanner({
             ) : (
               <>
                 <Sparkles className="w-5 h-5 mr-2" />
-                Start 3-Day Free Trial
+                Start 7-Day Free Trial
               </>
             )}
           </Button>
@@ -125,7 +125,7 @@ export default function SubscriptionRequiredBanner({
             <span className="font-semibold text-orange-700 dark:text-orange-400">
               Limited time offer:
             </span>{" "}
-            3 days free, then {plan.currencySymbol}{plan.currentPrice}/month • Cancel anytime
+            7 days free, then {plan.currencySymbol}{plan.currentPrice}/month • Cancel anytime
           </p>
         </div>
       </div>

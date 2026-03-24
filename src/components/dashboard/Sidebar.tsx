@@ -1,13 +1,12 @@
 
+import { useState, useEffect } from "react";
 import { Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { useNavigate } from "react-router-dom";
 import { useProject } from "@/contexts/ProjectContext";
 import { getCurrentUser } from "@/lib/api/auth";
-
-// Maximum number of projects a user can create
-const MAX_PROJECTS = 2;
+import { getSubscriptionStatusCached } from "@/lib/utils/subscription";
 
 export default function Sidebar() {
   const navigate = useNavigate();
@@ -17,8 +16,23 @@ export default function Sidebar() {
   const currentUser = getCurrentUser();
   const isAdmin = currentUser?.role === 'admin';
 
+  // Plan-based project limit (default 2 for backward compatibility)
+  const [maxProjects, setMaxProjects] = useState(2);
+
+  useEffect(() => {
+    const fetchLimits = async () => {
+      try {
+        const subStatus = await getSubscriptionStatusCached();
+        if (subStatus?.subscription?.planDetails?.maxProjects) {
+          setMaxProjects(subStatus.subscription.planDetails.maxProjects);
+        }
+      } catch { /* keep default */ }
+    };
+    fetchLimits();
+  }, []);
+
   // Disable create button when user has reached the maximum project limit (unless they're an admin)
-  const isCreateButtonDisabled = !isAdmin && projects.length >= MAX_PROJECTS;
+  const isCreateButtonDisabled = !isAdmin && projects.length >= maxProjects;
 
   const handleCreateProject = () => {
     // Only navigate if user hasn't reached the project limit
@@ -101,7 +115,7 @@ export default function Sidebar() {
               isAdmin
                 ? "Create a new project (Admin - Unlimited)"
                 : isCreateButtonDisabled
-                  ? `You can create a maximum of ${MAX_PROJECTS} projects`
+                  ? `You can create a maximum of ${maxProjects} projects`
                   : "Create a new project"
             }
             className={`w-full gap-2 ${
@@ -112,7 +126,7 @@ export default function Sidebar() {
           >
             <Plus className="w-5 h-5" />
             <span className="truncate">
-              {isCreateButtonDisabled ? `Max ${MAX_PROJECTS} Projects` : "Create New Project"}
+              {isCreateButtonDisabled ? `Max ${maxProjects} Projects` : "Create New Project"}
             </span>
           </Button>
         </div>

@@ -1,4 +1,5 @@
 
+import { useState, useEffect } from "react";
 import { useProject } from "@/contexts/ProjectContext";
 import { useNavigate } from "react-router-dom";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
@@ -13,8 +14,7 @@ import {
 import { ChevronDown, Plus, CheckIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { getCurrentUser } from "@/lib/api/auth";
-
-const MAX_PROJECTS = 2;
+import { getSubscriptionStatusCached } from "@/lib/utils/subscription";
 
 export default function ProjectSwitcher() {
   const navigate = useNavigate();
@@ -23,7 +23,23 @@ export default function ProjectSwitcher() {
   const isAdmin = currentUser?.role === 'admin';
 
   const selectedProject = selectedProjectId ? getProjectById(selectedProjectId) : null;
-  const isCreateButtonDisabled = !isAdmin && projects.length >= MAX_PROJECTS;
+
+  // Plan-based project limit (default 2 for backward compatibility)
+  const [maxProjects, setMaxProjects] = useState(2);
+
+  useEffect(() => {
+    const fetchLimits = async () => {
+      try {
+        const subStatus = await getSubscriptionStatusCached();
+        if (subStatus?.subscription?.planDetails?.maxProjects) {
+          setMaxProjects(subStatus.subscription.planDetails.maxProjects);
+        }
+      } catch { /* keep default */ }
+    };
+    fetchLimits();
+  }, []);
+
+  const isCreateButtonDisabled = !isAdmin && projects.length >= maxProjects;
 
   const getProjectInitial = (projectName: string) => {
     return projectName.charAt(0).toUpperCase();

@@ -22,6 +22,10 @@ export interface SubscriptionStatus {
       amount: number;
       currency: string;
       interval: string;
+      maxProjects: number;
+      maxKeywords: number;
+      maxReplyDrafts: number;
+      dataRetentionDays: number;
     };
   } | null;
 }
