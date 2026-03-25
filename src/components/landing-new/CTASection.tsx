@@ -1,5 +1,6 @@
 // @ts-nocheck
 import { motion } from "framer-motion";
+import { Link } from "react-router-dom";
 import { Button } from "../ui/button";
 import LinkedInEarlyAccessDialog from "./LinkedInEarlyAccessDialog";
 
@@ -66,14 +67,16 @@ export const CTASection = () => {
                 triggerClassName="rounded-full font-medium text-lg px-8 glow-primary glow-primary-hover btn-press"
                 triggerLabel="LinkedIn early access"
               />
-              <Button
-                size="lg"
-                variant="outline"
-                className="rounded-full font-medium text-lg px-8 btn-press"
-                data-testid="cta-book-demo"
-              >
-                Book a Demo
-              </Button>
+              <Link to="/request-demo">
+                <Button
+                  size="lg"
+                  variant="outline"
+                  className="rounded-full font-medium text-lg px-8 btn-press"
+                  data-testid="cta-book-demo"
+                >
+                  Book a Demo
+                </Button>
+              </Link>
             </motion.div>
 
             <motion.p
