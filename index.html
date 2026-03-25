@@ -11,6 +11,17 @@
       gtag('config', 'G-DGTN8BZW6W');
     </script>
     <script src="https://analytics.ahrefs.com/analytics.js" data-key="lzhgFsNaG63R0EfZfMp91A" async></script>
+    <script>
+      (() => {
+        try {
+          const savedTheme = localStorage.getItem("theme");
+          const shouldUseDark = savedTheme ? savedTheme === "dark" : true;
+          document.documentElement.classList.toggle("dark", shouldUseDark);
+        } catch {
+          document.documentElement.classList.add("dark");
+        }
+      })();
+    </script>
     <meta charset="UTF-8" />
     <link rel="icon" type="image/png" href="/logo.png" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
