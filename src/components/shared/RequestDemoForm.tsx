@@ -54,7 +54,7 @@ export default function RequestDemoForm({ onSuccess, onCancel, showCancelButton 
   });
 
   const onSubmit = async (data: DemoFormValues) => {
-    const submitWithTimeout = async (timeoutMs: number = 15000): Promise<Response> => {
+    const submitWithTimeout = async (endpoint: "request-sheet" | "request", timeoutMs: number = 15000): Promise<Response> => {
       const controller = new AbortController();
       const timeoutId = setTimeout(() => controller.abort(), timeoutMs);
 
@@ -64,7 +64,7 @@ export default function RequestDemoForm({ onSuccess, onCancel, showCancelButton 
           ? data.otherIndustry
           : data.industry || "";
 
-        const response = await fetch(`${RIXLY_API_BASE_URL}/api/demo/request-sheet`, {
+        const response = await fetch(`${RIXLY_API_BASE_URL}/api/demo/${endpoint}`, {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
@@ -94,7 +94,7 @@ export default function RequestDemoForm({ onSuccess, onCancel, showCancelButton 
       // Try up to 3 times (initial + 2 retries)
       for (let attempt = 1; attempt <= 3; attempt++) {
         try {
-          response = await submitWithTimeout(15000);
+          response = await submitWithTimeout("request-sheet", 15000);
 
           if (response.ok) {
             onSuccess();
@@ -129,7 +129,17 @@ export default function RequestDemoForm({ onSuccess, onCancel, showCancelButton 
         }
       }
 
-      // If we get here, all attempts failed
+      // Fallback: if Google Sheets path fails, try email-only endpoint.
+      try {
+        response = await submitWithTimeout("request", 10000);
+        if (response.ok) {
+          onSuccess();
+          return;
+        }
+      } catch (fallbackError) {
+        console.error("Demo request fallback endpoint failed:", fallbackError);
+      }
+
       throw lastError || new Error("Failed to submit demo request");
     } catch (error) {
       console.error("Error submitting demo request:", error);

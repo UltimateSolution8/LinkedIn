@@ -23,10 +23,10 @@ export const Navbar = ({ isDark, toggleTheme, setView }) => {
     { href: "#features", label: "Features" },
     { href: "#testimonials", label: "Testimonials" },
     { href: "#free-resource", label: "Resources" },
+    { to: "/blogs", label: "Blogs" },
     { href: "#pricing", label: "Pricing" },
     { label: "ROI", onClick: () => setView("roi"), hidden: true },
     { label: "Analytics", onClick: () => setView("dashboard"), hidden: true },
-    // { to: "/blogs", label: "Blogs", hidden: true },
   ];
 
   return (

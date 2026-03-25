@@ -1,47 +1,9 @@
 // @ts-nocheck
 import { motion } from "framer-motion";
-import { Play, Pause, MessageCircle, ArrowUp, ThumbsUp } from "lucide-react";
-import { useState, useRef } from "react";
 
-const mockRedditPosts = [
-  {
-    subreddit: "r/SaaS",
-    title: "Looking for project management tool - what do you all use?",
-    relevance: "98%",
-    comments: 47,
-    upvotes: 124,
-  },
-  {
-    subreddit: "r/startups",
-    title: "Best CRM for early stage startup? Need something affordable",
-    relevance: "95%",
-    comments: 32,
-    upvotes: 89,
-  },
-  {
-    subreddit: "r/B2B",
-    title: "How do you handle lead generation? Cold outreach not working",
-    relevance: "92%",
-    comments: 56,
-    upvotes: 201,
-  },
-];
+const YOUTUBE_EMBED_URL = "https://www.youtube.com/embed/ZkmpHDIze5w?rel=0&modestbranding=1";
 
 export const VideoSection = () => {
-  const [isPlaying, setIsPlaying] = useState(false);
-  const videoRef = useRef(null);
-
-  const togglePlay = () => {
-    if (videoRef.current) {
-      if (isPlaying) {
-        videoRef.current.pause();
-      } else {
-        videoRef.current.play();
-      }
-      setIsPlaying(!isPlaying);
-    }
-  };
-
   return (
     <section
       id="video"
@@ -71,44 +33,19 @@ export const VideoSection = () => {
           transition={{ duration: 0.6, delay: 0.2 }}
           className="relative max-w-5xl mx-auto"
         >
-          <div className="video-container aspect-video rounded-2xl overflow-hidden bg-card border border-border/50">
-            {/* Video element with sample video */}
-            <video
-              ref={videoRef}
-              className="w-full h-full object-cover"
-              poster="https://images.unsplash.com/photo-1551434678-e076c223a692?w=1200&h=675&fit=crop"
+          <div className="video-container aspect-video rounded-2xl overflow-hidden bg-card border border-border/50 shadow-xl">
+            <iframe
+              src={YOUTUBE_EMBED_URL}
+              title="Rixly Platform Walkthrough"
+              className="w-full h-full"
+              loading="lazy"
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+              referrerPolicy="strict-origin-when-cross-origin"
+              allowFullScreen
               data-testid="walkthrough-video"
-              onEnded={() => setIsPlaying(false)}
-            >
-              <source
-                src="https://sample-videos.com/video321/mp4/720/big_buck_bunny_720p_1mb.mp4"
-                type="video/mp4"
-              />
-              Your browser does not support the video tag.
-            </video>
-
-            {/* Play/Pause overlay */}
-            <button
-              onClick={togglePlay}
-              className="absolute inset-0 flex items-center justify-center bg-black/30 hover:bg-black/40 transition-colors duration-300 group"
-              data-testid="video-play-button"
-              aria-label={isPlaying ? "Pause video" : "Play video"}
-            >
-              <motion.div
-                whileHover={{ scale: 1.1 }}
-                whileTap={{ scale: 0.95 }}
-                className="w-20 h-20 rounded-full bg-primary flex items-center justify-center glow-primary"
-              >
-                {isPlaying ? (
-                  <Pause className="w-8 h-8 text-primary-foreground" />
-                ) : (
-                  <Play className="w-8 h-8 text-primary-foreground ml-1" />
-                )}
-              </motion.div>
-            </button>
+            />
           </div>
 
-          {/* Decorative elements */}
           <div className="absolute -top-8 -left-8 w-32 h-32 rounded-full bg-primary/10 blur-3xl pointer-events-none" />
           <div className="absolute -bottom-8 -right-8 w-32 h-32 rounded-full bg-primary/10 blur-3xl pointer-events-none" />
         </motion.div>

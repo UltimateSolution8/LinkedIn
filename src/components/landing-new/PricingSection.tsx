@@ -232,8 +232,7 @@ export const PricingSection = () => {
                       navigate("/login");
                     }
                   } else {
-                    // For "Book a Demo" - handle appropriately if needed
-                    // or just leave as is if not part of this task
+                    navigate("/request-demo");
                   }
                 }}
               >

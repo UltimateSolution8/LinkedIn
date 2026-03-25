@@ -32,24 +32,44 @@ export async function submitLeadCapture(payload: LeadCapturePayload): Promise<vo
     throw new Error("API base URL is not configured");
   }
 
+  const requestBody = {
+    fullName: payload.name.trim(),
+    email: payload.email.trim().toLowerCase(),
+    phone: payload.mobile.trim(),
+    industry: payload.source,
+    additionalInsight: buildAdditionalInsight(payload),
+  };
+
   const response = await fetch(`${RIXLY_API_BASE_URL}/api/demo/request-sheet`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
     },
     credentials: "include",
-    body: JSON.stringify({
-      fullName: payload.name.trim(),
-      email: payload.email.trim().toLowerCase(),
-      phone: payload.mobile.trim(),
-      industry: payload.source,
-      additionalInsight: buildAdditionalInsight(payload),
-    }),
+    body: JSON.stringify(requestBody),
   });
 
-  const responseData = await response.json().catch(() => ({}));
-  if (!response.ok) {
-    throw new Error(responseData?.message || "Failed to submit form");
+  if (response.ok) {
+    return;
   }
-}
 
+  const responseData = await response.json().catch(() => ({}));
+  const primaryErrorMessage = responseData?.message || "Failed to submit form";
+  console.error("[LeadCapture] Sheet submission failed, attempting email fallback:", primaryErrorMessage);
+
+  const fallbackResponse = await fetch(`${RIXLY_API_BASE_URL}/api/demo/request`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    credentials: "include",
+    body: JSON.stringify(requestBody),
+  });
+
+  if (fallbackResponse.ok) {
+    return;
+  }
+
+  const fallbackData = await fallbackResponse.json().catch(() => ({}));
+  throw new Error(fallbackData?.message || primaryErrorMessage || "Failed to submit form");
+}
