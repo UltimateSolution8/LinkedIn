@@ -218,26 +218,44 @@ export const PricingSection = () => {
                   ))}
                 </ul>
 
-              <Button
-                className={`w-full rounded-full font-medium btn-press ${plan.popular
-                  ? "glow-primary glow-primary-hover"
-                  : ""
-                  }`}
-                variant={plan.popular ? "default" : "outline"}
-                onClick={() => {
-                  if (plan.cta === "Buy now") {
-                    if (isAuthenticated) {
-                      navigate("/app/onboarding");
+              <div className="space-y-3">
+                <Button
+                  className={`w-full rounded-full font-medium btn-press ${plan.popular
+                    ? "glow-primary glow-primary-hover"
+                    : ""
+                    }`}
+                  variant={plan.popular ? "default" : "outline"}
+                  onClick={() => {
+                    if (plan.cta === "Buy now") {
+                      if (isAuthenticated) {
+                        navigate("/app/onboarding");
+                      } else {
+                        navigate("/login");
+                      }
                     } else {
-                      navigate("/login");
+                      navigate("/request-demo");
                     }
-                  } else {
-                    navigate("/request-demo");
-                  }
-                }}
-              >
-                {plan.cta}
-              </Button>
+                  }}
+                >
+                  {plan.cta}
+                </Button>
+
+                {plan.cta === "Buy now" && (
+                  <Button
+                    className="w-full rounded-full font-medium border-teal-600/30 text-teal-600 hover:bg-teal-600/5"
+                    variant="outline"
+                    onClick={() => {
+                      if (isAuthenticated) {
+                        navigate("/app/onboarding?isTrial=true");
+                      } else {
+                        navigate("/login?isTrial=true");
+                      }
+                    }}
+                  >
+                    Start 7-Day Free Trial
+                  </Button>
+                )}
+              </div>
             </motion.div>
           ))}
         </div>

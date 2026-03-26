@@ -61,7 +61,7 @@ export default function TrialActivationBanner({
 
           {/* Description */}
           <p className="text-neutral-600 dark:text-neutral-400 text-sm max-w-md">
-            Start your 3-day free trial to discover high-intent leads on Reddit
+            Start your 7-day free trial to discover high-intent leads on Reddit
           </p>
 
           {/* Features */}

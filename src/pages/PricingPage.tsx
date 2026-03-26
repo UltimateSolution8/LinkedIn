@@ -585,11 +585,11 @@ function PricingCard({ plan, onChoosePlan, processing = false }: PricingCardProp
               variant="outline"
               className="w-full border-teal-600 text-teal-600 hover:bg-teal-50 py-4 sm:py-6 rounded-xl text-sm sm:text-base font-semibold mb-3"
             >
-              Start 3-Day Free Trial
+              Start 7-Day Free Trial
             </Button>
 
             <p className="text-xs text-center text-gray-500 mb-4">
-              No charge for 3 days. Cancel anytime.
+              No charge for 7 days. Cancel anytime.
             </p>
 
             {/* Pay Now Button */}
