@@ -17,7 +17,8 @@ export default function SubscriptionRequiredBanner({
   processingTrial = false,
   processingPayment = false
 }: SubscriptionRequiredBannerProps) {
-  const plan = plans[0]; // Use first plan
+  const [selectedPlanIndex, setSelectedPlanIndex] = useState(0);
+  const plan = plans[selectedPlanIndex] || plans[0];
   const [showTrialDialog, setShowTrialDialog] = useState(false);
 
   if (!plan) return null;
@@ -80,6 +81,31 @@ export default function SubscriptionRequiredBanner({
           </div>
         </div>
 
+        {/* Plan Selector */}
+        <div className="mb-8">
+          <p className="text-sm font-semibold text-neutral-600 dark:text-neutral-400 uppercase tracking-wide mb-3">
+            Select Your Plan:
+          </p>
+          <div className="flex bg-orange-100/50 dark:bg-orange-800/10 p-1.5 rounded-xl w-fit border border-orange-200 dark:border-orange-900/50">
+            {plans.slice(0, 2).map((p, index) => {
+              const isSelected = selectedPlanIndex === index;
+              return (
+                <button
+                  key={p.id}
+                  onClick={() => setSelectedPlanIndex(index)}
+                  className={`px-6 py-2.5 rounded-lg text-sm font-bold transition-all ${
+                    isSelected 
+                      ? "bg-white dark:bg-neutral-800 text-orange-600 dark:text-orange-400 shadow-sm"
+                      : "text-neutral-600 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-neutral-200"
+                  }`}
+                >
+                  {p.name}
+                </button>
+              );
+            })}
+          </div>
+        </div>
+
         {/* CTAs */}
         <div className="flex flex-col sm:flex-row gap-4 mb-4">
           <Button
@@ -96,7 +122,7 @@ export default function SubscriptionRequiredBanner({
             ) : (
               <>
                 <Sparkles className="w-5 h-5 mr-2" />
-                Start 3-Day Free Trial
+                Start 7-Day Free Trial
               </>
             )}
           </Button>
@@ -125,7 +151,7 @@ export default function SubscriptionRequiredBanner({
             <span className="font-semibold text-orange-700 dark:text-orange-400">
               Limited time offer:
             </span>{" "}
-            3 days free, then {plan.currencySymbol}{plan.currentPrice}/month • Cancel anytime
+            7 days free, then {plan.currencySymbol}{plan.currentPrice}/month • Cancel anytime
           </p>
         </div>
       </div>

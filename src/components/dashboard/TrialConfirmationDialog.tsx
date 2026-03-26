@@ -32,7 +32,7 @@ export default function TrialConfirmationDialog({
         <DialogHeader>
           <DialogTitle className="text-xl flex items-center gap-2">
             <Shield className="w-5 h-5 text-orange-600" />
-            Start Your 3-Day Free Trial
+            Start Your 7-Day Free Trial
           </DialogTitle>
           <DialogDescription className="text-base text-left mt-2">
             Here's what happens next:
@@ -57,7 +57,7 @@ export default function TrialConfirmationDialog({
             <div className="flex items-start gap-2">
               <CheckCircle2 className="w-5 h-5 text-green-600 flex-shrink-0 mt-0.5" />
               <div className="text-sm">
-                <span className="font-semibold">Cancel anytime</span> within 3 days at no charge
+                <span className="font-semibold">Cancel anytime</span> within 7 days at no charge
               </div>
             </div>
           </div>
@@ -65,7 +65,7 @@ export default function TrialConfirmationDialog({
           {/* After trial */}
           <div className="bg-neutral-50 dark:bg-neutral-900 rounded-lg p-3 border border-neutral-200 dark:border-neutral-700">
             <p className="text-sm text-neutral-700 dark:text-neutral-300">
-              After 3 days, you'll be charged <span className="font-semibold">{plan.currencySymbol}{plan.currentPrice}/month</span> unless you cancel.
+              After 7 days, you'll be charged <span className="font-semibold">{plan.currencySymbol}{plan.currentPrice}/month</span> unless you cancel.
             </p>
           </div>
         </div>
