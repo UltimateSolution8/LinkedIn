@@ -28,7 +28,6 @@ export default function SubscriptionRequiredBanner({
   };
 
   const handleTrialConfirm = () => {
-    setShowTrialDialog(false);
     onChoosePlan(plan, true);
   };
 
@@ -140,7 +139,7 @@ export default function SubscriptionRequiredBanner({
                 Processing...
               </>
             ) : (
-              "View Plans & Pay Now"
+              "Buy Now"
             )}
           </Button>
         </div>

@@ -128,12 +128,7 @@ export default function DashboardView() {
   };
 
   const initializeRazorpay = async (subscriptionData: RazorpaySubscriptionResponse, plan: PricingPlan) => {
-    const script = document.createElement("script");
-    script.src = "https://checkout.razorpay.com/v1/checkout.js";
-    script.async = true;
-    document.body.appendChild(script);
-
-    script.onload = () => {
+    const openRZP = () => {
       const options = {
         key: subscriptionData.keyId,
         name: "Rixly",
@@ -169,6 +164,18 @@ export default function DashboardView() {
       const rzp = new (window as any).Razorpay(options);
       rzp.open();
     };
+
+    // Prevent duplicate script loading silent failures
+    if (typeof (window as any).Razorpay !== 'undefined') {
+      openRZP();
+      return;
+    }
+
+    const script = document.createElement("script");
+    script.src = "https://checkout.razorpay.com/v1/checkout.js";
+    script.async = true;
+    script.onload = openRZP;
+    document.body.appendChild(script);
   };
 
   const startTour = () => {
@@ -208,6 +215,20 @@ export default function DashboardView() {
     );
   }
 
+  // Show subscription banner if no access (Prioritize this over data errors!)
+  if (!hasSubscriptionAccess && pricingPlans.length > 0) {
+    return (
+      <div className="p-4 lg:p-8">
+        <SubscriptionRequiredBanner
+          plans={pricingPlans}
+          onChoosePlan={handleChoosePlan}
+          processingTrial={processingTrial}
+          processingPayment={processingPayment}
+        />
+      </div>
+    );
+  }
+
   // Show error state
   if (error) {
     return (
@@ -225,20 +246,6 @@ export default function DashboardView() {
   // Determine if we should show scanning progress steps (initial state)
   const showScanningProgress = scanningStatus &&
     (scanningStatus.stage == 'idle' || scanningStatus.stage === 'validating_subreddits' || scanningStatus.stage === 'scoring_leads');
-
-  // Show subscription banner if no access
-  if (!hasSubscriptionAccess && pricingPlans.length > 0) {
-    return (
-      <div className="p-4 lg:p-8">
-        <SubscriptionRequiredBanner
-          plans={pricingPlans}
-          onChoosePlan={handleChoosePlan}
-          processingTrial={processingTrial}
-          processingPayment={processingPayment}
-        />
-      </div>
-    );
-  }
 
   return (
     <div className="p-4 lg:p-8">
