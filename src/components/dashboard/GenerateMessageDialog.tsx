@@ -97,7 +97,7 @@ export default function GenerateMessageDialog({
     try {
       const response = await generateLeadResponse(leadId, tone, length);
       const newMessage = response.data.message;
-      
+
       const newMessages = [...cachedMessages, newMessage];
       // Add to cache
       setCachedMessages(newMessages);
@@ -110,8 +110,6 @@ export default function GenerateMessageDialog({
 
       // Decrement remaining attempts
       setRemainingAttempts((prev) => prev - 1);
-<<<<<<< HEAD
-=======
 
       // Update monthly usage from API response
       if ((response.data as any).monthlyUsed !== undefined) {
@@ -119,8 +117,6 @@ export default function GenerateMessageDialog({
         setMonthlyLimit((response.data as any).monthlyLimit);
       }
 
-      trackEvent('message_generated');
->>>>>>> bc3e3fa (feat: integrate dynamic UI constraints for subscription plans- Replaced hardcoded project limits with dynamic `maxProjects` from the subscription API in Dashboard, Sidebar, and ProjectSwitcher.- Updated `SubscriptionStatus` types to include new plan details (`maxProjects`, `maxKeywords`, `maxReplyDrafts`, `dataRetentionDays`).- Enhanced [GenerateMessageDialog](cci:1://file:///s:/30daysofpython/Rixly/Rixly-Landing/src/components/dashboard/GenerateMessageDialog.tsx:26:0-322:1) with a progress bar tracking real-time monthly AI drafts.- Added smart disabled states and tooltips to project creation and AI generation buttons when plan limits are reached.)
     } catch (error) {
       setResponseError(
         error instanceof Error ? error.message : "Failed to generate response"
@@ -178,11 +174,10 @@ export default function GenerateMessageDialog({
                   <button
                     key={option.value}
                     onClick={() => setTone(option.value)}
-                    className={`py-1.5 px-2 rounded-md border-2 transition-all ${
-                      tone === option.value
+                    className={`py-1.5 px-2 rounded-md border-2 transition-all ${tone === option.value
                         ? "border-teal-600 bg-teal-50 dark:bg-teal-950 dark:border-teal-400"
                         : "border-neutral-200 dark:border-neutral-800 hover:border-neutral-300 dark:hover:border-neutral-700"
-                    }`}
+                      }`}
                   >
                     <div className="text-xs font-medium text-neutral-950 dark:text-white">
                       {option.label}
@@ -202,11 +197,10 @@ export default function GenerateMessageDialog({
                   <button
                     key={option.value}
                     onClick={() => setLength(option.value)}
-                    className={`py-1.5 px-2 rounded-md border-2 transition-all ${
-                      length === option.value
+                    className={`py-1.5 px-2 rounded-md border-2 transition-all ${length === option.value
                         ? "border-teal-600 bg-teal-50 dark:bg-teal-950 dark:border-teal-400"
                         : "border-neutral-200 dark:border-neutral-800 hover:border-neutral-300 dark:hover:border-neutral-700"
-                    }`}
+                      }`}
                   >
                     <div className="text-xs font-medium text-neutral-950 dark:text-white">
                       {option.label}
@@ -267,7 +261,7 @@ export default function GenerateMessageDialog({
               </span>
             </div>
           )}
-          
+
           {/* Message Display Area with Navigation */}
           {!isLoadingMessages && cachedMessages.length > 0 && (
             <div className="space-y-2">
