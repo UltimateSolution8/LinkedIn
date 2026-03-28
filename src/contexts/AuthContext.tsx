@@ -1,5 +1,6 @@
 import { createContext, useContext, useState, ReactNode, useEffect } from "react";
 import { getCurrentUser, getMe, logout as logoutApi, type User } from "@/lib/api/auth";
+import { setUserId } from "@/lib/analytics";
 
 interface AuthContextType {
   user: User | null;
@@ -41,6 +42,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
     initAuth();
   }, []);
+
+  // GA4: Set user_id for per-user tracking
+  useEffect(() => {
+    if (user && user._id) {
+      setUserId(user._id);
+    }
+  }, [user]);
 
   // Listen for storage changes (cross-tab logout)
   useEffect(() => {

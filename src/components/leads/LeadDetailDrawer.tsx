@@ -6,6 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { getLeadDetails, type Lead, type LeadDetailsResponse } from "@/lib/api/leads";
 import GenerateCommentDialog from "@/components/dashboard/GenerateCommentDialog";
+import { trackEvent } from "@/lib/analytics";
 
 interface LeadDetailDrawerProps {
   open: boolean;
@@ -89,6 +90,7 @@ export default function LeadDetailDrawer({
     setIsSubmitting(true);
     try {
       await onMarkContacted(lead, replyText, replyTone);
+      trackEvent('lead_contacted');
       onOpenChange(false);
     } finally {
       setIsSubmitting(false);
@@ -100,6 +102,7 @@ export default function LeadDetailDrawer({
     setIsSubmitting(true);
     try {
       await onArchive(lead);
+      trackEvent('lead_archived');
       onOpenChange(false);
     } finally {
       setIsSubmitting(false);

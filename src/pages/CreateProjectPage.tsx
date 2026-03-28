@@ -14,6 +14,8 @@ import PreviewProjectStep from "@/components/create-project/PreviewProjectStep";
 import { createProject } from "@/lib/api/projects";
 import { checkSubscriptionAccess } from "@/lib/utils/subscription";
 import { useProject } from "@/contexts/ProjectContext";
+import { trackEvent } from "@/lib/analytics";
+
 
 export default function CreateProjectPage() {
   const navigate = useNavigate();
@@ -31,12 +33,15 @@ export default function CreateProjectPage() {
   const handleStep1Next = (data: ProjectInfoData) => {
     setProjectInfo(data);
     setCurrentStep(2);
+    trackEvent('project_step_completed', { step: 1, step_name: 'project_info' });
   };
 
   const handleStep2Next = (data: ProjectDetailsData) => {
     setProjectDetails(data);
     setCurrentStep(3);
+    trackEvent('project_step_completed', { step: 2, step_name: 'project_details' });
   };
+
 
   const handleStep2Back = () => {
     setCurrentStep(1);
@@ -45,6 +50,7 @@ export default function CreateProjectPage() {
   const handleStep3Next = () => {
     console.log("Keywords:", keywords);
     setCurrentStep(4);
+    trackEvent('project_step_completed', { step: 3, step_name: 'keyword_setup' });
   };
 
   const handleStep3Back = () => {
@@ -80,6 +86,7 @@ export default function CreateProjectPage() {
       const response = await createProject(projectData);
 
       console.log("Project created successfully:", response);
+      trackEvent('project_step_completed', { step: 4, step_name: 'project_created' });
 
       // Refresh project list and select the new project BEFORE redirecting
       await refreshProjects();

@@ -12,6 +12,8 @@ import {
 } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
 import { generateLeadResponse, getInviteMessages } from "@/lib/api/leads";
+import { trackEvent } from "@/lib/analytics";
+
 
 type Tone = "friendly" | "professional" | "casual";
 type Length = "short" | "medium";
@@ -108,6 +110,8 @@ export default function GenerateMessageDialog({
 
       // Decrement remaining attempts
       setRemainingAttempts((prev) => prev - 1);
+      trackEvent('message_generated');
+
     } catch (error) {
       setResponseError(
         error instanceof Error ? error.message : "Failed to generate response"
@@ -137,7 +141,9 @@ export default function GenerateMessageDialog({
     navigator.clipboard.writeText(currentMessage);
 
     // Open Reddit DM
+    trackEvent('dm_send_clicked');
     window.open(dmUrl, "_blank");
+
   };
 
   const currentMessage = cachedMessages[currentMessageIndex] || "";
