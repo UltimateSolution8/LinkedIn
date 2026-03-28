@@ -12,6 +12,8 @@ import {
 } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
 import { getGeneratedComments, generatePostComment } from "@/lib/api/posts";
+import { trackEvent } from "@/lib/analytics";
+
 
 type Tone = "friendly" | "professional" | "casual";
 type Length = "short" | "medium";
@@ -98,6 +100,8 @@ export default function GenerateCommentDialog({
 
       // Update remaining attempts from response
       setRemainingAttempts(response.data.remainingAttempts);
+      trackEvent('comment_generated');
+
     } catch (error) {
       setResponseError(
         error instanceof Error ? error.message : "Failed to generate comment"
@@ -121,6 +125,9 @@ export default function GenerateCommentDialog({
 
     // Copy to clipboard
     navigator.clipboard.writeText(currentComment);
+
+    trackEvent('comment_copied');
+
 
     // Show success message (you could add a toast notification here)
     alert("Comment copied to clipboard!");

@@ -26,8 +26,10 @@ import {
 import { useScanStatus } from "@/hooks/useScanStatus";
 import LeadDetailDrawer from "./LeadDetailDrawer";
 import GenerateCommentDialog from "@/components/dashboard/GenerateCommentDialog";
+import { trackEvent } from "@/lib/analytics";
 
 interface LeadsPageProps {
+
   projectId: string;
   mode: LeadListType;
   onCountsRefresh?: () => Promise<void>;
@@ -452,8 +454,15 @@ export default function LeadsPage({ projectId, mode, onCountsRefresh }: LeadsPag
                   ? "border-teal-500 shadow-sm"
                   : "border-neutral-200 dark:border-neutral-800 hover:border-teal-300"
                   }`}
-                onClick={() => setExpandedLeadId((current) => (current === lead.leadId ? null : lead.leadId))}
+                onClick={() => {
+                  const willExpand = expandedLeadId !== lead.leadId;
+                  setExpandedLeadId((current) => (current === lead.leadId ? null : lead.leadId));
+                  if (willExpand) {
+                    trackEvent('lead_card_opened', { page: mode === 'hot' ? 'hot_leads' : 'opportunities' });
+                  }
+                }}
               >
+
                 <div className="p-4 flex items-start gap-3">
                   <div className={`w-12 h-12 rounded-full border-2 ${scoreColor} flex items-center justify-center font-bold text-sm`}>
                     {lead.score?.toFixed(1) || 0}
@@ -541,8 +550,10 @@ export default function LeadsPage({ projectId, mode, onCountsRefresh }: LeadsPag
                         onClick={(event) => {
                           event.stopPropagation();
                           setCommentLead(lead);
+                          trackEvent('comment_generate_clicked', { page: mode === 'hot' ? 'hot_leads' : 'opportunities' });
                         }}
                       >
+
                         Generate Comment
                       </Button>
                       <Button
@@ -550,8 +561,10 @@ export default function LeadsPage({ projectId, mode, onCountsRefresh }: LeadsPag
                         onClick={(event) => {
                           event.stopPropagation();
                           setDrawerLead(lead);
+                          trackEvent('reply_draft_clicked', { page: mode === 'hot' ? 'hot_leads' : 'opportunities' });
                         }}
                       >
+
                         Draft Reply
                       </Button>
                       <Button
@@ -559,9 +572,11 @@ export default function LeadsPage({ projectId, mode, onCountsRefresh }: LeadsPag
                         variant="outline"
                         onClick={(event) => {
                           event.stopPropagation();
+                          trackEvent('reddit_link_clicked', { page: mode === 'hot' ? 'hot_leads' : 'opportunities' });
                           window.open(lead.postUrl, "_blank", "noopener,noreferrer");
                         }}
                       >
+
                         Open on Reddit
                         <ExternalLink className="w-3.5 h-3.5" />
                       </Button>
