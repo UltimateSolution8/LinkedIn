@@ -12,7 +12,7 @@ export default function WhileYouWait({ onAddProject, onEditSettings }: WhileYouW
     if (onAddProject) {
       onAddProject();
     } else {
-      navigate("/projects/new");
+      navigate("/create-project");
     }
   };
 

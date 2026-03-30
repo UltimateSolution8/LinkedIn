@@ -10,6 +10,7 @@ import { useState, useEffect } from "react";
 import { getSubscriptionStatusCached } from "@/lib/utils/subscription";
 import { getUserStatusLabel } from "@/lib/utils/subscriptionLabels";
 import { SubscriptionStatus } from "@/lib/api/subscription";
+import { useProject } from "@/contexts/ProjectContext";
 
 interface NavItem {
   label: string;
@@ -27,6 +28,7 @@ export default function AppSidebar({ leadsCount = 0, opportunitiesCount = 0 }: A
   const { projectId } = useParams<{ projectId: string }>();
   const navigate = useNavigate();
   const { user: currentUser } = useAuth();
+  const { projects } = useProject();
   const [subscriptionStatus, setSubscriptionStatus] = useState<SubscriptionStatus | null>(null);
 
   // Fetch subscription status on mount
@@ -68,8 +70,14 @@ export default function AppSidebar({ leadsCount = 0, opportunitiesCount = 0 }: A
     },
   ];
 
+  const maxProjects = subscriptionStatus?.subscription?.planDetails?.maxProjects || 2;
+  const isAdmin = currentUser?.role === 'admin';
+  const isCreateButtonDisabled = !isAdmin && projects.length >= maxProjects;
+
   const handleNewProject = () => {
-    navigate("/create-project");
+    if (!isCreateButtonDisabled) {
+      navigate("/create-project");
+    }
   };
 
   const getUserInitials = (firstName: string, lastName: string) => {
@@ -97,10 +105,16 @@ export default function AppSidebar({ leadsCount = 0, opportunitiesCount = 0 }: A
       <div className="px-4 mb-6">
         <Button
           onClick={handleNewProject}
-          className="w-full flex items-center justify-center gap-2 bg-primary hover:bg-primary/90 text-white py-2.5 rounded-xl font-semibold transition-colors"
+          disabled={isCreateButtonDisabled}
+          className={cn(
+            "w-full flex items-center justify-center gap-2 py-2.5 rounded-xl font-semibold transition-colors",
+            isCreateButtonDisabled
+              ? "bg-neutral-100 dark:bg-neutral-800 text-neutral-400 dark:text-neutral-500 cursor-not-allowed"
+              : "bg-primary hover:bg-primary/90 text-white"
+          )}
         >
           <Plus className="h-4 w-4" />
-          <span>New project</span>
+          <span>{isCreateButtonDisabled ? `Max ${maxProjects} projects` : "New project"}</span>
         </Button>
       </div>
 
