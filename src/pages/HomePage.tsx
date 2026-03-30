@@ -23,7 +23,7 @@ import { CompanyLogos } from "@/components/landing-new/CompanyLogos";
 import { ScrollToTop } from "@/components/landing-new/ScrollToTop";
 import ExitIntentPlaybookDialog from "@/components/landing-new/ExitIntentPlaybookDialog";
 import { getCurrentUser } from "@/lib/api/auth";
-import { useExitIntent } from "@/hooks/useExitIntent";
+import { useBackButtonExitIntent } from "@/hooks/useBackButtonExitIntent";
 
 const AnalyticsDashboard = lazy(() => import("@/components/landing-new/AnalyticsDashboard"));
 const ROIPage = lazy(() => import("@/components/landing-new/ROIPage").then((mod) => ({ default: mod.ROIPage })));
@@ -65,16 +65,10 @@ export default function HomePage() {
     };
   }, []);
 
-  useExitIntent({
+  useBackButtonExitIntent({
     enabled: view === "landing" && isAnonymousVisitor,
     onExitIntent: () => setShowExitIntent(true),
-    sessionKey: "rixly_exit_intent_seen",
-    cooldownHours: 24,
-    minTimeOnPageMs: 3000,
-    minScrollY: 80,
-    topBoundaryPx: 24,
-    minUpwardDeltaPx: 18,
-    beforeUnloadFallback: true,
+    seenKey: "rixly_exit_intent_back_seen",
   });
 
   const toggleTheme = () => setIsDark(!isDark);

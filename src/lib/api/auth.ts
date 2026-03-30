@@ -45,6 +45,7 @@ export interface SigninRequest {
 }
 
 export interface User {
+  userId?: number;
   _id: string;
   email: string;
   firstName: string;
@@ -52,6 +53,10 @@ export interface User {
   isEmailVerified: boolean;
   authType: string;
   role?: string;
+  acquisitionSource?: string | null;
+  acquisitionSourceOther?: string | null;
+  acquisitionRegion?: string | null;
+  acquisitionCapturedAt?: string | null;
   createdAt: string;
   updatedAt: string;
 }
@@ -220,6 +225,38 @@ export function getCurrentUser(): User | null {
     console.error("Failed to parse user data:", error);
     return null;
   }
+}
+
+export interface OnboardingAcquisitionPayload {
+  source: string;
+  sourceOther?: string;
+  region: string;
+}
+
+export async function saveOnboardingAcquisition(payload: OnboardingAcquisitionPayload): Promise<User> {
+  if (!RIXLY_API_BASE_URL) {
+    throw new Error("API base URL is not configured");
+  }
+
+  const response = await fetch(`${RIXLY_API_BASE_URL}/api/auth/onboarding-acquisition`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    credentials: "include",
+    body: JSON.stringify(payload),
+  });
+
+  const data = await response.json().catch(() => ({}));
+  if (!response.ok) {
+    throw new Error(data?.message || data?.error || "Failed to save onboarding details");
+  }
+
+  const userData = data.user || data.data || data;
+  if (userData?.emailId && !userData?.email) {
+    userData.email = userData.emailId;
+  }
+  return userData as User;
 }
 
 export interface VerifyEmailResponse {

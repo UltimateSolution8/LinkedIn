@@ -21,7 +21,7 @@ function writeBooleanStorage(key: string, value: boolean): void {
 
 export function useDashboardSiteTour() {
   const { user } = useAuth();
-  const userId = user?._id ?? "anonymous";
+  const userId = user?._id ?? (user?.userId ? String(user.userId) : "anonymous");
 
   const keys = useMemo(
     () => ({
@@ -69,7 +69,8 @@ export function useDashboardSiteTour() {
     writeBooleanStorage(keys.completed, true);
   }, [keys.completed, markPromptSeen]);
 
-  const shouldAutoPrompt = Boolean(user?._id) && !promptSeen && !dismissed && !completed;
+  const hasStableUserId = Boolean(user?._id || user?.userId);
+  const shouldAutoPrompt = hasStableUserId && !promptSeen && !dismissed && !completed;
 
   return {
     shouldAutoPrompt,

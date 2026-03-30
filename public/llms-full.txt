@@ -1,5 +1,4 @@
 # Rixly LLM Guidance File
-# Canonical machine-readable endpoint: /llms.txt
 
 ## Product Identity
 Rixly is a social opportunity discovery and action copilot.

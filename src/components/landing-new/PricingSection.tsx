@@ -7,6 +7,7 @@ import { detectUserCurrency } from "@/lib/utils/geolocation";
 import { getPricingPlans, type PricingPlan } from "@/lib/api/pricing";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
+import RequestDemoDialog from "@/components/shared/RequestDemoDialog";
 
 const basePlans = [
   {
@@ -69,6 +70,7 @@ export const PricingSection = () => {
   const [currency, setCurrency] = useState<"USD" | "INR">("USD");
   const [apiPlans, setApiPlans] = useState<PricingPlan[]>([]);
   const [loading, setLoading] = useState(true);
+  const [requestDemoOpen, setRequestDemoOpen] = useState(false);
   const navigate = useNavigate();
   const { isAuthenticated } = useAuth();
 
@@ -163,6 +165,15 @@ export const PricingSection = () => {
           <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
             Choose the plan that fits your needs.
           </p>
+          <div className="mt-5">
+            <Button
+              variant="outline"
+              className="rounded-full border-primary/20 hover:bg-primary/5"
+              onClick={() => setRequestDemoOpen(true)}
+            >
+              Book a Demo
+            </Button>
+          </div>
         </motion.div>
 
         {loading ? (
@@ -233,7 +244,7 @@ export const PricingSection = () => {
                         navigate("/login");
                       }
                     } else {
-                      navigate("/request-demo");
+                      setRequestDemoOpen(true);
                     }
                   }}
                 >
@@ -255,12 +266,25 @@ export const PricingSection = () => {
                     Start 7-Day Free Trial
                   </Button>
                 )}
+
+                <Button
+                  className="w-full rounded-full font-medium border-primary/20 hover:bg-primary/5"
+                  variant="outline"
+                  onClick={() => setRequestDemoOpen(true)}
+                >
+                  Talk to Sales
+                </Button>
               </div>
             </motion.div>
           ))}
         </div>
         )}
       </div>
+
+      <RequestDemoDialog
+        isOpen={requestDemoOpen}
+        onClose={() => setRequestDemoOpen(false)}
+      />
     </section>
   );
 };

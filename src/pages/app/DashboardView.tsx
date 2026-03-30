@@ -1,5 +1,5 @@
 import { Link, useParams } from "react-router-dom";
-import { useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useProject } from "@/contexts/ProjectContext";
 import { useDashboardData } from "@/hooks/useDashboardData";
 import { useScanningStatus } from "@/hooks/useScanningStatus";
@@ -15,7 +15,7 @@ import KeywordPerformanceChart from "@/components/dashboard/KeywordPerformanceCh
 import { getPricingPlans, type PricingPlan, createSubscription as createPricingSubscription, verifySubscriptionPayment, RazorpaySubscriptionResponse } from "@/lib/api/pricing";
 import { detectUserCurrency } from "@/lib/utils/geolocation";
 import { getSubscriptionStatusCached } from "@/lib/utils/subscription";
-import { useEffect } from "react";
+import { saveOnboardingAcquisition } from "@/lib/api/auth";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -27,6 +27,8 @@ import {
 } from "@/components/ui/dialog";
 import { useDashboardSiteTour } from "@/hooks/useDashboardSiteTour";
 import DashboardSiteTour from "@/components/tour/DashboardSiteTour";
+import { useAuth } from "@/contexts/AuthContext";
+import AcquisitionSurveyDialog from "@/components/onboarding/AcquisitionSurveyDialog";
 
 /**
  * DashboardView - Stats Dashboard
@@ -42,6 +44,7 @@ import DashboardSiteTour from "@/components/tour/DashboardSiteTour";
 export default function DashboardView() {
   const { projectId } = useParams<{ projectId: string }>();
   const { projects, isLoading: projectsLoading } = useProject();
+  const { user, setUser } = useAuth();
   const {
     shouldAutoPrompt,
     markPromptSeen,
@@ -72,6 +75,13 @@ export default function DashboardView() {
   const [processingPayment, setProcessingPayment] = useState(false);
   const [isTourPromptOpen, setIsTourPromptOpen] = useState(false);
   const [isTourOpen, setIsTourOpen] = useState(false);
+  const [isAcquisitionDialogOpen, setIsAcquisitionDialogOpen] = useState(false);
+  const [isAcquisitionSaving, setIsAcquisitionSaving] = useState(false);
+
+  const acquisitionSurveySkipKey = useMemo(() => {
+    const userKey = user?.userId ?? user?._id ?? user?.email ?? "anonymous";
+    return `rixly.acquisitionSurvey.skipped.${userKey}`;
+  }, [user]);
 
   // Fetch project stats (only when scanning is completed)
   const isCompleted = scanningStatus?.stage === 'completed';
@@ -98,10 +108,18 @@ export default function DashboardView() {
   }, [hasSubscriptionAccess]);
 
   useEffect(() => {
-    if (shouldAutoPrompt) {
+    if (shouldAutoPrompt && !isAcquisitionDialogOpen) {
       setIsTourPromptOpen(true);
     }
-  }, [shouldAutoPrompt]);
+  }, [isAcquisitionDialogOpen, shouldAutoPrompt]);
+
+  useEffect(() => {
+    if (!user) return;
+
+    const alreadyCaptured = Boolean(user.acquisitionCapturedAt);
+    const skipped = localStorage.getItem(acquisitionSurveySkipKey) === "true";
+    setIsAcquisitionDialogOpen(!alreadyCaptured && !skipped);
+  }, [acquisitionSurveySkipKey, user]);
 
   const handleChoosePlan = async (plan: PricingPlan, isTrial: boolean) => {
     try {
@@ -191,6 +209,33 @@ export default function DashboardView() {
     } else {
       markTourDismissed();
     }
+  };
+
+  const handleSaveAcquisition = async ({
+    source,
+    sourceOther,
+    region,
+  }: {
+    source: string;
+    sourceOther?: string;
+    region: string;
+  }) => {
+    try {
+      setIsAcquisitionSaving(true);
+      const updatedUser = await saveOnboardingAcquisition({ source, sourceOther, region });
+      setUser(updatedUser);
+      setIsAcquisitionDialogOpen(false);
+      localStorage.removeItem(acquisitionSurveySkipKey);
+    } catch (error) {
+      console.error("Failed to save acquisition survey:", error);
+    } finally {
+      setIsAcquisitionSaving(false);
+    }
+  };
+
+  const handleSkipAcquisition = () => {
+    localStorage.setItem(acquisitionSurveySkipKey, "true");
+    setIsAcquisitionDialogOpen(false);
   };
 
   // Show empty state if user has no projects
@@ -371,6 +416,14 @@ export default function DashboardView() {
       </Dialog>
 
       <DashboardSiteTour isOpen={isTourOpen} onClose={handleTourClose} />
+
+      <AcquisitionSurveyDialog
+        open={isAcquisitionDialogOpen}
+        onOpenChange={setIsAcquisitionDialogOpen}
+        onSubmit={handleSaveAcquisition}
+        onSkip={handleSkipAcquisition}
+        isSubmitting={isAcquisitionSaving}
+      />
     </div>
   );
 }
