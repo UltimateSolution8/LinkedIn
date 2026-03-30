@@ -1,6 +1,8 @@
 import { X, Sparkles, Check } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { type PricingPlan } from "@/lib/api/pricing";
+import { getCurrentUser } from "@/lib/api/auth";
+import { PopupButton } from "react-calendly";
 
 interface TrialActivationBannerProps {
   plans: PricingPlan[];
@@ -61,7 +63,7 @@ export default function TrialActivationBanner({
 
           {/* Description */}
           <p className="text-neutral-600 dark:text-neutral-400 text-sm max-w-md">
-            Start your 7-day free trial to discover high-intent leads on Reddit
+            Book a demo to learn how to discover high-intent leads on Reddit
           </p>
 
           {/* Features */}
@@ -79,7 +81,8 @@ export default function TrialActivationBanner({
 
         {/* Right side - CTAs */}
         <div className="flex-shrink-0 flex flex-col sm:flex-row gap-3 w-full md:w-auto">
-          <Button
+          {/* Start Free Trial Button - Commented out per user request */}
+          {/* <Button
             onClick={() => onChoosePlan(plan, true)}
             disabled={processingTrial || processingPayment}
             size="lg"
@@ -96,7 +99,20 @@ export default function TrialActivationBanner({
                 Start Free Trial
               </>
             )}
-          </Button>
+          </Button> */}
+
+          <div className="w-full sm:w-auto">
+            <PopupButton
+              url="https://calendly.com/rixlyleads/30min"
+              rootElement={document.getElementById("root")!}
+              text="Book Demo"
+              className="w-full h-full bg-teal-600 hover:bg-teal-700 text-white font-semibold px-8 py-4 rounded-xl shadow-lg shadow-teal-600/30 hover:shadow-teal-600/40 transition-all text-base flex items-center justify-center"
+              prefill={{
+                email: getCurrentUser()?.email || "",
+                name: getCurrentUser() ? `${getCurrentUser()?.firstName} ${getCurrentUser()?.lastName}` : "",
+              }}
+            />
+          </div>
 
           <Button
             onClick={() => onChoosePlan(plan, false)}

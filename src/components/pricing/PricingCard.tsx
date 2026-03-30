@@ -3,6 +3,8 @@ import { Check, Zap, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { type PricingPlan } from "@/lib/api/pricing";
+import { PopupButton } from "react-calendly";
+import { getCurrentUser } from "@/lib/api/auth";
 
 interface PricingCardProps {
     plan: PricingPlan;
@@ -119,8 +121,8 @@ export default function PricingCard({ plan, onChoosePlan, processing = false }: 
                     })}
                 </ul>
 
-                {/* Trial Button */}
-                {!processing && (
+                {/* Trial Button - Commented out per user request */}
+                {/* {!processing && (
                     <>
                         <Button
                             onClick={() => onChoosePlan(true)}
@@ -134,7 +136,6 @@ export default function PricingCard({ plan, onChoosePlan, processing = false }: 
                             No charge for 7 days. Cancel anytime.
                         </p>
 
-                        {/* Pay Now Button (existing flow) */}
                         <Button
                             onClick={() => onChoosePlan(false)}
                             className="w-full bg-gradient-to-r from-teal-600 to-teal-700 hover:from-teal-700 hover:to-teal-800 text-white py-4 sm:py-6 rounded-xl text-sm sm:text-base font-semibold"
@@ -142,6 +143,28 @@ export default function PricingCard({ plan, onChoosePlan, processing = false }: 
                             Pay Now
                         </Button>
                     </>
+                )} */}
+
+                {!processing && (
+                    <div className="space-y-3">
+                        <PopupButton
+                            url="https://calendly.com/rixlyleads/30min"
+                            rootElement={document.getElementById("root")!}
+                            text="Book Demo"
+                            className="w-full border-2 border-teal-600 text-teal-600 hover:bg-teal-50 py-4 rounded-xl text-sm sm:text-base font-bold transition-colors"
+                            prefill={{
+                                email: getCurrentUser()?.email || "",
+                                name: getCurrentUser() ? `${getCurrentUser()?.firstName} ${getCurrentUser()?.lastName}` : "",
+                            }}
+                        />
+
+                        <Button
+                            onClick={() => onChoosePlan(false)}
+                            className="w-full bg-gradient-to-r from-teal-600 to-teal-700 hover:from-teal-700 hover:to-teal-800 text-white py-4 sm:py-6 rounded-xl text-sm sm:text-base font-semibold"
+                        >
+                            Pay Now
+                        </Button>
+                    </div>
                 )}
 
                 {/* Processing State */}

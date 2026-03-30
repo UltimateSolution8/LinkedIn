@@ -7,11 +7,12 @@ import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { getPricingPlans, createSubscription, verifySubscriptionPayment, type PricingPlan, RazorpaySubscriptionResponse } from "@/lib/api/pricing";
 import PaymentStatusModal from "@/components/pricing/PaymentStatusModal";
 import AuthDialog from "@/components/pricing/AuthDialog";
-import RequestDemoDialog from "@/components/shared/RequestDemoDialog";
+// import RequestDemoDialog from "@/components/shared/RequestDemoDialog";
 import { detectUserCurrency } from "@/lib/utils/geolocation";
 import { getSubscriptionStatusCached } from "@/lib/utils/subscription";
 import { type SubscriptionStatus } from "@/lib/api/subscription";
 import { getCurrentUser } from "@/lib/api/auth";
+import { PopupButton, useCalendlyEventListener } from "react-calendly";
 
 // Declare Razorpay types for TypeScript
 declare global {
@@ -29,7 +30,7 @@ export default function PricingPage() {
   const [checkingSubscription, setCheckingSubscription] = useState(true);
   const [isCheckingStatus, setIsCheckingStatus] = useState(false);
   const [authDialogOpen, setAuthDialogOpen] = useState(false);
-  const [requestDemoDialogOpen, setRequestDemoDialogOpen] = useState(false);
+  // const [requestDemoDialogOpen, setRequestDemoDialogOpen] = useState(false);
   const [selectedPlan, _setSelectedPlan] = useState<PricingPlan | null>(null);
   // [PROD-KEEP] Tracks if the user chose Trial or Pay Now to survive the login process
   const [selectedIsTrial, setSelectedIsTrial] = useState<boolean>(false);
@@ -41,6 +42,15 @@ export default function PricingPage() {
   }>({
     isOpen: false,
     status: "loading",
+  });
+
+  // Listen to booking events
+  useCalendlyEventListener({
+    onEventScheduled: (e) => {
+      console.log("Calendly Event Scheduled:", e.data.payload);
+      // In a real app, you might want to call your backend here
+      // to record that this user booked a demo, even before the webhook hits.
+    },
   });
 
   // Check email verification and subscription status on mount
@@ -490,10 +500,10 @@ export default function PricingPage() {
         />
 
         {/* Request Demo Dialog */}
-        <RequestDemoDialog
+        {/* <RequestDemoDialog
           isOpen={requestDemoDialogOpen}
           onClose={() => setRequestDemoDialogOpen(false)}
-        />
+        /> */}
       </div>
     </div>
   );
@@ -577,8 +587,8 @@ function PricingCard({ plan, onChoosePlan, processing = false }: PricingCardProp
           })}
         </ul>
 
-        {/* Trial Button */}
-        {!processing && (
+        {/* Trial Button - Commented out per user request */}
+        {/* {!processing && (
           <>
             <Button
               onClick={() => onChoosePlan(true)}
@@ -592,7 +602,6 @@ function PricingCard({ plan, onChoosePlan, processing = false }: PricingCardProp
               No charge for 7 days. Cancel anytime.
             </p>
 
-            {/* Pay Now Button */}
             <Button
               onClick={() => onChoosePlan(false)}
               className="w-full bg-gradient-to-r from-teal-600 to-teal-700 hover:from-teal-700 hover:to-teal-800 text-white py-4 sm:py-6 rounded-xl text-sm sm:text-base font-semibold"
@@ -600,6 +609,28 @@ function PricingCard({ plan, onChoosePlan, processing = false }: PricingCardProp
               Pay Now
             </Button>
           </>
+        )} */}
+
+        {!processing && (
+          <div className="space-y-3">
+            <PopupButton
+              url="https://calendly.com/rixlyleads/30min"
+              rootElement={document.getElementById("root")!}
+              text="Book Demo"
+              className="w-full border-2 border-teal-600 text-teal-600 hover:bg-teal-50 py-4 rounded-xl text-sm sm:text-base font-bold transition-colors"
+              prefill={{
+                email: getCurrentUser()?.email || "",
+                name: getCurrentUser() ? `${getCurrentUser()?.firstName} ${getCurrentUser()?.lastName}` : "",
+              }}
+            />
+
+            <Button
+              onClick={() => onChoosePlan(false)}
+              className="w-full bg-gradient-to-r from-teal-600 to-teal-700 hover:from-teal-700 hover:to-teal-800 text-white py-4 sm:py-6 rounded-xl text-sm sm:text-base font-semibold"
+            >
+              Pay Now
+            </Button>
+          </div>
         )}
 
         {/* Processing State */}

@@ -7,12 +7,13 @@ import { Card, CardContent } from "@/components/ui/card";
 import { getPricingPlans, createSubscription, verifySubscriptionPayment, type PricingPlan, RazorpaySubscriptionResponse } from "@/lib/api/pricing";
 import PaymentStatusModal from "@/components/pricing/PaymentStatusModal";
 import AuthDialog from "@/components/pricing/AuthDialog";
-import RequestDemoDialog from "@/components/shared/RequestDemoDialog";
+// import RequestDemoDialog from "@/components/shared/RequestDemoDialog";
 import { detectUserCurrency } from "@/lib/utils/geolocation";
 import { getSubscriptionStatusCached } from "@/lib/utils/subscription";
 import { type SubscriptionStatus } from "@/lib/api/subscription";
 import { getCurrentUser, logout } from "@/lib/api/auth";
 import PricingCard from "@/components/pricing/PricingCard";
+import { useCalendlyEventListener } from "react-calendly";
 
 // Declare Razorpay types for TypeScript
 declare global {
@@ -30,7 +31,7 @@ export default function AuthPricingPage() {
   const [checkingSubscription, setCheckingSubscription] = useState(true);
   const [isCheckingStatus, setIsCheckingStatus] = useState(false);
   const [authDialogOpen, setAuthDialogOpen] = useState(false);
-  const [requestDemoDialogOpen, setRequestDemoDialogOpen] = useState(false);
+  // const [requestDemoDialogOpen, setRequestDemoDialogOpen] = useState(false);
   const [selectedPlan, _setSelectedPlan] = useState<PricingPlan | null>(null);
   const [paymentModal, setPaymentModal] = useState<{
     isOpen: boolean;
@@ -40,6 +41,14 @@ export default function AuthPricingPage() {
   }>({
     isOpen: false,
     status: "loading",
+  });
+
+  // Listen to booking events
+  useCalendlyEventListener({
+    onEventScheduled: (e) => {
+      console.log("Calendly Event Scheduled (Auth):", e.data.payload);
+      // Backend webhook will handle persistence
+    },
   });
 
   // Check email verification and subscription status on mount
@@ -532,10 +541,10 @@ export default function AuthPricingPage() {
         />
 
         {/* Request Demo Dialog */}
-        <RequestDemoDialog
+        {/* <RequestDemoDialog
           isOpen={requestDemoDialogOpen}
           onClose={() => setRequestDemoDialogOpen(false)}
-        />
+        /> */}
       </div>
     </div>
   );

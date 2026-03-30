@@ -1,8 +1,9 @@
-import { AlertCircle, Sparkles, TrendingUp, Users, Clock } from "lucide-react";
+import { AlertCircle, TrendingUp, Users, Clock } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { type PricingPlan } from "@/lib/api/pricing";
 import { useState } from "react";
-import TrialConfirmationDialog from "./TrialConfirmationDialog";
+import { getCurrentUser } from "@/lib/api/auth";
+import { PopupButton } from "react-calendly";
 
 interface SubscriptionRequiredBannerProps {
   plans: PricingPlan[];
@@ -19,17 +20,17 @@ export default function SubscriptionRequiredBanner({
 }: SubscriptionRequiredBannerProps) {
   const [selectedPlanIndex, setSelectedPlanIndex] = useState(0);
   const plan = plans[selectedPlanIndex] || plans[0];
-  const [showTrialDialog, setShowTrialDialog] = useState(false);
+  // const [showTrialDialog, setShowTrialDialog] = useState(false);
 
   if (!plan) return null;
 
-  const handleTrialClick = () => {
+  /* const handleTrialClick = () => {
     setShowTrialDialog(true);
   };
 
   const handleTrialConfirm = () => {
     onChoosePlan(plan, true);
-  };
+  }; */
 
   const missedOpportunities = [
     { icon: Users, text: "Qualified leads ready to engage" },
@@ -107,7 +108,8 @@ export default function SubscriptionRequiredBanner({
 
         {/* CTAs */}
         <div className="flex flex-col sm:flex-row gap-4 mb-4">
-          <Button
+          {/* Start 7-Day Free Trial Button - Commented out per user request */}
+          {/* <Button
             onClick={handleTrialClick}
             disabled={processingTrial || processingPayment}
             size="lg"
@@ -124,7 +126,20 @@ export default function SubscriptionRequiredBanner({
                 Start 7-Day Free Trial
               </>
             )}
-          </Button>
+          </Button> */}
+
+          <div className="w-full sm:flex-1">
+            <PopupButton
+              url="https://calendly.com/rixlyleads/30min"
+              rootElement={document.getElementById("root")!}
+              text="Book Demo"
+              className="w-full h-full bg-gradient-to-r from-orange-600 to-red-600 hover:from-orange-700 hover:to-red-700 text-white font-bold px-8 py-4 rounded-xl shadow-xl shadow-orange-600/40 hover:shadow-orange-600/60 transition-all text-lg flex items-center justify-center"
+              prefill={{
+                email: getCurrentUser()?.email || "",
+                name: getCurrentUser() ? `${getCurrentUser()?.firstName} ${getCurrentUser()?.lastName}` : "",
+              }}
+            />
+          </div>
 
           <Button
             onClick={() => onChoosePlan(plan, false)}
@@ -150,19 +165,19 @@ export default function SubscriptionRequiredBanner({
             <span className="font-semibold text-orange-700 dark:text-orange-400">
               Limited time offer:
             </span>{" "}
-            7 days free, then {plan.currencySymbol}{plan.currentPrice}/month • Cancel anytime
+            {plan.currencySymbol}{plan.currentPrice}/month • Cancel anytime
           </p>
         </div>
       </div>
 
-      {/* Trial Confirmation Dialog */}
-      <TrialConfirmationDialog
+      {/* Trial Confirmation Dialog - Removed as trial button is replaced by Book Demo */}
+      {/* <TrialConfirmationDialog
         open={showTrialDialog}
         onOpenChange={setShowTrialDialog}
         onConfirm={handleTrialConfirm}
         plan={plan}
         isProcessing={processingTrial}
-      />
+      /> */}
     </div>
   );
 }

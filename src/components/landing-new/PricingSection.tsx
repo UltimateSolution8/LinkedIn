@@ -7,7 +7,9 @@ import { detectUserCurrency } from "@/lib/utils/geolocation";
 import { getPricingPlans, type PricingPlan } from "@/lib/api/pricing";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
-import RequestDemoDialog from "@/components/shared/RequestDemoDialog";
+// import RequestDemoDialog from "@/components/shared/RequestDemoDialog";
+import { PopupButton } from "react-calendly";
+import { getCurrentUser } from "@/lib/api/auth";
 
 const basePlans = [
   {
@@ -70,7 +72,7 @@ export const PricingSection = () => {
   const [currency, setCurrency] = useState<"USD" | "INR">("USD");
   const [apiPlans, setApiPlans] = useState<PricingPlan[]>([]);
   const [loading, setLoading] = useState(true);
-  const [requestDemoOpen, setRequestDemoOpen] = useState(false);
+  // const [requestDemoOpen, setRequestDemoOpen] = useState(false);
   const navigate = useNavigate();
   const { isAuthenticated } = useAuth();
 
@@ -166,13 +168,16 @@ export const PricingSection = () => {
             Choose the plan that fits your needs.
           </p>
           <div className="mt-5">
-            <Button
-              variant="outline"
-              className="rounded-full border-primary/20 hover:bg-primary/5"
-              onClick={() => setRequestDemoOpen(true)}
-            >
-              Book a Demo
-            </Button>
+            <PopupButton
+              url="https://calendly.com/rixlyleads/30min"
+              rootElement={document.getElementById("root")!}
+              text="Book a Demo"
+              className="rounded-full border border-primary/20 hover:bg-primary/5 px-4 py-2 text-sm font-medium transition-colors"
+              prefill={{
+                email: getCurrentUser()?.email || "",
+                name: getCurrentUser() ? `${getCurrentUser()?.firstName} ${getCurrentUser()?.lastName}` : "",
+              }}
+            />
           </div>
         </motion.div>
 
@@ -230,28 +235,47 @@ export const PricingSection = () => {
                 </ul>
 
               <div className="space-y-3">
-                <Button
-                  className={`w-full rounded-full font-medium btn-press ${plan.popular
-                    ? "glow-primary glow-primary-hover"
-                    : ""
-                    }`}
-                  variant={plan.popular ? "default" : "outline"}
-                  onClick={() => {
-                    if (plan.cta === "Buy now") {
+                {plan.cta === "Buy now" ? (
+                  <Button
+                    className={`w-full rounded-full font-medium btn-press ${plan.popular
+                      ? "glow-primary glow-primary-hover"
+                      : ""
+                      }`}
+                    variant={plan.popular ? "default" : "outline"}
+                    onClick={() => {
                       if (isAuthenticated) {
                         navigate("/app/onboarding");
                       } else {
                         navigate("/login");
                       }
-                    } else {
-                      setRequestDemoOpen(true);
-                    }
-                  }}
-                >
-                  {plan.cta}
-                </Button>
+                    }}
+                  >
+                    {plan.cta}
+                  </Button>
+                ) : (
+                  <>
+                    {/* <Button
+                      className={`w-full rounded-full font-medium btn-press`}
+                      variant="outline"
+                      onClick={() => setRequestDemoOpen(true)}
+                    >
+                      {plan.cta}
+                    </Button> */}
+                    <PopupButton
+                      url="https://calendly.com/rixlyleads/30min"
+                      rootElement={document.getElementById("root")!}
+                      text="Book a Demo"
+                      className={`w-full rounded-full font-medium btn-press py-2 border-2 border-primary/20 hover:bg-primary/5 transition-colors`}
+                      prefill={{
+                        email: getCurrentUser()?.email || "",
+                        name: getCurrentUser() ? `${getCurrentUser()?.firstName} ${getCurrentUser()?.lastName}` : "",
+                      }}
+                    />
+                  </>
+                )}
 
-                {plan.cta === "Buy now" && (
+
+{/* plan.cta === "Buy now" && (
                   <Button
                     className="w-full rounded-full font-medium border-teal-600/30 text-teal-600 hover:bg-teal-600/5"
                     variant="outline"
@@ -265,15 +289,20 @@ export const PricingSection = () => {
                   >
                     Start 7-Day Free Trial
                   </Button>
-                )}
+                ) */}
 
-                <Button
-                  className="w-full rounded-full font-medium border-primary/20 hover:bg-primary/5"
-                  variant="outline"
-                  onClick={() => setRequestDemoOpen(true)}
-                >
-                  Talk to Sales
-                </Button>
+                <div className="w-full">
+                  <PopupButton
+                    url="https://calendly.com/rixlyleads/30min"
+                    rootElement={document.getElementById("root")!}
+                    text="Book Demo"
+                    className="w-full rounded-full font-bold border-2 border-primary/20 hover:bg-primary/5 py-2 transition-colors text-primary"
+                    prefill={{
+                      email: getCurrentUser()?.email || "",
+                      name: getCurrentUser() ? `${getCurrentUser()?.firstName} ${getCurrentUser()?.lastName}` : "",
+                    }}
+                  />
+                </div>
               </div>
             </motion.div>
           ))}
@@ -281,10 +310,10 @@ export const PricingSection = () => {
         )}
       </div>
 
-      <RequestDemoDialog
+      {/* <RequestDemoDialog
         isOpen={requestDemoOpen}
         onClose={() => setRequestDemoOpen(false)}
-      />
+      /> */}
     </section>
   );
 };
