@@ -1,4 +1,8 @@
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { useProject } from "@/contexts/ProjectContext";
+import { getSubscriptionStatusCached } from "@/lib/utils/subscription";
+import { getCurrentUser } from "@/lib/api/auth";
 
 interface WhileYouWaitProps {
   onAddProject?: () => void;
@@ -7,8 +11,28 @@ interface WhileYouWaitProps {
 
 export default function WhileYouWait({ onAddProject, onEditSettings }: WhileYouWaitProps) {
   const navigate = useNavigate();
+  const { projects } = useProject();
+  const [maxProjects, setMaxProjects] = useState(2);
+  const currentUser = getCurrentUser();
+  const isAdmin = currentUser?.role === 'admin';
+
+  useEffect(() => {
+    const fetchLimits = async () => {
+      try {
+        const subStatus = await getSubscriptionStatusCached();
+        if (subStatus?.subscription?.planDetails?.maxProjects) {
+          setMaxProjects(subStatus.subscription.planDetails.maxProjects);
+        }
+      } catch { /* keep default 2 */ }
+    };
+    fetchLimits();
+  }, []);
+
+  const isCreateButtonDisabled = !isAdmin && projects.length >= maxProjects;
 
   const handleAddProject = () => {
+    if (isCreateButtonDisabled) return;
+
     if (onAddProject) {
       onAddProject();
     } else {
@@ -57,9 +81,14 @@ export default function WhileYouWait({ onAddProject, onEditSettings }: WhileYouW
         <div className="flex flex-col gap-2 md:gap-3">
           <button
             onClick={handleAddProject}
-            className="w-full bg-primary hover:bg-teal-600 text-white font-semibold py-2 md:py-2.5 px-4 rounded-lg transition-all shadow-sm text-sm md:text-base"
+            disabled={isCreateButtonDisabled}
+            className={`w-full font-semibold py-2 md:py-2.5 px-4 rounded-lg transition-all shadow-sm text-sm md:text-base ${
+              isCreateButtonDisabled
+                ? "bg-neutral-100 dark:bg-neutral-800 text-neutral-400 dark:text-neutral-500 cursor-not-allowed"
+                : "bg-primary hover:bg-teal-600 text-white"
+            }`}
           >
-            Add another project
+            {isCreateButtonDisabled ? `Max ${maxProjects} projects reached` : "Add another project"}
           </button>
           <button
             onClick={handleEditSettings}
