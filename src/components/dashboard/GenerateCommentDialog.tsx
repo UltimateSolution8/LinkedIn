@@ -39,6 +39,8 @@ export default function GenerateCommentDialog({
   const [tone, setTone] = useState<Tone>("friendly");
   const [length, setLength] = useState<Length>("medium");
   const [remainingAttempts, setRemainingAttempts] = useState(2);
+  const [monthlyUsed, setMonthlyUsed] = useState(0);
+  const [monthlyLimit, setMonthlyLimit] = useState<number | null>(null);
 
   // Tone and Length options
   const toneOptions: { value: Tone; label: string }[] = [
@@ -68,6 +70,12 @@ export default function GenerateCommentDialog({
       const comments = response.data.messages.map((comment) => comment.message);
       setCachedComments(comments);
       setRemainingAttempts(response.data.remainingAttempts);
+
+      // Update monthly usage from API response
+      if ((response.data as any).monthlyUsed !== undefined) {
+        setMonthlyUsed((response.data as any).monthlyUsed);
+        setMonthlyLimit((response.data as any).monthlyLimit);
+      }
     } catch (error) {
       setResponseError(
         error instanceof Error ? error.message : "Failed to load previous comments"
@@ -100,6 +108,13 @@ export default function GenerateCommentDialog({
 
       // Update remaining attempts from response
       setRemainingAttempts(response.data.remainingAttempts);
+
+      // Update monthly usage from API response
+      if ((response.data as any).monthlyUsed !== undefined) {
+        setMonthlyUsed((response.data as any).monthlyUsed);
+        setMonthlyLimit((response.data as any).monthlyLimit);
+      }
+
       trackEvent('comment_generated');
 
     } catch (error) {
@@ -200,7 +215,7 @@ export default function GenerateCommentDialog({
           {/* Generate Button */}
           <Button
             onClick={handleGenerateComment}
-            disabled={isGeneratingComment || remainingAttempts <= 0 || isLoadingComments}
+            disabled={isGeneratingComment || remainingAttempts <= 0 || isLoadingComments || (monthlyLimit !== null && monthlyUsed >= monthlyLimit)}
             className="w-full py-2 bg-teal-600 hover:bg-teal-700 dark:bg-teal-600 dark:hover:bg-teal-700"
           >
             {isGeneratingComment ? (
@@ -208,6 +223,8 @@ export default function GenerateCommentDialog({
                 <Loader2 className="w-3.5 h-3.5 mr-2 animate-spin" />
                 <span className="text-xs">Generating...</span>
               </>
+            ) : monthlyLimit !== null && monthlyUsed >= monthlyLimit ? (
+              <span className="text-xs">Monthly limit reached ({monthlyUsed}/{monthlyLimit})</span>
             ) : (
               <>
                 <Sparkles className="w-3.5 h-3.5 mr-2" />
@@ -215,6 +232,19 @@ export default function GenerateCommentDialog({
               </>
             )}
           </Button>
+
+          {/* Monthly Usage Indicator */}
+          {monthlyLimit !== null && (
+            <div className="flex items-center justify-between text-xs text-neutral-500 dark:text-neutral-400 px-1">
+              <span>Monthly drafts: {monthlyUsed} / {monthlyLimit}</span>
+              <div className="w-24 h-1.5 bg-neutral-200 dark:bg-neutral-700 rounded-full overflow-hidden">
+                <div
+                  className={`h-full rounded-full transition-all ${monthlyUsed >= monthlyLimit ? 'bg-red-500' : 'bg-teal-500'}`}
+                  style={{ width: `${Math.min((monthlyUsed / monthlyLimit) * 100, 100)}%` }}
+                />
+              </div>
+            </div>
+          )}
 
           {/* Error Display */}
           {responseError && (

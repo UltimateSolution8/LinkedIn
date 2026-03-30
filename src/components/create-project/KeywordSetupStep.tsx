@@ -35,6 +35,7 @@ export default function KeywordSetupStep({
   const [isGenerating, setIsGenerating] = useState(false);
   const [generationError, setGenerationError] = useState<string | null>(null);
   const [maxKeywords, setMaxKeywords] = useState(30);
+  const minKeywords = 25;
 
   useEffect(() => {
     const fetchLimits = async () => {
@@ -55,8 +56,10 @@ export default function KeywordSetupStep({
         text: keywordInput.trim(),
         isAIGenerated: false,
       };
-      onKeywordsChange([...keywords, newKeyword]);
-      setKeywordInput("");
+      if (keywords.length < maxKeywords) {
+        onKeywordsChange([...keywords, newKeyword]);
+        setKeywordInput("");
+      }
     }
   };
 
@@ -86,7 +89,8 @@ export default function KeywordSetupStep({
           text: keyword,
           isAIGenerated: true,
         }));
-        onKeywordsChange([...keywords, ...aiKeywords]);
+        const merged = [...keywords, ...aiKeywords].slice(0, maxKeywords);
+        onKeywordsChange(merged);
       }
     } catch (error) {
       setGenerationError(
@@ -126,7 +130,8 @@ export default function KeywordSetupStep({
             <Button
               type="button"
               onClick={handleAddKeyword}
-              className="flex-shrink-0 bg-teal-600 hover:bg-teal-700 text-white px-6"
+              disabled={keywords.length >= maxKeywords}
+              className="flex-shrink-0 bg-teal-600 hover:bg-teal-700 text-white px-6 disabled:opacity-50"
             >
               Add
             </Button>
@@ -137,7 +142,7 @@ export default function KeywordSetupStep({
             type="button"
             variant="outline"
             onClick={handleAIGenerate}
-            disabled={isGenerating || !productDescription}
+            disabled={isGenerating || !productDescription || keywords.length >= maxKeywords}
             className="w-full border-neutral-300 dark:border-neutral-700 hover:bg-neutral-100 dark:hover:bg-neutral-800 gap-2"
           >
             {isGenerating ? (
@@ -157,11 +162,11 @@ export default function KeywordSetupStep({
           )}
 
           {/* Minimum Keywords Warning */}
-          {keywords.length < maxKeywords && (
+          {keywords.length < minKeywords && (
             <div className="flex items-start gap-3 p-4 bg-amber-50 dark:bg-amber-950/20 border border-amber-200 dark:border-amber-800/50 rounded-lg">
               <AlertCircle className="w-5 h-5 text-amber-600 dark:text-amber-500 flex-shrink-0 mt-0.5" />
               <p className="text-sm text-amber-800 dark:text-amber-300">
-                You need at least <strong>{maxKeywords} keywords</strong> to proceed. Use the <strong>AI Keyword Generator</strong> above to get started quickly.
+                You need at least <strong>{minKeywords} keywords</strong> to proceed. Use the <strong>AI Keyword Generator</strong> above to get started quickly.
               </p>
             </div>
           )}
@@ -223,7 +228,7 @@ export default function KeywordSetupStep({
         <Button
           type="button"
           onClick={onNext}
-          disabled={keywords.length < maxKeywords}
+          disabled={keywords.length < minKeywords}
           className="min-w-[84px] bg-teal-600 hover:bg-teal-700 text-white gap-2"
         >
           <span>Next</span>
