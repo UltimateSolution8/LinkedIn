@@ -76,7 +76,7 @@ export const HeroSection = () => {
               className="text-lg md:text-xl text-muted-foreground mb-8 max-w-xl leading-relaxed"
               data-testid="hero-description"
             >
-              AI-powered monitoring across Reddit surfaces high-intent buyers in real time. LinkedIn integration launching soon.
+              Find high-intent buyers on Reddit with AI-powered monitoring. Rixly surfaces real conversations and helps you convert them into qualified leads.
             </motion.p>
 
             <motion.div

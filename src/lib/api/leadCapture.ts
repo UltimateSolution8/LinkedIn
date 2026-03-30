@@ -3,8 +3,8 @@ const RIXLY_API_BASE_URL = import.meta.env.VITE_RIXLY_API_BASE_URL;
 export interface LeadCapturePayload {
   name: string;
   email: string;
-  mobile: string;
-  companyName: string;
+  mobile?: string;
+  companyName?: string;
   source:
     | "playbook_download"
     | "free_subreddits"
@@ -15,10 +15,11 @@ export interface LeadCapturePayload {
 }
 
 function buildAdditionalInsight(payload: LeadCapturePayload): string {
-  const parts = [
-    `Source: ${payload.source}`,
-    `Company: ${payload.companyName}`,
-  ];
+  const parts = [`Source: ${payload.source}`];
+
+  if (payload.companyName?.trim()) {
+    parts.push(`Company: ${payload.companyName.trim()}`);
+  }
 
   if (payload.extraDetails) {
     parts.push(payload.extraDetails);
@@ -35,7 +36,7 @@ export async function submitLeadCapture(payload: LeadCapturePayload): Promise<vo
   const requestBody = {
     fullName: payload.name.trim(),
     email: payload.email.trim().toLowerCase(),
-    phone: payload.mobile.trim(),
+    phone: payload.mobile?.trim() || "0000000000",
     industry: payload.source,
     additionalInsight: buildAdditionalInsight(payload),
   };

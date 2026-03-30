@@ -1,4 +1,4 @@
-import { Routes, Route, Navigate } from 'react-router-dom'
+import { Routes, Route, Navigate, useLocation } from 'react-router-dom'
 import { lazy, Suspense, useEffect } from 'react'
 
 // Layouts
@@ -46,10 +46,26 @@ import OnboardingPage from '@/pages/OnboardingPage'
 import ProjectProviderWrapper from '@/components/ProjectProviderWrapper'
 
 export default function AppRouter() {
-  // Set default page title and meta description
+  const location = useLocation()
+
+  const setRobotsMeta = (value: string) => {
+    let robotsMeta = document.querySelector('meta[name="robots"]')
+    if (!robotsMeta) {
+      robotsMeta = document.createElement("meta")
+      robotsMeta.setAttribute("name", "robots")
+      document.head.appendChild(robotsMeta)
+    }
+    robotsMeta.setAttribute("content", value)
+  }
+
+  // Set default page title and route-level indexing hints
   useEffect(() => {
-    document.title = 'RIXLY - Reddit Intelligence Platform'
-  }, [])
+    document.title = 'Rixly finds warm leads across platforms and turns them into sales.'
+
+    const noIndexPrefixes = ["/login", "/forgot-password", "/reset-password", "/verify-email", "/verify-email-prompt", "/app", "/admin"]
+    const shouldNoIndex = noIndexPrefixes.some((prefix) => location.pathname === prefix || location.pathname.startsWith(`${prefix}/`))
+    setRobotsMeta(shouldNoIndex ? "noindex, nofollow" : "index, follow")
+  }, [location.pathname])
 
   return (
     <Routes>

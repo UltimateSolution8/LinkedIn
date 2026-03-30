@@ -1,7 +1,7 @@
 // @ts-nocheck
 import { motion } from "framer-motion";
 
-const YOUTUBE_EMBED_URL = "https://www.youtube.com/embed/ZkmpHDIze5w?rel=0&modestbranding=1";
+const YOUTUBE_EMBED_URL = "https://www.youtube.com/embed/lbXFZXs_BzI?rel=0&modestbranding=1";
 
 export const VideoSection = () => {
   return (

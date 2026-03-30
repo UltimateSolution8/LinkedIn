@@ -45,8 +45,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   // GA4: Set user_id for per-user tracking
   useEffect(() => {
-    if (user && user._id) {
-      setUserId(user._id);
+    const analyticsUserId = user?._id ?? (user?.userId ? String(user.userId) : null);
+    if (analyticsUserId) {
+      setUserId(analyticsUserId);
     }
   }, [user]);
 

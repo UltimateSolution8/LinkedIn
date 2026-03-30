@@ -24,8 +24,6 @@ export default function ExitIntentPlaybookDialog({ open, onOpenChange }: ExitInt
   const [formData, setFormData] = useState({
     name: "",
     email: "",
-    mobile: "",
-    companyName: "",
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState("");
@@ -39,8 +37,6 @@ export default function ExitIntentPlaybookDialog({ open, onOpenChange }: ExitInt
       setFormData({
         name: "",
         email: "",
-        mobile: "",
-        companyName: "",
       });
     }
   }, [open]);
@@ -50,8 +46,6 @@ export default function ExitIntentPlaybookDialog({ open, onOpenChange }: ExitInt
     if (!formData.name.trim()) nextErrors.name = "Name is required";
     if (!formData.email.trim()) nextErrors.email = "Email is required";
     else if (!/\S+@\S+\.\S+/.test(formData.email)) nextErrors.email = "Invalid email format";
-    if (!formData.mobile.trim()) nextErrors.mobile = "Mobile is required";
-    if (!formData.companyName.trim()) nextErrors.companyName = "Company Name is required";
     return nextErrors;
   };
 
@@ -76,8 +70,6 @@ export default function ExitIntentPlaybookDialog({ open, onOpenChange }: ExitInt
       await submitLeadCapture({
         name: formData.name,
         email: formData.email,
-        mobile: formData.mobile,
-        companyName: formData.companyName,
         source: "exit_intent_playbook",
       });
       setSubmitted(true);
@@ -132,29 +124,6 @@ export default function ExitIntentPlaybookDialog({ open, onOpenChange }: ExitInt
                   className={errors.email ? "border-red-500" : ""}
                 />
                 {errors.email && <p className="text-xs text-red-500">{errors.email}</p>}
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="exit-mobile">Mobile *</Label>
-                <Input
-                  id="exit-mobile"
-                  type="tel"
-                  placeholder="+1 234 567 8900"
-                  value={formData.mobile}
-                  onChange={(e) => updateField("mobile", e.target.value)}
-                  className={errors.mobile ? "border-red-500" : ""}
-                />
-                {errors.mobile && <p className="text-xs text-red-500">{errors.mobile}</p>}
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="exit-company">Company Name *</Label>
-                <Input
-                  id="exit-company"
-                  placeholder="Your company"
-                  value={formData.companyName}
-                  onChange={(e) => updateField("companyName", e.target.value)}
-                  className={errors.companyName ? "border-red-500" : ""}
-                />
-                {errors.companyName && <p className="text-xs text-red-500">{errors.companyName}</p>}
               </div>
               <Button type="submit" disabled={isSubmitting} className="w-full bg-primary hover:bg-primary/90">
                 {isSubmitting ? "Submitting..." : "Unlock Playbook"}
