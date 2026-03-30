@@ -8,34 +8,23 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 export type AcquisitionSurveyValues = {
   source: string;
   sourceOther?: string;
-  region: string;
 };
 
 type AcquisitionSurveyDialogProps = {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   onSubmit: (values: AcquisitionSurveyValues) => Promise<void>;
-  onSkip: () => void;
   isSubmitting: boolean;
 };
 
 const SOURCE_OPTIONS = [
-  { value: "google_search", label: "Google Search" },
-  { value: "linkedin", label: "LinkedIn" },
   { value: "reddit", label: "Reddit" },
+  { value: "google_search", label: "Google Search" },
+  { value: "chatgpt", label: "ChatGPT" },
+  { value: "social_media", label: "Social Media" },
+  { value: "friend_colleague", label: "Friend / Colleague" },
   { value: "youtube", label: "YouTube" },
-  { value: "referral", label: "Referral" },
-  { value: "community", label: "Community/Forum" },
-  { value: "other", label: "Other" },
-];
-
-const REGION_OPTIONS = [
-  { value: "india", label: "India" },
-  { value: "north_america", label: "North America" },
-  { value: "europe", label: "Europe" },
-  { value: "apac", label: "APAC" },
-  { value: "middle_east_africa", label: "Middle East & Africa" },
-  { value: "latin_america", label: "Latin America" },
+  { value: "linkedin", label: "LinkedIn" },
   { value: "other", label: "Other" },
 ];
 
@@ -43,19 +32,17 @@ export default function AcquisitionSurveyDialog({
   open,
   onOpenChange,
   onSubmit,
-  onSkip,
   isSubmitting,
 }: AcquisitionSurveyDialogProps) {
   const [source, setSource] = useState("");
   const [sourceOther, setSourceOther] = useState("");
-  const [region, setRegion] = useState("");
   const [error, setError] = useState("");
 
   const requiresOtherSource = useMemo(() => source === "other", [source]);
 
   const handleSubmit = async () => {
-    if (!source || !region) {
-      setError("Please select source and region.");
+    if (!source) {
+      setError("Please select an option.");
       return;
     }
 
@@ -68,23 +55,26 @@ export default function AcquisitionSurveyDialog({
     await onSubmit({
       source,
       sourceOther: requiresOtherSource ? sourceOther.trim() : undefined,
-      region,
     });
   };
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-md">
+      <DialogContent
+        className="sm:max-w-md"
+        onPointerDownOutside={(event) => event.preventDefault()}
+        onEscapeKeyDown={(event) => event.preventDefault()}
+      >
         <DialogHeader>
-          <DialogTitle>One quick question</DialogTitle>
+          <DialogTitle>One quick onboarding question</DialogTitle>
           <DialogDescription>
-            Help us personalize your experience. This takes just a few seconds.
+            How did you hear about us?
           </DialogDescription>
         </DialogHeader>
 
         <div className="space-y-4">
           <div className="space-y-2">
-            <Label htmlFor="acq-source">How did you hear about Rixly?</Label>
+            <Label htmlFor="acq-source">Select one option</Label>
             <Select value={source} onValueChange={setSource}>
               <SelectTrigger id="acq-source">
                 <SelectValue placeholder="Select source" />
@@ -101,7 +91,7 @@ export default function AcquisitionSurveyDialog({
 
           {requiresOtherSource && (
             <div className="space-y-2">
-              <Label htmlFor="acq-source-other">Other source</Label>
+              <Label htmlFor="acq-source-other">Other</Label>
               <Input
                 id="acq-source-other"
                 placeholder="Please specify"
@@ -111,31 +101,12 @@ export default function AcquisitionSurveyDialog({
             </div>
           )}
 
-          <div className="space-y-2">
-            <Label htmlFor="acq-region">Your region</Label>
-            <Select value={region} onValueChange={setRegion}>
-              <SelectTrigger id="acq-region">
-                <SelectValue placeholder="Select region" />
-              </SelectTrigger>
-              <SelectContent>
-                {REGION_OPTIONS.map((item) => (
-                  <SelectItem key={item.value} value={item.value}>
-                    {item.label}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-
           {error && <p className="text-sm text-red-500">{error}</p>}
         </div>
 
         <DialogFooter className="flex-col gap-2 sm:flex-row sm:justify-end">
-          <Button type="button" variant="ghost" onClick={onSkip} disabled={isSubmitting}>
-            Skip for now
-          </Button>
           <Button type="button" onClick={handleSubmit} disabled={isSubmitting}>
-            {isSubmitting ? "Saving..." : "Save"}
+            {isSubmitting ? "Saving..." : "Continue"}
           </Button>
         </DialogFooter>
       </DialogContent>

@@ -13,6 +13,8 @@ import { signin } from "@/lib/api/auth";
 import { getProjects } from "@/lib/api/projects";
 import { useAuth } from "@/contexts/AuthContext";
 
+const ONBOARDING_PENDING_KEY = "rixly.post_verification_onboarding.pending";
+
 const loginSchema = z.object({
   email: z.string().email("Please enter a valid email address"),
   password: z.string().min(8, "Password must be at least 8 characters"),
@@ -65,6 +67,10 @@ export default function LoginForm({ onSuccess }: LoginFormProps = {}) {
           navigate("/verify-email-prompt");
         }
         return;
+      }
+
+      if (!response.user.acquisitionCapturedAt) {
+        sessionStorage.setItem(ONBOARDING_PENDING_KEY, "1");
       }
 
       // If onSuccess callback is provided, call it instead of redirecting
