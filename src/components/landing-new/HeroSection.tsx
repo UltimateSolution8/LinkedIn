@@ -5,6 +5,8 @@ import { Button } from "../ui/button";
 import { Badge } from "../ui/badge";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
+import { PopupButton } from "react-calendly";
+import { getCurrentUser } from "@/lib/api/auth";
 
 export const HeroSection = () => {
   const navigate = useNavigate();
@@ -86,30 +88,7 @@ export const HeroSection = () => {
               className="relative"
             >
               <div className="flex flex-wrap gap-4 mb-4 relative z-10">
-                <div className="relative inline-block overflow-hidden rounded-full">
-
-                  {/* Ribbon strip */}
-                  <span
-                    className="
-                        absolute 
-                        -left-8 
-                        top-2
-                        w-24
-                        h-4
-                        bg-red-600 
-                        text-white 
-                        text-[9px] 
-                        font-bold
-                        flex items-center justify-center
-                        -rotate-45
-                        origin-center
-                        tracking-wider
-                        uppercase
-                      "
-                  >
-                    FREE
-                  </span>
-
+                {/* <div className="relative inline-block overflow-hidden rounded-full">
                   <Button
                     size="lg"
                     className="rounded-full font-medium text-lg px-8 glow-primary glow-primary-hover btn-press bg-primary-gradient border-none text-white shadow-[0_10px_30px_rgba(30,134,141,0.3)]"
@@ -124,7 +103,18 @@ export const HeroSection = () => {
                   >
                     Start Finding Leads
                   </Button>
-                </div>
+                </div> */}
+                <PopupButton
+                  url="https://calendly.com/rixlyleads/30min"
+                  rootElement={document.getElementById("root")!}
+                  text="Start Finding Leads"
+                  className="rounded-full font-medium text-lg px-8 py-3 glow-primary glow-primary-hover btn-press bg-primary-gradient border-none text-white shadow-[0_10px_30px_rgba(30,134,141,0.3)]"
+                  data-testid="hero-get-started"
+                  prefill={{
+                    email: getCurrentUser()?.email || "",
+                    name: getCurrentUser() ? `${getCurrentUser()?.firstName} ${getCurrentUser()?.lastName}` : "",
+                  }}
+                />
                 <Button
                   size="lg"
                   variant="outline"

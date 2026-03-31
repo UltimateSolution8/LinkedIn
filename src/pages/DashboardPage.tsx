@@ -19,7 +19,7 @@ import { getSubscriptionStatusCached, checkSubscriptionAccess } from "@/lib/util
 import PaymentStatusModal from "@/components/pricing/PaymentStatusModal";
 import { useEffect } from "react";
 
-const MAX_PROJECTS = 2;
+
 
 export default function DashboardPage() {
   const navigate = useNavigate();
@@ -52,7 +52,10 @@ export default function DashboardPage() {
   const isAdmin = currentUser?.role === 'admin';
 
   const project = selectedProjectId ? getProjectById(selectedProjectId) : null;
-  const isCreateButtonDisabled = !isAdmin && projects.length >= MAX_PROJECTS;
+
+  // Plan-based project limit (default 2 for backward compatibility)
+  const [maxProjects, setMaxProjects] = useState(2);
+  const isCreateButtonDisabled = !isAdmin && projects.length >= maxProjects;
 
   const getProjectInitial = (projectName: string) => {
     return projectName.charAt(0).toUpperCase();
@@ -76,6 +79,14 @@ export default function DashboardPage() {
 
         const hasAccess = await checkSubscriptionAccess();
         setHasAccess(hasAccess);
+
+        // Get plan limits for project cap
+        try {
+          const subStatus = await getSubscriptionStatusCached();
+          if (subStatus?.subscription?.planDetails?.maxProjects) {
+            setMaxProjects(subStatus.subscription.planDetails.maxProjects);
+          }
+        } catch { /* keep default */ }
 
         if (!hasAccess) {
           const currency = await detectUserCurrency();
@@ -266,7 +277,7 @@ export default function DashboardPage() {
                       isAdmin
                         ? "Create new project (Admin - Unlimited)"
                         : isCreateButtonDisabled
-                          ? `Max ${MAX_PROJECTS} projects`
+                          ? `Max ${maxProjects} projects`
                           : "Create new project"
                     }
                   >

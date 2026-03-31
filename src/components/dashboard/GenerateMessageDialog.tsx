@@ -39,6 +39,8 @@ export default function GenerateMessageDialog({
   const [tone, setTone] = useState<Tone>("friendly");
   const [length, setLength] = useState<Length>("medium");
   const [remainingAttempts, setRemainingAttempts] = useState(2);
+  const [monthlyUsed, setMonthlyUsed] = useState(0);
+  const [monthlyLimit, setMonthlyLimit] = useState<number | null>(null);
 
   // Tone and Length options
   const toneOptions: { value: Tone; label: string }[] = [
@@ -77,6 +79,12 @@ export default function GenerateMessageDialog({
 
       // Update remaining attempts from API
       setRemainingAttempts(response.data.remainingAttempts);
+      
+      // Update monthly usage from API response
+      if ((response.data as any).monthlyUsed !== undefined) {
+        setMonthlyUsed((response.data as any).monthlyUsed);
+        setMonthlyLimit((response.data as any).monthlyLimit);
+      }
     } catch (error) {
       setResponseError(
         error instanceof Error ? error.message : "Failed to load previous messages"
@@ -97,7 +105,7 @@ export default function GenerateMessageDialog({
     try {
       const response = await generateLeadResponse(leadId, tone, length);
       const newMessage = response.data.message;
-      
+
       const newMessages = [...cachedMessages, newMessage];
       // Add to cache
       setCachedMessages(newMessages);
@@ -110,6 +118,13 @@ export default function GenerateMessageDialog({
 
       // Decrement remaining attempts
       setRemainingAttempts((prev) => prev - 1);
+
+      // Update monthly usage from API response
+      if ((response.data as any).monthlyUsed !== undefined) {
+        setMonthlyUsed((response.data as any).monthlyUsed);
+        setMonthlyLimit((response.data as any).monthlyLimit);
+      }
+
       trackEvent('message_generated');
 
     } catch (error) {
@@ -171,11 +186,10 @@ export default function GenerateMessageDialog({
                   <button
                     key={option.value}
                     onClick={() => setTone(option.value)}
-                    className={`py-1.5 px-2 rounded-md border-2 transition-all ${
-                      tone === option.value
+                    className={`py-1.5 px-2 rounded-md border-2 transition-all ${tone === option.value
                         ? "border-teal-600 bg-teal-50 dark:bg-teal-950 dark:border-teal-400"
                         : "border-neutral-200 dark:border-neutral-800 hover:border-neutral-300 dark:hover:border-neutral-700"
-                    }`}
+                      }`}
                   >
                     <div className="text-xs font-medium text-neutral-950 dark:text-white">
                       {option.label}
@@ -195,11 +209,10 @@ export default function GenerateMessageDialog({
                   <button
                     key={option.value}
                     onClick={() => setLength(option.value)}
-                    className={`py-1.5 px-2 rounded-md border-2 transition-all ${
-                      length === option.value
+                    className={`py-1.5 px-2 rounded-md border-2 transition-all ${length === option.value
                         ? "border-teal-600 bg-teal-50 dark:bg-teal-950 dark:border-teal-400"
                         : "border-neutral-200 dark:border-neutral-800 hover:border-neutral-300 dark:hover:border-neutral-700"
-                    }`}
+                      }`}
                   >
                     <div className="text-xs font-medium text-neutral-950 dark:text-white">
                       {option.label}
@@ -213,7 +226,7 @@ export default function GenerateMessageDialog({
           {/* Generate Button */}
           <Button
             onClick={handleGenerateResponse}
-            disabled={isGeneratingResponse || remainingAttempts <= 0 || isLoadingMessages}
+            disabled={isGeneratingResponse || remainingAttempts <= 0 || isLoadingMessages || (monthlyLimit !== null && monthlyUsed >= monthlyLimit)}
             className="w-full py-2 bg-teal-600 hover:bg-teal-700 dark:bg-teal-600 dark:hover:bg-teal-700"
           >
             {isGeneratingResponse ? (
@@ -221,6 +234,8 @@ export default function GenerateMessageDialog({
                 <Loader2 className="w-3.5 h-3.5 mr-2 animate-spin" />
                 <span className="text-xs">Generating...</span>
               </>
+            ) : monthlyLimit !== null && monthlyUsed >= monthlyLimit ? (
+              <span className="text-xs">Monthly limit reached ({monthlyUsed}/{monthlyLimit})</span>
             ) : (
               <>
                 <Sparkles className="w-3.5 h-3.5 mr-2" />
@@ -228,6 +243,19 @@ export default function GenerateMessageDialog({
               </>
             )}
           </Button>
+
+          {/* Monthly Usage Indicator */}
+          {monthlyLimit !== null && (
+            <div className="flex items-center justify-between text-xs text-neutral-500 dark:text-neutral-400 px-1">
+              <span>Monthly drafts: {monthlyUsed} / {monthlyLimit}</span>
+              <div className="w-24 h-1.5 bg-neutral-200 dark:bg-neutral-700 rounded-full overflow-hidden">
+                <div
+                  className={`h-full rounded-full transition-all ${monthlyUsed >= monthlyLimit ? 'bg-red-500' : 'bg-teal-500'}`}
+                  style={{ width: `${Math.min((monthlyUsed / monthlyLimit) * 100, 100)}%` }}
+                />
+              </div>
+            </div>
+          )}
 
           {/* Error Display */}
           {responseError && (
@@ -245,7 +273,7 @@ export default function GenerateMessageDialog({
               </span>
             </div>
           )}
-          
+
           {/* Message Display Area with Navigation */}
           {!isLoadingMessages && cachedMessages.length > 0 && (
             <div className="space-y-2">

@@ -5,6 +5,8 @@ import { motion } from "framer-motion";
 import { Menu, X, Sun, Moon } from "lucide-react";
 import { Button } from "../ui/button";
 import { useAuth } from "@/contexts/AuthContext";
+import { PopupButton } from "react-calendly";
+import { getCurrentUser } from "@/lib/api/auth";
 
 export const Navbar = ({ isDark, toggleTheme, setView }) => {
   const [isScrolled, setIsScrolled] = useState(false);
@@ -97,7 +99,7 @@ export const Navbar = ({ isDark, toggleTheme, setView }) => {
               <>
                 {isAuthenticated ? (
                   <>
-                    <Link to="/contactus">
+                    {/* <Link to="/contactus">
                       <Button
                         variant="ghost"
                         className="font-medium"
@@ -105,7 +107,18 @@ export const Navbar = ({ isDark, toggleTheme, setView }) => {
                       >
                         Contact
                       </Button>
-                    </Link>
+                    </Link> */}
+                    <PopupButton
+                      url="https://calendly.com/rixlyleads/30min"
+                      rootElement={document.getElementById("root")!}
+                      text="Book Demo"
+                      className="font-medium text-sm px-4 py-2 rounded-md hover:bg-muted transition-colors"
+                      data-testid="nav-book-demo"
+                      prefill={{
+                        email: getCurrentUser()?.email || "",
+                        name: getCurrentUser() ? `${getCurrentUser()?.firstName} ${getCurrentUser()?.lastName}` : "",
+                      }}
+                    />
                     <Link to="/dashboard">
                       <Button
                         className="rounded-full font-medium glow-primary glow-primary-hover btn-press"
@@ -117,7 +130,7 @@ export const Navbar = ({ isDark, toggleTheme, setView }) => {
                   </>
                 ) : (
                   <>
-                    <Link to="/contactus">
+                    {/* <Link to="/contactus">
                       <Button
                         variant="ghost"
                         className="font-medium"
@@ -125,7 +138,18 @@ export const Navbar = ({ isDark, toggleTheme, setView }) => {
                       >
                         Contact
                       </Button>
-                    </Link>
+                    </Link> */}
+                    <PopupButton
+                      url="https://calendly.com/rixlyleads/30min"
+                      rootElement={document.getElementById("root")!}
+                      text="Book Demo"
+                      className="font-medium text-sm px-4 py-2 rounded-md hover:bg-muted transition-colors"
+                      data-testid="nav-book-demo"
+                      prefill={{
+                        email: getCurrentUser()?.email || "",
+                        name: getCurrentUser() ? `${getCurrentUser()?.firstName} ${getCurrentUser()?.lastName}` : "",
+                      }}
+                    />
                     <Link to="/login">
                       <Button
                         variant="ghost"
@@ -218,7 +242,7 @@ export const Navbar = ({ isDark, toggleTheme, setView }) => {
                   <>
                     {isAuthenticated ? (
                       <>
-                        <Link to="/contactus" onClick={() => setIsMobileMenuOpen(false)}>
+                        {/* <Link to="/contactus" onClick={() => setIsMobileMenuOpen(false)}>
                           <Button
                             variant="outline"
                             className="w-full font-medium"
@@ -226,7 +250,18 @@ export const Navbar = ({ isDark, toggleTheme, setView }) => {
                           >
                             Contact
                           </Button>
-                        </Link>
+                        </Link> */}
+                        <PopupButton
+                          url="https://calendly.com/rixlyleads/30min"
+                          rootElement={document.getElementById("root")!}
+                          text="Book Demo"
+                          className="w-full font-medium text-sm px-4 py-2.5 rounded-md border border-border hover:bg-muted transition-colors text-center"
+                          data-testid="mobile-book-demo"
+                          prefill={{
+                            email: getCurrentUser()?.email || "",
+                            name: getCurrentUser() ? `${getCurrentUser()?.firstName} ${getCurrentUser()?.lastName}` : "",
+                          }}
+                        />
                         <Link to="/dashboard" onClick={() => setIsMobileMenuOpen(false)}>
                           <Button
                             className="w-full rounded-full font-medium glow-primary"
@@ -238,7 +273,7 @@ export const Navbar = ({ isDark, toggleTheme, setView }) => {
                       </>
                     ) : (
                       <>
-                        <Link to="/contactus" onClick={() => setIsMobileMenuOpen(false)}>
+                        {/* <Link to="/contactus" onClick={() => setIsMobileMenuOpen(false)}>
                           <Button
                             variant="outline"
                             className="w-full font-medium"
@@ -246,7 +281,18 @@ export const Navbar = ({ isDark, toggleTheme, setView }) => {
                           >
                             Contact
                           </Button>
-                        </Link>
+                        </Link> */}
+                        <PopupButton
+                          url="https://calendly.com/rixlyleads/30min"
+                          rootElement={document.getElementById("root")!}
+                          text="Book Demo"
+                          className="w-full font-medium text-sm px-4 py-2.5 rounded-md border border-border hover:bg-muted transition-colors text-center"
+                          data-testid="mobile-book-demo"
+                          prefill={{
+                            email: getCurrentUser()?.email || "",
+                            name: getCurrentUser() ? `${getCurrentUser()?.firstName} ${getCurrentUser()?.lastName}` : "",
+                          }}
+                        />
                         <Link to="/login" onClick={() => setIsMobileMenuOpen(false)}>
                           <Button
                             className="w-full rounded-full font-medium glow-primary"

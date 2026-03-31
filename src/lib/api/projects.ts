@@ -69,6 +69,8 @@ export interface GenerateKeywordsRequest {
 export interface GenerateKeywordsResponseData {
   keywords: string[];
   keywordsCount: number;
+  totalGenerated?: number;
+  limit?: number;
   targetAudience: string[];
   valuePropositions: string[];
 }

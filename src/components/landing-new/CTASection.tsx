@@ -3,6 +3,8 @@ import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
 import { Button } from "../ui/button";
 import LinkedInEarlyAccessDialog from "./LinkedInEarlyAccessDialog";
+import { PopupButton } from "react-calendly";
+import { getCurrentUser } from "@/lib/api/auth";
 
 export const CTASection = () => {
   return (
@@ -67,7 +69,7 @@ export const CTASection = () => {
                 triggerClassName="rounded-full font-medium text-lg px-8 glow-primary glow-primary-hover btn-press"
                 triggerLabel="LinkedIn early access"
               />
-              <Link to="/request-demo">
+              {/* <Link to="/request-demo">
                 <Button
                   size="lg"
                   variant="outline"
@@ -76,7 +78,18 @@ export const CTASection = () => {
                 >
                   Book a Demo
                 </Button>
-              </Link>
+              </Link> */}
+              <PopupButton
+                url="https://calendly.com/rixlyleads/30min"
+                rootElement={document.getElementById("root")!}
+                text="Book a Demo"
+                className="rounded-full font-medium text-lg px-8 py-3 btn-press border-2 border-primary/20 hover:bg-primary/5 transition-colors"
+                data-testid="cta-book-demo"
+                prefill={{
+                  email: getCurrentUser()?.email || "",
+                  name: getCurrentUser() ? `${getCurrentUser()?.firstName} ${getCurrentUser()?.lastName}` : "",
+                }}
+              />
             </motion.div>
 
             <motion.p

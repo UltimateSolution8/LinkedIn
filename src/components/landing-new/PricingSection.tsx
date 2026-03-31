@@ -7,7 +7,9 @@ import { detectUserCurrency } from "@/lib/utils/geolocation";
 import { getPricingPlans, type PricingPlan } from "@/lib/api/pricing";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
-import RequestDemoDialog from "@/components/shared/RequestDemoDialog";
+// import RequestDemoDialog from "@/components/shared/RequestDemoDialog";
+import { PopupButton } from "react-calendly";
+import { getCurrentUser } from "@/lib/api/auth";
 
 const basePlans = [
   {
@@ -70,7 +72,7 @@ export const PricingSection = () => {
   const [currency, setCurrency] = useState<"USD" | "INR">("USD");
   const [apiPlans, setApiPlans] = useState<PricingPlan[]>([]);
   const [loading, setLoading] = useState(true);
-  const [requestDemoOpen, setRequestDemoOpen] = useState(false);
+  // const [requestDemoOpen, setRequestDemoOpen] = useState(false);
   const navigate = useNavigate();
   const { isAuthenticated } = useAuth();
 
@@ -166,18 +168,21 @@ export const PricingSection = () => {
             Choose the plan that fits your needs.
           </p>
           <div className="mt-5">
-            <Button
-              variant="outline"
-              className="rounded-full border-primary/20 hover:bg-primary/5"
-              onClick={() => setRequestDemoOpen(true)}
-            >
-              Book a Demo
-            </Button>
+            <PopupButton
+              url="https://calendly.com/rixlyleads/30min"
+              rootElement={document.getElementById("root")!}
+              text="Book a Demo"
+              className="rounded-full border border-primary/20 hover:bg-primary/5 px-4 py-2 text-sm font-medium transition-colors"
+              prefill={{
+                email: getCurrentUser()?.email || "",
+                name: getCurrentUser() ? `${getCurrentUser()?.firstName} ${getCurrentUser()?.lastName}` : "",
+              }}
+            />
           </div>
         </motion.div>
 
         {loading ? (
-          <div className="flex justify-center items-center py-20">
+          <div className="flex justify-center items-center py-20" >
             <Loader2 className="w-8 h-8 animate-spin text-primary" />
           </div>
         ) : (
@@ -189,11 +194,10 @@ export const PricingSection = () => {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ duration: 0.5, delay: index * 0.1 }}
-                className={`relative rounded-2xl border bg-card p-8 ${
-                  plan.popular
+                className={`relative rounded-2xl border bg-card p-8 ${plan.popular
                     ? "pricing-popular border-primary/50"
                     : "border-border/50"
-                }`}
+                  }`}
                 data-testid={`pricing-card-${plan.name.toLowerCase()}`}
               >
                 {plan.popular && (
@@ -229,62 +233,76 @@ export const PricingSection = () => {
                   ))}
                 </ul>
 
-              <div className="space-y-3">
-                <Button
-                  className={`w-full rounded-full font-medium btn-press ${plan.popular
-                    ? "glow-primary glow-primary-hover"
-                    : ""
-                    }`}
-                  variant={plan.popular ? "default" : "outline"}
-                  onClick={() => {
-                    if (plan.cta === "Buy now") {
-                      if (isAuthenticated) {
-                        navigate("/app/onboarding");
-                      } else {
-                        navigate("/login");
-                      }
-                    } else {
-                      setRequestDemoOpen(true);
-                    }
-                  }}
-                >
-                  {plan.cta}
-                </Button>
+                <div className="space-y-3">
+                  {plan.cta === "Buy now" ? (
+                    <Button
+                      className={`w-full rounded-full font-medium btn-press ${plan.popular
+                        ? "glow-primary glow-primary-hover"
+                        : ""
+                        }`}
+                      variant={plan.popular ? "default" : "outline"}
+                      onClick={() => {
+                        if (isAuthenticated) {
+                          navigate("/app/onboarding");
+                        } else {
+                          navigate("/login");
+                        }
+                      }}
+                    >
+                      {plan.cta}
+                    </Button>
+                  ) : (
+                    <>
+                      {/* <Button
+                        className={`w-full rounded-full font-medium btn-press`}
+                        variant="outline"
+                        onClick={() => setRequestDemoOpen(true)}
+                      >
+                        {plan.cta}
+                      </Button> */}
+                    </>
+                  )}
 
-                {plan.cta === "Buy now" && (
-                  <Button
-                    className="w-full rounded-full font-medium border-teal-600/30 text-teal-600 hover:bg-teal-600/5"
-                    variant="outline"
-                    onClick={() => {
-                      if (isAuthenticated) {
-                        navigate("/app/onboarding?isTrial=true");
-                      } else {
-                        navigate("/login?isTrial=true");
-                      }
-                    }}
-                  >
-                    Start 7-Day Free Trial
-                  </Button>
-                )}
 
-                <Button
-                  className="w-full rounded-full font-medium border-primary/20 hover:bg-primary/5"
-                  variant="outline"
-                  onClick={() => setRequestDemoOpen(true)}
-                >
-                  Talk to Sales
-                </Button>
-              </div>
-            </motion.div>
-          ))}
-        </div>
+                  {/* plan.cta === "Buy now" && (
+                    <Button
+                      className="w-full rounded-full font-medium border-teal-600/30 text-teal-600 hover:bg-teal-600/5"
+                      variant="outline"
+                      onClick={() => {
+                        if (isAuthenticated) {
+                          navigate("/app/onboarding?isTrial=true");
+                        } else {
+                          navigate("/login?isTrial=true");
+                        }
+                      }}
+                    >
+                      Start 7-Day Free Trial
+                    </Button>
+                  ) */}
+
+                  <div className="w-full">
+                    <PopupButton
+                      url="https://calendly.com/rixlyleads/30min"
+                      rootElement={document.getElementById("root")!}
+                      text="Book Demo"
+                      className="w-full rounded-full font-bold border-2 border-primary/20 hover:bg-primary/5 py-2 transition-colors text-primary"
+                      prefill={{
+                        email: getCurrentUser()?.email || "",
+                        name: getCurrentUser() ? `${getCurrentUser()?.firstName} ${getCurrentUser()?.lastName}` : "",
+                      }}
+                    />
+                  </div>
+                </div>
+              </motion.div>
+            ))}
+          </div>
         )}
       </div>
 
-      <RequestDemoDialog
+      {/* <RequestDemoDialog
         isOpen={requestDemoOpen}
         onClose={() => setRequestDemoOpen(false)}
-      />
+      /> */}
     </section>
   );
 };
