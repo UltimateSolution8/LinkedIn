@@ -40,6 +40,7 @@ import DashboardView from '@/pages/app/DashboardView'
 import LeadsView from '@/pages/app/LeadsView'
 import OpportunitiesView from '@/pages/app/OpportunitiesView'
 import SettingsView from '@/pages/app/SettingsView'
+import GuideView from '@/pages/app/GuideView'
 import ProjectRouteGuard from '@/components/app/ProjectRouteGuard'
 import DashboardRedirect from '@/components/DashboardRedirect'
 import OnboardingPage from '@/pages/OnboardingPage'
@@ -143,6 +144,7 @@ export default function AppRouter() {
           <Route path="/app/:projectId/leads" element={<LeadsView />} />
           <Route path="/app/:projectId/opportunities" element={<OpportunitiesView />} />
           <Route path="/app/:projectId/settings" element={<SettingsView />} />
+          <Route path="/app/:projectId/playbook" element={<GuideView />} />
           {/* Redirect /app/:projectId to /app/:projectId/dashboard */}
           <Route path="/app/:projectId" element={<Navigate to="dashboard" replace />} />
         </Route>
