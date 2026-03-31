@@ -438,8 +438,6 @@ export default function BlogPage() {
       await submitLeadCapture({
         name: "Newsletter Subscriber",
         email,
-        mobile: "0000000000",
-        companyName: "N/A",
         source: "blog_newsletter",
         extraDetails: "Signup captured from blog newsletter form",
       });

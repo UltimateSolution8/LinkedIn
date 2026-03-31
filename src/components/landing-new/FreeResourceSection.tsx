@@ -1,7 +1,7 @@
 // @ts-nocheck
 import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
-import { Download, BookOpen, ArrowRight, CheckCircle, X } from "lucide-react";
+import { Download, BookOpen, ArrowRight, CheckCircle } from "lucide-react";
 import { Button } from "../ui/button";
 import { Input } from "../ui/input";
 import { Label } from "../ui/label";
@@ -38,6 +38,7 @@ export const FreeResourceSection = () => {
     email: "",
     mobile: "",
     companyName: "",
+    websiteUrl: "",
   });
   const [playbookSubmitted, setPlaybookSubmitted] = useState(false);
   const [subredditsSubmitted, setSubredditsSubmitted] = useState(false);
@@ -66,8 +67,6 @@ export const FreeResourceSection = () => {
     if (!data.name.trim()) errors.name = "Name is required";
     if (!data.email.trim()) errors.email = "Email is required";
     else if (!/\S+@\S+\.\S+/.test(data.email)) errors.email = "Invalid email format";
-    if (!data.mobile.trim()) errors.mobile = "Mobile is required";
-    if (!data.companyName.trim()) errors.companyName = "Company Name is required";
     return errors;
   };
 
@@ -113,6 +112,7 @@ export const FreeResourceSection = () => {
         email: subredditsFormData.email,
         mobile: subredditsFormData.mobile,
         companyName: subredditsFormData.companyName,
+        websiteUrl: subredditsFormData.websiteUrl,
         source: "free_subreddits",
       });
       setSubredditsSubmitted(true);
@@ -156,7 +156,7 @@ export const FreeResourceSection = () => {
   };
 
   const resetSubredditsForm = () => {
-    setSubredditsFormData({ name: "", email: "", mobile: "", companyName: "" });
+    setSubredditsFormData({ name: "", email: "", mobile: "", companyName: "", websiteUrl: "" });
     setSubredditsSubmitted(false);
     setSubredditsErrors({});
     setSubredditsSubmitError("");
@@ -327,7 +327,7 @@ export const FreeResourceSection = () => {
                               <Input
                                 id="playbook-email"
                                 type="email"
-                                placeholder="your@email.com"
+                                placeholder="you@example.com"
                                 value={playbookFormData.email}
                                 onChange={(e) => handlePlaybookInputChange("email", e.target.value)}
                                 className={playbookErrors.email ? "border-red-500" : ""}
@@ -337,31 +337,23 @@ export const FreeResourceSection = () => {
                               )}
                             </div>
                             <div className="space-y-2">
-                              <Label htmlFor="playbook-mobile">Mobile *</Label>
+                              <Label htmlFor="playbook-mobile">Phone (Optional)</Label>
                               <Input
                                 id="playbook-mobile"
                                 type="tel"
                                 placeholder="+1 234 567 8900"
                                 value={playbookFormData.mobile}
                                 onChange={(e) => handlePlaybookInputChange("mobile", e.target.value)}
-                                className={playbookErrors.mobile ? "border-red-500" : ""}
                               />
-                              {playbookErrors.mobile && (
-                                <p className="text-xs text-red-500">{playbookErrors.mobile}</p>
-                              )}
                             </div>
                             <div className="space-y-2">
-                              <Label htmlFor="playbook-company">Company Name *</Label>
+                              <Label htmlFor="playbook-company">Company Name (Optional)</Label>
                               <Input
                                 id="playbook-company"
                                 placeholder="Your company name"
                                 value={playbookFormData.companyName}
                                 onChange={(e) => handlePlaybookInputChange("companyName", e.target.value)}
-                                className={playbookErrors.companyName ? "border-red-500" : ""}
                               />
-                              {playbookErrors.companyName && (
-                                <p className="text-xs text-red-500">{playbookErrors.companyName}</p>
-                              )}
                             </div>
                             <Button
                               type="submit"
@@ -439,7 +431,7 @@ export const FreeResourceSection = () => {
                               <Input
                                 id="subreddits-email"
                                 type="email"
-                                placeholder="your@email.com"
+                                placeholder="you@example.com"
                                 value={subredditsFormData.email}
                                 onChange={(e) => handleSubredditsInputChange("email", e.target.value)}
                                 className={subredditsErrors.email ? "border-red-500" : ""}
@@ -449,31 +441,33 @@ export const FreeResourceSection = () => {
                               )}
                             </div>
                             <div className="space-y-2">
-                              <Label htmlFor="subreddits-mobile">Mobile *</Label>
+                              <Label htmlFor="subreddits-mobile">Phone (Optional)</Label>
                               <Input
                                 id="subreddits-mobile"
                                 type="tel"
                                 placeholder="+1 234 567 8900"
                                 value={subredditsFormData.mobile}
                                 onChange={(e) => handleSubredditsInputChange("mobile", e.target.value)}
-                                className={subredditsErrors.mobile ? "border-red-500" : ""}
                               />
-                              {subredditsErrors.mobile && (
-                                <p className="text-xs text-red-500">{subredditsErrors.mobile}</p>
-                              )}
                             </div>
                             <div className="space-y-2">
-                              <Label htmlFor="subreddits-company">Company Name *</Label>
+                              <Label htmlFor="subreddits-company">Company Name (Optional)</Label>
                               <Input
                                 id="subreddits-company"
                                 placeholder="Your company name"
                                 value={subredditsFormData.companyName}
                                 onChange={(e) => handleSubredditsInputChange("companyName", e.target.value)}
-                                className={subredditsErrors.companyName ? "border-red-500" : ""}
                               />
-                              {subredditsErrors.companyName && (
-                                <p className="text-xs text-red-500">{subredditsErrors.companyName}</p>
-                              )}
+                            </div>
+                            <div className="space-y-2">
+                              <Label htmlFor="subreddits-website">Website URL (Optional)</Label>
+                              <Input
+                                id="subreddits-website"
+                                type="url"
+                                placeholder="https://yourwebsite.com"
+                                value={subredditsFormData.websiteUrl}
+                                onChange={(e) => handleSubredditsInputChange("websiteUrl", e.target.value)}
+                              />
                             </div>
                             <Button
                               type="submit"
@@ -524,7 +518,7 @@ export const FreeResourceSection = () => {
                   </Dialog>
 
                   <p className="text-xs text-slate-500 dark:text-slate-400 text-center">
-                    PDF Format • 2.5 MB • All fields are mandatory
+                    PDF Format • 2.5 MB • Name and email required
                   </p>
                 </motion.div>
               </div>
