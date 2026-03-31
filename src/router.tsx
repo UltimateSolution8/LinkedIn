@@ -47,7 +47,6 @@ import ProjectProviderWrapper from '@/components/ProjectProviderWrapper'
 
 export default function AppRouter() {
   const location = useLocation()
-  const siteUrl = "https://userixly.com"
 
   const setRobotsMeta = (value: string) => {
     let robotsMeta = document.querySelector('meta[name="robots"]')
@@ -59,28 +58,13 @@ export default function AppRouter() {
     robotsMeta.setAttribute("content", value)
   }
 
-  const setCanonicalUrl = (href: string) => {
-    let canonicalLink = document.querySelector('link[rel="canonical"]') as HTMLLinkElement | null
-    if (!canonicalLink) {
-      canonicalLink = document.createElement("link")
-      canonicalLink.setAttribute("rel", "canonical")
-      document.head.appendChild(canonicalLink)
-    }
-    canonicalLink.setAttribute("href", href)
-  }
-
   // Set default page title and route-level indexing hints
   useEffect(() => {
     document.title = 'Rixly finds warm leads across platforms and turns them into sales.'
 
-    const noIndexPrefixes = ["/login", "/request-demo", "/demo-form", "/forgot-password", "/reset-password", "/verify-email", "/verify-email-prompt", "/auth-pricing", "/app", "/admin"]
+    const noIndexPrefixes = ["/login", "/forgot-password", "/reset-password", "/verify-email", "/verify-email-prompt", "/app", "/admin"]
     const shouldNoIndex = noIndexPrefixes.some((prefix) => location.pathname === prefix || location.pathname.startsWith(`${prefix}/`))
     setRobotsMeta(shouldNoIndex ? "noindex, nofollow" : "index, follow")
-
-    const canonicalHref = shouldNoIndex
-      ? `${siteUrl}/`
-      : `${siteUrl}${location.pathname === "/" ? "/" : location.pathname}`
-    setCanonicalUrl(canonicalHref)
   }, [location.pathname])
 
   return (
@@ -93,7 +77,6 @@ export default function AppRouter() {
           <Route path="/pricing" element={<Navigate to="/#pricing" replace />} />
           <Route path="/contactus" element={<ContactUsPage />} />
           <Route path="/request-demo" element={<RequestDemoPage />} />
-          <Route path="/demo-form" element={<Navigate to="/" replace />} />
           <Route path="/policies/privacy" element={<PrivacyPolicyPage />} />
           <Route path="/policies/terms" element={<TermsPage />} />
           <Route

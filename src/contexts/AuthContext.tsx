@@ -2,8 +2,6 @@ import { createContext, useContext, useState, ReactNode, useEffect } from "react
 import { getCurrentUser, getMe, logout as logoutApi, type User } from "@/lib/api/auth";
 import { setUserId } from "@/lib/analytics";
 
-const ONBOARDING_PENDING_KEY = "rixly.post_verification_onboarding.pending";
-
 interface AuthContextType {
   user: User | null;
   isAuthenticated: boolean;
@@ -22,8 +20,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     const initAuth = async () => {
       try {
-        const cachedUser = getCurrentUser();
-        let currentUser = cachedUser;
+        let currentUser = getCurrentUser();
 
         // If no user in localStorage, try fetching from server (in case of Google OAuth or cleared storage)
         if (!currentUser) {
@@ -31,10 +28,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           if (currentUser) {
             // Save to localStorage so it's available for next time
             localStorage.setItem("user", JSON.stringify(currentUser));
-
-            if (currentUser.isEmailVerified && !currentUser.acquisitionCapturedAt) {
-              sessionStorage.setItem(ONBOARDING_PENDING_KEY, "1");
-            }
           }
         }
 

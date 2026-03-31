@@ -22,21 +22,21 @@ const RequestDemoPage = () => {
           initial={{ opacity: 0, scale: 0.95 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ duration: 0.4 }}
-          className="w-full max-w-md bg-card shadow-xl rounded-2xl p-8 border border-border"
+          className="w-full max-w-md bg-white shadow-xl rounded-2xl p-8 border border-gray-200"
         >
           <div className="text-center">
             <div className="flex justify-center mb-4">
               <CheckCircle className="w-16 h-16 text-green-500" />
             </div>
-            <h2 className="text-2xl font-semibold text-foreground mb-2">
+            <h2 className="text-2xl font-semibold text-gray-900 mb-2">
               Thank You!
             </h2>
-            <p className="text-muted-foreground mb-6">
+            <p className="text-gray-600 mb-6">
               Your demo request has been submitted successfully. We&apos;ll get back to you within 24 hours.
             </p>
             <button
               onClick={handleNewRequest}
-              className="w-full py-2 rounded-lg bg-primary text-primary-foreground font-medium hover:bg-primary/90"
+              className="w-full py-2 rounded-lg bg-teal-600 text-white font-medium hover:bg-teal-700"
             >
               Submit Another Request
             </button>
@@ -52,12 +52,12 @@ const RequestDemoPage = () => {
         initial={{ opacity: 0, y: 15 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.4 }}
-        className="w-full max-w-md bg-card shadow-xl rounded-2xl p-6 sm:p-8 border border-border"
+        className="w-full max-w-md bg-white shadow-xl rounded-2xl p-6 sm:p-8 border border-gray-200"
       >
-        <h2 className="text-2xl font-semibold text-foreground mb-1">
+        <h2 className="text-2xl font-semibold text-gray-900 mb-1">
           Request a Demo
         </h2>
-        <p className="text-sm text-muted-foreground mb-6">
+        <p className="text-sm text-gray-500 mb-6">
           Fill out the form below and we&apos;ll get back to you within 24 hours.
         </p>
 

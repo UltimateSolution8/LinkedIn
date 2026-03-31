@@ -12,8 +12,6 @@ import {
 import { Plus } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { useProject } from "@/contexts/ProjectContext";
-import { usePostVerificationOnboarding } from "@/hooks/usePostVerificationOnboarding";
-import AcquisitionSurveyDialog from "@/components/onboarding/AcquisitionSurveyDialog";
 
 /**
  * Onboarding page for users with zero projects
@@ -23,7 +21,6 @@ export default function OnboardingPage() {
   const navigate = useNavigate();
   const { user: currentUser, isLoading: authLoading, isAuthenticated, logout } = useAuth();
   const { projects, isLoading: projectsLoading } = useProject();
-  const { isOpen, isSubmitting, handleSubmit, setIsOpen } = usePostVerificationOnboarding();
 
   // Redirect if not authenticated
   useEffect(() => {
@@ -154,15 +151,6 @@ export default function OnboardingPage() {
 
         </div>
       </div>
-
-      <AcquisitionSurveyDialog
-        open={isOpen}
-        onOpenChange={(nextOpen) => {
-          if (nextOpen) setIsOpen(true);
-        }}
-        onSubmit={handleSubmit}
-        isSubmitting={isSubmitting}
-      />
     </div>
   );
 }

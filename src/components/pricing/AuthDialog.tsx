@@ -15,7 +15,7 @@ import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { AlertCircle } from "lucide-react";
 //import GoogleIcon from "@/components/auth/GoogleIcon";
-import { clearClientAuthState, signin, signup, verifyOtp } from "@/lib/api/auth";
+import { signin, signup, verifyOtp } from "@/lib/api/auth";
 import { checkSubscriptionAccess } from "@/lib/utils/subscription";
 
 interface AuthDialogProps {
@@ -43,7 +43,6 @@ const signupSchema = z.object({
 
 type LoginFormData = z.infer<typeof loginSchema>;
 type SignupFormData = z.infer<typeof signupSchema>;
-const ONBOARDING_PENDING_KEY = "rixly.post_verification_onboarding.pending";
 
 export default function AuthDialog({
   isOpen,
@@ -86,7 +85,8 @@ export default function AuthDialog({
         password: data.password,
       });
 
-      clearClientAuthState();
+      localStorage.clear();
+      sessionStorage.clear();
 
       // Store user data in localStorage (access token is now in HTTP-only cookie)
       if (response.user) {
@@ -100,10 +100,6 @@ export default function AuthDialog({
           navigate("/verify-email-prompt");
         }
         return;
-      }
-
-      if (!response.user.acquisitionCapturedAt) {
-        sessionStorage.setItem(ONBOARDING_PENDING_KEY, "1");
       }
 
       if (onAuthSuccess) {
@@ -142,14 +138,11 @@ export default function AuthDialog({
         verificationMethod: "otp",
       });
 
-      clearClientAuthState();
+      localStorage.clear();
 
       // Store user data in localStorage (access token is now in HTTP-only cookie)
       if (response.user) {
         localStorage.setItem("user", JSON.stringify(response.user));
-        if (response.user.isEmailVerified && !response.user.acquisitionCapturedAt) {
-          sessionStorage.setItem(ONBOARDING_PENDING_KEY, "1");
-        }
       }
 
       // Transition to OTP verification view
@@ -177,9 +170,6 @@ export default function AuthDialog({
       // Update user in localStorage if returned
       if (response.user) {
         localStorage.setItem("user", JSON.stringify(response.user));
-        if (response.user.isEmailVerified && !response.user.acquisitionCapturedAt) {
-          sessionStorage.setItem(ONBOARDING_PENDING_KEY, "1");
-        }
       }
 
       // Call onAuthSuccess to proceed to payment flow
