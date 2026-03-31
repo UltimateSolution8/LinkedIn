@@ -338,7 +338,15 @@ export default function DashboardView() {
         </div>
       )}
 
-      <Dialog open={isTourPromptOpen} onOpenChange={setIsTourPromptOpen}>
+      <Dialog
+        open={isTourPromptOpen}
+        onOpenChange={(nextOpen) => {
+          if (!nextOpen && isTourPromptOpen) {
+            markNotNow();
+          }
+          setIsTourPromptOpen(nextOpen);
+        }}
+      >
         <DialogContent className="sm:max-w-md">
           <DialogHeader>
             <DialogTitle>Quick dashboard tour</DialogTitle>

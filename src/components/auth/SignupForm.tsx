@@ -9,7 +9,7 @@ import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
 import GoogleIcon from "@/components/auth/GoogleIcon";
-import { signup } from "@/lib/api/auth";
+import { clearClientAuthState, signup } from "@/lib/api/auth";
 import { getProjects } from "@/lib/api/projects";
 import { useAuth } from "@/contexts/AuthContext";
 
@@ -56,8 +56,8 @@ export default function SignupForm({ onSuccess }: SignupFormProps = {}) {
         lastName: data.lastName,
       });
 
-      // IMPORTANT: Clear any cached data from previous session first
-      localStorage.clear();
+      // Clear only auth/session-specific keys while preserving user preferences.
+      clearClientAuthState();
 
       // Update auth context with user data (also stores in localStorage)
       if (response.user) {
