@@ -261,7 +261,7 @@ export const PricingSection = () => {
                     >
                       {plan.cta}
                     </Button> */}
-                    <PopupButton
+                    {/* <PopupButton
                       url="https://calendly.com/rixlyleads/30min"
                       rootElement={document.getElementById("root")!}
                       text="Book a Demo"
@@ -270,7 +270,7 @@ export const PricingSection = () => {
                         email: getCurrentUser()?.email || "",
                         name: getCurrentUser() ? `${getCurrentUser()?.firstName} ${getCurrentUser()?.lastName}` : "",
                       }}
-                    />
+                    /> */}
                   </>
                 )}
 
