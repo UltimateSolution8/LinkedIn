@@ -2,6 +2,7 @@ import { clearCurrencyCache } from "../utils/geolocation";
 import { clearSubscriptionCache } from "../utils/subscription";
 
 const RIXLY_API_BASE_URL = import.meta.env.VITE_RIXLY_API_BASE_URL;
+const AUTH_LOCAL_STORAGE_KEYS = ["user", "accessToken", "lastAccessedProjectId"] as const;
 
 if (!RIXLY_API_BASE_URL) {
   console.error(
@@ -19,17 +20,7 @@ export interface SignupRequest {
 
 export interface SignupResponse {
   message: string;
-  user: {
-    _id: string;
-    email: string;
-    firstName: string;
-    lastName: string;
-    isEmailVerified: boolean;
-    authType: string;
-    role?: string;
-    createdAt: string;
-    updatedAt: string;
-  };
+  user: User;
   accessToken: string;
 }
 
@@ -164,8 +155,13 @@ export async function logout(): Promise<void> {
     console.error("Error during logout:", error);
   }
 
-  // Clear ALL authentication and session data from localStorage and sessionStorage
-  localStorage.clear();
+  clearClientAuthState();
+}
+
+export function clearClientAuthState(): void {
+  for (const key of AUTH_LOCAL_STORAGE_KEYS) {
+    localStorage.removeItem(key);
+  }
   sessionStorage.clear();
   clearCurrencyCache();
   clearSubscriptionCache();
@@ -230,7 +226,6 @@ export function getCurrentUser(): User | null {
 export interface OnboardingAcquisitionPayload {
   source: string;
   sourceOther?: string;
-  region: string;
 }
 
 export async function saveOnboardingAcquisition(payload: OnboardingAcquisitionPayload): Promise<User> {

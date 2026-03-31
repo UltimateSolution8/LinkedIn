@@ -6,6 +6,8 @@ import MobileNav from "@/components/app/MobileNav";
 import { useState, useEffect, useCallback } from "react";
 import { useParams } from "react-router-dom";
 import { getLeadCounts } from "@/lib/api/leads";
+import AcquisitionSurveyDialog from "@/components/onboarding/AcquisitionSurveyDialog";
+import { usePostVerificationOnboarding } from "@/hooks/usePostVerificationOnboarding";
 
 export interface AppLayoutOutletContext {
   refreshLeadCounts: () => Promise<void>;
@@ -15,6 +17,7 @@ export default function AppLayout() {
   const { projectId } = useParams<{ projectId: string }>();
   const [leadsCount, setLeadsCount] = useState(0);
   const [opportunitiesCount, setOpportunitiesCount] = useState(0);
+  const { isOpen, isSubmitting, handleSubmit, setIsOpen } = usePostVerificationOnboarding();
 
   const refreshLeadCounts = useCallback(async () => {
     if (!projectId) {
@@ -65,6 +68,15 @@ export default function AppLayout() {
           <Outlet context={outletContext} />
         </main>
       </div>
+
+      <AcquisitionSurveyDialog
+        open={isOpen}
+        onOpenChange={(nextOpen) => {
+          if (nextOpen) setIsOpen(true);
+        }}
+        onSubmit={handleSubmit}
+        isSubmitting={isSubmitting}
+      />
     </div>
   );
 }

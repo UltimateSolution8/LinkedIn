@@ -1,6 +1,9 @@
 User-agent: *
 Allow: /
 Disallow: /login
+Disallow: /request-demo
+Disallow: /demo-form
+Disallow: /auth-pricing
 Disallow: /forgot-password
 Disallow: /reset-password
 Disallow: /verify-email

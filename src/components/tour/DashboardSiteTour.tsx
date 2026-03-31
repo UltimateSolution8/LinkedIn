@@ -153,7 +153,7 @@ export default function DashboardSiteTour({ isOpen, onClose }: DashboardSiteTour
             onClick={() => {
               if (isLast) {
                 completedRef.current = true;
-                safeClose(true);
+                handleSetIsOpen(false);
                 return;
               }
               setCurrentStep((prev) => Math.min(prev + 1, stepsLength - 1));

@@ -9,9 +9,11 @@ import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
 import GoogleIcon from "@/components/auth/GoogleIcon";
-import { signin } from "@/lib/api/auth";
+import { clearClientAuthState, signin } from "@/lib/api/auth";
 import { getProjects } from "@/lib/api/projects";
 import { useAuth } from "@/contexts/AuthContext";
+
+const ONBOARDING_PENDING_KEY = "rixly.post_verification_onboarding.pending";
 
 const loginSchema = z.object({
   email: z.string().email("Please enter a valid email address"),
@@ -48,23 +50,29 @@ export default function LoginForm({ onSuccess }: LoginFormProps = {}) {
         password: data.password,
       });
 
-      // IMPORTANT: Clear any cached data from previous session first
-      localStorage.clear();
-      sessionStorage.clear();
-
-      // Update auth context with user data (also stores in localStorage)
-      if (response.user) {
-        setUser(response.user);
-      }
+      // Clear only auth/session-specific keys while preserving user preferences.
+      clearClientAuthState();
 
       // Check email verification first
       if (!response.user.isEmailVerified) {
+        if (response.user) {
+          setUser(response.user);
+        }
         if (onSuccess) {
           onSuccess();
         } else {
           navigate("/verify-email-prompt");
         }
         return;
+      }
+
+      if (!response.user.acquisitionCapturedAt) {
+        sessionStorage.setItem(ONBOARDING_PENDING_KEY, "1");
+      }
+
+      // Update auth context with user data after onboarding trigger flag is set.
+      if (response.user) {
+        setUser(response.user);
       }
 
       // If onSuccess callback is provided, call it instead of redirecting
