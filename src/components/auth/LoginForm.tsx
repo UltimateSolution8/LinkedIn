@@ -53,13 +53,11 @@ export default function LoginForm({ onSuccess }: LoginFormProps = {}) {
       // Clear only auth/session-specific keys while preserving user preferences.
       clearClientAuthState();
 
-      // Update auth context with user data (also stores in localStorage)
-      if (response.user) {
-        setUser(response.user);
-      }
-
       // Check email verification first
       if (!response.user.isEmailVerified) {
+        if (response.user) {
+          setUser(response.user);
+        }
         if (onSuccess) {
           onSuccess();
         } else {
@@ -70,6 +68,11 @@ export default function LoginForm({ onSuccess }: LoginFormProps = {}) {
 
       if (!response.user.acquisitionCapturedAt) {
         sessionStorage.setItem(ONBOARDING_PENDING_KEY, "1");
+      }
+
+      // Update auth context with user data after onboarding trigger flag is set.
+      if (response.user) {
+        setUser(response.user);
       }
 
       // If onSuccess callback is provided, call it instead of redirecting
