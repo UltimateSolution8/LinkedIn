@@ -29,7 +29,7 @@ export default function GuideView() {
   };
 
   return (
-    <div className="max-w-5xl mx-auto py-8 px-4 md:px-8 bg-neutral-50/50 dark:bg-neutral-950/50 min-h-screen">
+    <div className="max-w-7xl mx-auto py-8 px-4 md:px-8 bg-neutral-50/50 dark:bg-neutral-950/50 min-h-screen">
       {/* Hero Section */}
       <motion.div
         initial={{ opacity: 0, y: -20 }}
