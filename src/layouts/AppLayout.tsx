@@ -71,9 +71,7 @@ export default function AppLayout() {
 
       <AcquisitionSurveyDialog
         open={isOpen}
-        onOpenChange={(nextOpen) => {
-          if (nextOpen) setIsOpen(true);
-        }}
+        onOpenChange={setIsOpen}
         onSubmit={handleSubmit}
         isSubmitting={isSubmitting}
       />

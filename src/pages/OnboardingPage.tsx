@@ -157,9 +157,7 @@ export default function OnboardingPage() {
 
       <AcquisitionSurveyDialog
         open={isOpen}
-        onOpenChange={(nextOpen) => {
-          if (nextOpen) setIsOpen(true);
-        }}
+        onOpenChange={setIsOpen}
         onSubmit={handleSubmit}
         isSubmitting={isSubmitting}
       />
