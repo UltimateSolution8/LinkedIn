@@ -1,6 +1,6 @@
 
 import { NavLink, useParams, useNavigate } from "react-router-dom";
-import { LayoutDashboard, Flame, Target, Settings, Plus } from "lucide-react";
+import { LayoutDashboard, Flame, Target, Settings, Plus, BookOpen } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -62,6 +62,11 @@ export default function AppSidebar({ leadsCount = 0, opportunitiesCount = 0 }: A
       icon: Target,
       path: `/app/${projectId}/opportunities`,
       badge: opportunitiesCount,
+    },
+    {
+      label: "Playbook",
+      icon: BookOpen,
+      path: `/app/${projectId}/playbook`,
     },
     {
       label: "Settings",

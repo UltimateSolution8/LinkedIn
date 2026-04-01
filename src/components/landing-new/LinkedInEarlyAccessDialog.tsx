@@ -40,8 +40,6 @@ export default function LinkedInEarlyAccessDialog({
     if (!formData.name.trim()) nextErrors.name = "Name is required";
     if (!formData.email.trim()) nextErrors.email = "Email is required";
     else if (!/\S+@\S+\.\S+/.test(formData.email)) nextErrors.email = "Invalid email format";
-    if (!formData.mobile.trim()) nextErrors.mobile = "Mobile is required";
-    if (!formData.companyName.trim()) nextErrors.companyName = "Company Name is required";
     return nextErrors;
   };
 
@@ -131,7 +129,7 @@ export default function LinkedInEarlyAccessDialog({
                 <Input
                   id="li-email"
                   type="email"
-                  placeholder="your@email.com"
+                  placeholder="you@example.com"
                   value={formData.email}
                   onChange={(e) => updateField("email", e.target.value)}
                   className={errors.email ? "border-red-500" : ""}
@@ -139,27 +137,23 @@ export default function LinkedInEarlyAccessDialog({
                 {errors.email && <p className="text-xs text-red-500">{errors.email}</p>}
               </div>
               <div className="space-y-2">
-                <Label htmlFor="li-mobile">Mobile *</Label>
+                <Label htmlFor="li-mobile">Phone (Optional)</Label>
                 <Input
                   id="li-mobile"
                   type="tel"
                   placeholder="+1 234 567 8900"
                   value={formData.mobile}
                   onChange={(e) => updateField("mobile", e.target.value)}
-                  className={errors.mobile ? "border-red-500" : ""}
                 />
-                {errors.mobile && <p className="text-xs text-red-500">{errors.mobile}</p>}
               </div>
               <div className="space-y-2">
-                <Label htmlFor="li-company">Company Name *</Label>
+                <Label htmlFor="li-company">Company Name (Optional)</Label>
                 <Input
                   id="li-company"
                   placeholder="Your company"
                   value={formData.companyName}
                   onChange={(e) => updateField("companyName", e.target.value)}
-                  className={errors.companyName ? "border-red-500" : ""}
                 />
-                {errors.companyName && <p className="text-xs text-red-500">{errors.companyName}</p>}
               </div>
               <Button type="submit" disabled={isSubmitting} className="w-full bg-primary hover:bg-primary/90">
                 {isSubmitting ? "Submitting..." : "Submit Early Access Request"}

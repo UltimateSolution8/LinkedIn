@@ -5,6 +5,7 @@ export interface LeadCapturePayload {
   email: string;
   mobile?: string;
   companyName?: string;
+  websiteUrl?: string;
   source:
     | "playbook_download"
     | "free_subreddits"
@@ -14,11 +15,23 @@ export interface LeadCapturePayload {
   extraDetails?: string;
 }
 
+const FORM_TYPE_BY_SOURCE: Record<LeadCapturePayload["source"], string> = {
+  playbook_download: "playbook_download",
+  free_subreddits: "free_subreddits",
+  linkedin_early_access: "linkedin_early_access",
+  exit_intent_playbook: "exit_intent_playbook",
+  blog_newsletter: "blog_newsletter",
+};
+
 function buildAdditionalInsight(payload: LeadCapturePayload): string {
   const parts = [`Source: ${payload.source}`];
 
   if (payload.companyName?.trim()) {
     parts.push(`Company: ${payload.companyName.trim()}`);
+  }
+
+  if (payload.websiteUrl?.trim()) {
+    parts.push(`Website: ${payload.websiteUrl.trim()}`);
   }
 
   if (payload.extraDetails) {
@@ -36,9 +49,10 @@ export async function submitLeadCapture(payload: LeadCapturePayload): Promise<vo
   const requestBody = {
     fullName: payload.name.trim(),
     email: payload.email.trim().toLowerCase(),
-    phone: payload.mobile?.trim() || "0000000000",
+    phone: payload.mobile?.trim() || "",
     industry: payload.source,
     additionalInsight: buildAdditionalInsight(payload),
+    formType: FORM_TYPE_BY_SOURCE[payload.source],
   };
 
   const response = await fetch(`${RIXLY_API_BASE_URL}/api/demo/request-sheet`, {
