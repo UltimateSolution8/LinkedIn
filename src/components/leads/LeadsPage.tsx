@@ -18,6 +18,7 @@ import {
   patchLeadFollowUp,
   patchLeadStar,
   patchLeadStatus,
+  rateMatch,
   saveReplyStyle,
   type Lead,
   type LeadListType,
@@ -83,6 +84,7 @@ export default function LeadsPage({ projectId, mode, onCountsRefresh }: LeadsPag
   const [commentLead, setCommentLead] = useState<Lead | null>(null);
   const [actionError, setActionError] = useState<string | null>(null);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
+  const [hoverRating, setHoverRating] = useState<number>(0);
 
   const activeFiltersCount = selectedPainTags.length + (starredOnly ? 1 : 0) + (followUpOnly ? 1 : 0);
 
@@ -268,6 +270,19 @@ export default function LeadsPage({ projectId, mode, onCountsRefresh }: LeadsPag
     } catch (err) {
       setLeads(previousLeads);
       setActionError(err instanceof Error ? err.message : "Failed to archive lead");
+    }
+  };
+
+  const onRateLead = async (lead: Lead, rating: number) => {
+    setActionError(null);
+    const previous = lead.userRating;
+    updateLeadInList(lead.leadId, (item) => ({ ...item, userRating: rating }));
+    try {
+      await rateMatch(String(lead.leadId), rating);
+      showSuccess("Rating saved");
+    } catch (err) {
+      updateLeadInList(lead.leadId, (item) => ({ ...item, userRating: previous }));
+      setActionError(err instanceof Error ? err.message : "Failed to save rating");
     }
   };
 
@@ -541,6 +556,40 @@ export default function LeadsPage({ projectId, mode, onCountsRefresh }: LeadsPag
                           ))}
                         </ul>
                       </section>
+                    </div>
+
+                    <div
+                      className="flex items-center gap-2"
+                      onClick={(event) => event.stopPropagation()}
+                    >
+                      <span className="text-xs text-neutral-500">Rate this match</span>
+                      <div className="flex items-center gap-0.5">
+                        {[1, 2, 3, 4, 5].map((star) => (
+                          <button
+                            key={star}
+                            type="button"
+                            onMouseEnter={() => setHoverRating(star)}
+                            onMouseLeave={() => setHoverRating(0)}
+                            onClick={(event) => {
+                              event.stopPropagation();
+                              void onRateLead(lead, star);
+                            }}
+                            className="p-0.5 transition-colors"
+                            aria-label={`Rate ${star} out of 5`}
+                          >
+                            <Star
+                              className={`w-4 h-4 transition-colors ${
+                                star <= (hoverRating || lead.userRating || 0)
+                                  ? "fill-amber-400 text-amber-400"
+                                  : "text-neutral-300 dark:text-neutral-600"
+                              }`}
+                            />
+                          </button>
+                        ))}
+                      </div>
+                      {lead.userRating !== undefined && lead.userRating > 0 && (
+                        <span className="text-xs text-neutral-400">{lead.userRating}/5</span>
+                      )}
                     </div>
 
                     <div className="flex flex-wrap items-center gap-2">

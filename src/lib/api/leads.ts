@@ -16,6 +16,7 @@ export interface Lead {
   isFollowUp?: boolean;
   followUpAt?: string;
   status?: string;
+  userRating?: number;
   painTags?: string[];
   body?: string;
 
