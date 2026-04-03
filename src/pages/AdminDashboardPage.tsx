@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { Loader2, Users, FolderKanban, Play, RefreshCw, ChevronDown, ChevronUp, StopCircle } from "lucide-react";
+import { Loader2, Users, FolderKanban, Play, RefreshCw, ChevronDown, ChevronUp, StopCircle, Plus } from "lucide-react";
 import {
   getAdminDashboardStats,
   getTodaysLeadsByProject,
@@ -343,13 +343,23 @@ export default function AdminDashboardPage() {
               <CardTitle>Recent Job Runs</CardTitle>
               <CardDescription>Last 10 completed or failed jobs</CardDescription>
             </div>
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => navigate("/admin/jobs")}
-            >
-              View All History
-            </Button>
+            <div className="flex items-center gap-2">
+              <Button
+                size="sm"
+                onClick={() => navigate("/admin/job-runs/new")}
+                className="bg-teal-600 hover:bg-teal-700 text-white"
+              >
+                <Plus className="w-4 h-4 mr-1" />
+                New Job Run
+              </Button>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => navigate("/admin/jobs")}
+              >
+                View All History
+              </Button>
+            </div>
           </div>
         </CardHeader>
         <CardContent>

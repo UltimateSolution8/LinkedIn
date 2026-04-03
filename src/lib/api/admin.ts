@@ -995,6 +995,60 @@ export async function getProjectsBreakdown(): Promise<ProjectBreakdownItem[]> {
 }
 
 /**
+ * Create a new job run for a project (admin only)
+ */
+export interface CreateJobRunResponse {
+  message: string;
+  jobRun: {
+    id: number;
+    projectId: number;
+    jobType: string;
+    status: string;
+    isActive: boolean;
+    createdAt: string;
+  };
+}
+
+export async function createJobRun(
+  projectId: number,
+  jobType: string
+): Promise<CreateJobRunResponse> {
+  if (!RIXLY_API_BASE_URL) {
+    throw new Error(
+      "API base URL is not configured. Please set VITE_RIXLY_API_BASE_URL in your .env file."
+    );
+  }
+
+  try {
+    const response = await fetch(
+      `${RIXLY_API_BASE_URL}/api/admin/projects/${projectId}/job-runs`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        credentials: "include",
+        body: JSON.stringify({ jobType }),
+      }
+    );
+
+    const responseData: CreateJobRunResponse = await response.json();
+
+    if (!response.ok) {
+      throw new Error(
+        (responseData as unknown as { message?: string }).message ||
+          "Failed to create job run"
+      );
+    }
+
+    return responseData;
+  } catch (error) {
+    console.error("Error creating job run:", error);
+    throw error;
+  }
+}
+
+/**
  * Stop a running job (admin only)
  */
 export async function stopJob(jobRunId: number): Promise<StopJobResponse> {
