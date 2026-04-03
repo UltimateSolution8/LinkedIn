@@ -150,7 +150,7 @@ export default function DashboardSiteTour({ isOpen, onClose }: DashboardSiteTour
       }}
       prevButton={({ currentStep, setCurrentStep }) =>
         currentStep > 0 ? (
-          <button 
+          <button
             type="button"
             className="px-6 py-2 bg-teal-600 text-white rounded-full text-xs font-bold hover:bg-teal-700 transition-colors uppercase tracking-wider shadow-sm"
             onClick={() => setCurrentStep((prev) => Math.max(prev - 1, 0))}
@@ -159,7 +159,7 @@ export default function DashboardSiteTour({ isOpen, onClose }: DashboardSiteTour
           </button>
         ) : null
       }
-      nextButton={({ currentStep, stepsLength, setCurrentStep }) => {
+      nextButton={({ currentStep, stepsLength, setCurrentStep, setIsOpen }) => {
         const isLast = currentStep === stepsLength - 1;
         return (
           <button
@@ -168,7 +168,8 @@ export default function DashboardSiteTour({ isOpen, onClose }: DashboardSiteTour
             onClick={() => {
               if (isLast) {
                 completedRef.current = true;
-                handleSetIsOpen(false);
+                setIsOpen(false);
+                onClose(true);
                 return;
               }
               setCurrentStep((prev) => Math.min(prev + 1, stepsLength - 1));
@@ -178,8 +179,14 @@ export default function DashboardSiteTour({ isOpen, onClose }: DashboardSiteTour
           </button>
         );
       }}
-      onClickClose={() => handleSetIsOpen(false)}
-      onClickMask={() => handleSetIsOpen(false)}
+      onClickClose={({ setIsOpen }) => {
+        setIsOpen(false);
+        onClose(completedRef.current);
+      }}
+      onClickMask={({ setIsOpen }) => {
+        setIsOpen(false);
+        onClose(completedRef.current);
+      }}
     />
   );
 }
