@@ -150,36 +150,25 @@ export default function DashboardSiteTour({ isOpen, onClose }: DashboardSiteTour
       }}
       prevButton={({ currentStep, setCurrentStep }) =>
         currentStep > 0 ? (
-<<<<<<< HEAD
           <button
             type="button"
             className="px-6 py-2 bg-teal-600 text-white rounded-full text-xs font-bold hover:bg-teal-700 transition-colors uppercase tracking-wider shadow-sm"
-=======
-          <button 
-            type="button"
-            className="px-4 py-2 bg-neutral-200 dark:bg-neutral-800 text-neutral-900 dark:text-white rounded-lg text-xs font-bold hover:bg-neutral-300 transition-colors uppercase tracking-wider"
->>>>>>> b59175e (Dashboard tour clean up)
             onClick={() => setCurrentStep((prev) => Math.max(prev - 1, 0))}
           >
             Back
           </button>
         ) : null
       }
-      nextButton={({ currentStep, stepsLength, setCurrentStep, setIsOpen }) => {
+      nextButton={({ currentStep, stepsLength, setCurrentStep }) => {
         const isLast = currentStep === stepsLength - 1;
         return (
           <button
             type="button"
-<<<<<<< HEAD
             className="px-6 py-2 bg-teal-600 text-white rounded-full text-xs font-bold hover:bg-teal-700 transition-colors uppercase tracking-wider shadow-sm"
-=======
-            className="px-6 py-2 bg-teal-600 text-white rounded-lg text-xs font-bold hover:bg-teal-700 transition-colors uppercase tracking-wider shadow-sm"
->>>>>>> b59175e (Dashboard tour clean up)
             onClick={() => {
               if (isLast) {
                 completedRef.current = true;
-                setIsOpen(false);
-                onClose(true);
+                handleSetIsOpen(false);
                 return;
               }
               setCurrentStep((prev) => Math.min(prev + 1, stepsLength - 1));
@@ -189,13 +178,11 @@ export default function DashboardSiteTour({ isOpen, onClose }: DashboardSiteTour
           </button>
         );
       }}
-      onClickClose={({ setIsOpen }) => {
-        setIsOpen(false);
-        onClose(completedRef.current);
+      onClickClose={() => {
+        handleSetIsOpen(false);
       }}
-      onClickMask={({ setIsOpen }) => {
-        setIsOpen(false);
-        onClose(completedRef.current);
+      onClickMask={() => {
+        handleSetIsOpen(false);
       }}
     />
   );
