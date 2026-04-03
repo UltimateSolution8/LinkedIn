@@ -277,16 +277,12 @@ export default function ProjectDetailsStep({
                 placeholder="https://www.yourproject.com"
                 {...register("websiteUrl", {
                   validate: (value) => {
-                    if (!value) return true; // allow empty if optional
-
+                    if (!value) return true;
                     try {
                       const url = new URL(value);
-
-                      // Optional: enforce real domain (has dot like google.com)
                       if (!url.hostname.includes(".")) {
                         return "Enter a valid domain (e.g. example.com)";
                       }
-
                       return true;
                     } catch {
                       return "Invalid URL format";
@@ -295,28 +291,23 @@ export default function ProjectDetailsStep({
 
                   onBlur: (e) => {
                     let value = e.target.value.trim();
-
                     if (!value) return;
 
-                    // Step 1: Normalize protocol
                     if (!/^https?:\/\//i.test(value)) {
                       value = `https://${value}`;
                     } else if (value.startsWith("http://")) {
                       value = value.replace("http://", "https://");
                     }
 
-                    // Step 2: Validate before setting
                     try {
                       const url = new URL(value);
-
-                      if (!url.hostname.includes(".")) return;
-
-                      setValue("websiteUrl", value, { shouldValidate: true });
-                    } catch {
-                      // Don't update if invalid
-                    }
+                      if (url.hostname.includes(".")) {
+                        setValue("websiteUrl", value, { shouldValidate: true });
+                      }
+                    } catch { /* Handled by validation errors */ }
                   }
                 })}
+                className="pl-10 border-neutral-300 dark:border-neutral-700 bg-white dark:bg-neutral-900 focus-visible:ring-teal-600/50 focus-visible:border-teal-600/80"
               />
             </div>
             {errors.websiteUrl && (
