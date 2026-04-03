@@ -1,14 +1,18 @@
 import { DashboardKPIs } from "@/lib/api/projects";
 import { Flame, TrendingUp, Users, Radar } from "lucide-react";
 
+export type DashboardMetricKey = "hot_leads" | "this_week" | "total_leads" | "posts_scanned";
+
 interface KPICardsProps {
   kpis: DashboardKPIs;
   isScanning: boolean; // Show placeholder "—" when scanning_empty
+  onCardClick?: (metric: DashboardMetricKey) => void;
 }
 
-export default function KPICards({ kpis, isScanning }: KPICardsProps) {
+export default function KPICards({ kpis, isScanning, onCardClick }: KPICardsProps) {
   const cards = [
     {
+      key: "hot_leads" as const,
       label: "Hot Leads",
       value: kpis.hotLeadCount,
       subtitle: kpis.hotLeadCount > 0 ? "Action Required" : null,
@@ -18,6 +22,7 @@ export default function KPICards({ kpis, isScanning }: KPICardsProps) {
       valueColor: "text-orange-500"
     },
     {
+      key: "this_week" as const,
       label: "This Week",
       value: kpis.leadsThisWeek,
       subtitle: kpis.leadsThisWeek > 0 ? "+12% vs last" : null,
@@ -27,6 +32,7 @@ export default function KPICards({ kpis, isScanning }: KPICardsProps) {
       valueColor: "text-neutral-800 dark:text-white"
     },
     {
+      key: "total_leads" as const,
       label: "Total Leads",
       value: kpis.totalLeads,
       subtitle: "Lifetime growth",
@@ -36,6 +42,7 @@ export default function KPICards({ kpis, isScanning }: KPICardsProps) {
       valueColor: "text-neutral-800 dark:text-white"
     },
     {
+      key: "posts_scanned" as const,
       label: "Posts Scanned",
       value: kpis.postsScanned,
       subtitle: kpis.postsScanned > 0 ? "And counting..." : null,
@@ -58,9 +65,11 @@ export default function KPICards({ kpis, isScanning }: KPICardsProps) {
           {cards.map((card, index) => {
             const Icon = card.icon;
             return (
-              <div
+              <button
+                type="button"
                 key={index}
-                className="min-w-[160px] flex-1 bg-white dark:bg-neutral-900 p-4 rounded-2xl border border-teal-200/20 dark:border-neutral-800 shadow-sm"
+                onClick={() => onCardClick?.(card.key)}
+                className="min-w-[160px] flex-1 text-left bg-white dark:bg-neutral-900 p-4 rounded-2xl border border-teal-200/20 dark:border-neutral-800 shadow-sm hover:border-teal-300 dark:hover:border-teal-700 hover:shadow-md transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50"
               >
                 {/* Icon */}
                 <div className={`w-10 h-10 rounded-lg ${card.iconBg} flex items-center justify-center ${card.iconColor} mb-3`}>
@@ -92,7 +101,7 @@ export default function KPICards({ kpis, isScanning }: KPICardsProps) {
                     {card.subtitle}
                   </p>
                 )}
-              </div>
+              </button>
             );
           })}
         </div>
@@ -103,9 +112,11 @@ export default function KPICards({ kpis, isScanning }: KPICardsProps) {
         {cards.map((card, index) => {
           const Icon = card.icon;
           return (
-            <div
+            <button
+              type="button"
               key={index}
-              className="bg-white dark:bg-neutral-900 p-6 rounded-xl border border-neutral-200 dark:border-neutral-800 shadow-sm"
+              onClick={() => onCardClick?.(card.key)}
+              className="text-left bg-white dark:bg-neutral-900 p-6 rounded-xl border border-neutral-200 dark:border-neutral-800 shadow-sm hover:border-teal-300 dark:hover:border-teal-700 hover:shadow-md transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50"
             >
               {/* Icon */}
               <div className={`w-12 h-12 rounded-lg ${card.iconBg} flex items-center justify-center ${card.iconColor} mb-4`}>
@@ -137,7 +148,7 @@ export default function KPICards({ kpis, isScanning }: KPICardsProps) {
                   {card.subtitle}
                 </p>
               )}
-            </div>
+            </button>
           );
         })}
       </section>

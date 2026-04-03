@@ -1,4 +1,4 @@
-import { Link, useParams } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import { useEffect, useMemo, useState } from "react";
 import { useProject } from "@/contexts/ProjectContext";
 import { useDashboardData } from "@/hooks/useDashboardData";
@@ -8,6 +8,7 @@ import EmptyProjectState from "@/components/dashboard/EmptyProjectState";
 import ScanningBanner from "@/components/dashboard/ScanningBanner";
 import SubscriptionRequiredBanner from "@/components/dashboard/SubscriptionRequiredBanner";
 import KPICards from "@/components/dashboard/KPICards";
+import type { DashboardMetricKey } from "@/components/dashboard/KPICards";
 import ScanningProgressSteps from "@/components/dashboard/ScanningProgressSteps";
 import WhileYouWait from "@/components/dashboard/WhileYouWait";
 import SubredditPerformanceChart from "@/components/dashboard/SubredditPerformanceChart";
@@ -43,6 +44,7 @@ import AcquisitionSurveyDialog from "@/components/onboarding/AcquisitionSurveyDi
  */
 export default function DashboardView() {
   const { projectId } = useParams<{ projectId: string }>();
+  const navigate = useNavigate();
   const { projects, isLoading: projectsLoading } = useProject();
   const { user, setUser } = useAuth();
   const {
@@ -214,15 +216,13 @@ export default function DashboardView() {
   const handleSaveAcquisition = async ({
     source,
     sourceOther,
-    region,
   }: {
     source: string;
     sourceOther?: string;
-    region: string;
   }) => {
     try {
       setIsAcquisitionSaving(true);
-      const updatedUser = await saveOnboardingAcquisition({ source, sourceOther, region });
+      const updatedUser = await saveOnboardingAcquisition({ source, sourceOther });
       setUser(updatedUser);
       setIsAcquisitionDialogOpen(false);
       localStorage.removeItem(acquisitionSurveySkipKey);
@@ -287,6 +287,43 @@ export default function DashboardView() {
 
   const isScanning = dashboardData?.scanState === "scanning_empty" || dashboardData?.scanState === "scanning_partial";
   const scanProgress = dashboardData?.scanProgress || 0;
+  const isNewUserNoLeads = Boolean(dashboardData && dashboardData.kpis.totalLeads === 0 && !isScanning);
+
+  const getWeekRange = () => {
+    const now = new Date();
+    const dayOfWeek = now.getDay();
+    const daysSinceMonday = dayOfWeek === 0 ? 6 : dayOfWeek - 1;
+
+    const start = new Date(now);
+    start.setDate(now.getDate() - daysSinceMonday);
+    start.setHours(0, 0, 0, 0);
+
+    const end = new Date();
+    return { start, end };
+  };
+
+  const handleMetricCardClick = (metric: DashboardMetricKey) => {
+    if (!projectId) return;
+
+    if (metric === "this_week") {
+      const { start, end } = getWeekRange();
+      const params = new URLSearchParams({
+        period: "this-week",
+        sort: "date",
+        createdAfter: start.toISOString(),
+        createdBefore: end.toISOString(),
+      });
+      navigate(`/app/${projectId}/leads?${params.toString()}`);
+      return;
+    }
+
+    if (metric === "posts_scanned") {
+      navigate(`/app/${projectId}/opportunities`);
+      return;
+    }
+
+    navigate(`/app/${projectId}/leads`);
+  };
 
   // Determine if we should show scanning progress steps (initial state)
   const showScanningProgress = scanningStatus &&
@@ -327,7 +364,31 @@ export default function DashboardView() {
 
       {/* KPI Cards */}
       {dashboardData && (
-        <KPICards kpis={dashboardData.kpis} isScanning={isScanning} />
+        <KPICards
+          kpis={dashboardData.kpis}
+          isScanning={isScanning}
+          onCardClick={handleMetricCardClick}
+        />
+      )}
+
+      {isNewUserNoLeads && (
+        <section className="mb-8 rounded-xl border border-neutral-200 dark:border-neutral-800 bg-white dark:bg-neutral-900 p-5 lg:p-6">
+          <h2 className="text-lg font-semibold text-neutral-900 dark:text-white">No leads yet. Here’s what to do next.</h2>
+          <p className="mt-1 text-sm text-neutral-600 dark:text-neutral-400">
+            Get your first results faster by reviewing setup and running a scan.
+          </p>
+          <div className="mt-4 grid gap-3 sm:grid-cols-3">
+            <Button variant="outline" onClick={() => navigate(`/app/${projectId}/settings`)}>
+              Review settings
+            </Button>
+            <Button variant="outline" onClick={() => navigate(`/app/${projectId}/playbook`)}>
+              Open playbook
+            </Button>
+            <Button onClick={() => navigate(`/app/${projectId}/leads`)} className="bg-primary hover:bg-primary/90 text-white">
+              Open hot leads
+            </Button>
+          </div>
+        </section>
       )}
 
       {/* Main Layout Grid - Scanning Progress Steps + While You Wait */}
@@ -349,7 +410,7 @@ export default function DashboardView() {
       )}
 
       {/* Top Subreddits & Keywords - Show when scanning is completed */}
-      {isCompleted && !showScanningProgress && (
+      {isCompleted && !showScanningProgress && !isNewUserNoLeads && (
         <div className="mt-8">
             {statsLoading ? (
               <div className="flex items-center justify-center h-32">

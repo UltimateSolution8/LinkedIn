@@ -230,7 +230,6 @@ export function getCurrentUser(): User | null {
 export interface OnboardingAcquisitionPayload {
   source: string;
   sourceOther?: string;
-  region: string;
 }
 
 export async function saveOnboardingAcquisition(payload: OnboardingAcquisitionPayload): Promise<User> {
