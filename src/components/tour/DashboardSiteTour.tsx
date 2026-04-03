@@ -178,12 +178,8 @@ export default function DashboardSiteTour({ isOpen, onClose }: DashboardSiteTour
           </button>
         );
       }}
-      onClickClose={() => {
-        handleSetIsOpen(false);
-      }}
-      onClickMask={() => {
-        handleSetIsOpen(false);
-      }}
+      onClickClose={() => handleSetIsOpen(false)}
+      onClickMask={() => handleSetIsOpen(false)}
     />
   );
 }
