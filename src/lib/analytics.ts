@@ -7,13 +7,31 @@
 const GA_MEASUREMENT_ID = import.meta.env.VITE_GA_MEASUREMENT_ID || 'G-DGTN8BZW6W';
 
 export function trackEvent(eventName: string, params?: Record<string, unknown>) {
-  if (typeof window !== 'undefined' && window.gtag) {
+  if (typeof window === 'undefined') return;
+
+  const isLive = ['www.userixly.com', 'userixly.com'].includes(window.location.hostname);
+  
+  if (!isLive) {
+    console.log(`[Analytics Event] ${eventName}`, params);
+    return;
+  }
+
+  if (window.gtag) {
     window.gtag('event', eventName, params);
   }
 }
 
 export function setUserId(userId: string) {
-  if (typeof window !== 'undefined' && window.gtag) {
+  if (typeof window === 'undefined') return;
+
+  const isLive = ['www.userixly.com', 'userixly.com'].includes(window.location.hostname);
+  
+  if (!isLive) {
+    console.log(`[Analytics Config] User ID: ${userId}`);
+    return;
+  }
+
+  if (window.gtag) {
     window.gtag('config', GA_MEASUREMENT_ID, { user_id: userId });
   }
 }

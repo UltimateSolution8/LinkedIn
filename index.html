@@ -2,6 +2,17 @@
 <html lang="en">
   <head>
     <!-- Google tag (gtag.js) -->
+    <script>
+      // Google Analytics should only run on the Live site
+      const liveHostnames = ['www.userixly.com', 'userixly.com'];
+      const isLive = liveHostnames.includes(window.location.hostname);
+      
+      if (!isLive) {
+        // This is Gtag's official way to opt-out/disable tracking
+        window['ga-disable-G-DGTN8BZW6W'] = true;
+        console.log(`[Analytics] Google Analytics disabled for: ${window.location.hostname}`);
+      }
+    </script>
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-DGTN8BZW6W"></script>
     <script>
       window.dataLayer = window.dataLayer || [];
@@ -10,7 +21,18 @@
 
       gtag('config', 'G-DGTN8BZW6W');
     </script>
-    <script src="https://analytics.ahrefs.com/analytics.js" data-key="lzhgFsNaG63R0EfZfMp91A" async></script>
+    <script>
+      // Load other tracking scripts only on live
+      if (['www.userixly.com', 'userixly.com'].includes(window.location.hostname)) {
+        const ahrefs = document.createElement('script');
+        ahrefs.src = "https://analytics.ahrefs.com/analytics.js";
+        ahrefs.setAttribute('data-key', 'lzhgFsNaG63R0EfZfMp91A');
+        ahrefs.async = true;
+        document.head.appendChild(ahrefs);
+      } else {
+        console.log(`[Analytics] Ahrefs disabled for: ${window.location.hostname}`);
+      }
+    </script>
     <script>
       (() => {
         try {

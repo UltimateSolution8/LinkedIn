@@ -10,7 +10,9 @@ import { generateDescription, generateProductInsights } from "@/lib/api/projects
 import ProductDescriptionWarningDialog from "./ProductDescriptionWarningDialog";
 
 const projectDetailsSchema = z.object({
-  websiteUrl: z.string().url("Please enter a valid URL"),
+  websiteUrl: z.string()
+    .url("Please enter a valid URL (e.g., https://www.yourproject.com)")
+    .refine(url => url.startsWith('https://'), "URL must start with https:// for security"),
   description: z.string().min(20, "Description must be at least 20 characters"),
   targetAudience: z.array(z.string()).min(1, "Add at least one target audience segment"),
   valuePropositions: z.array(z.string()).min(1, "Add at least one value proposition"),
@@ -65,7 +67,7 @@ export default function ProjectDetailsStep({
     if (!url || url.trim().length === 0) return false;
     try {
       const urlObj = new URL(url);
-      return urlObj.protocol === "http:" || urlObj.protocol === "https:";
+      return urlObj.protocol === "https:";
     } catch {
       return false;
     }
@@ -129,8 +131,8 @@ export default function ProjectDetailsStep({
     // Validate URL format
     try {
       const url = new URL(websiteUrl);
-      if (!url.protocol.startsWith("http")) {
-        setDescriptionError("Please enter a valid URL");
+      if (url.protocol !== "https:") {
+        setDescriptionError("URL must start with https://");
         return;
       }
     } catch {
@@ -273,8 +275,48 @@ export default function ProjectDetailsStep({
                 id="website-url"
                 type="url"
                 placeholder="https://www.yourproject.com"
-                {...register("websiteUrl")}
-                className="pl-10 border-neutral-300 dark:border-neutral-700 bg-white dark:bg-neutral-900 focus-visible:ring-teal-600/50 focus-visible:border-teal-600/80"
+                {...register("websiteUrl", {
+                  validate: (value) => {
+                    if (!value) return true; // allow empty if optional
+
+                    try {
+                      const url = new URL(value);
+
+                      // Optional: enforce real domain (has dot like google.com)
+                      if (!url.hostname.includes(".")) {
+                        return "Enter a valid domain (e.g. example.com)";
+                      }
+
+                      return true;
+                    } catch {
+                      return "Invalid URL format";
+                    }
+                  },
+
+                  onBlur: (e) => {
+                    let value = e.target.value.trim();
+
+                    if (!value) return;
+
+                    // Step 1: Normalize protocol
+                    if (!/^https?:\/\//i.test(value)) {
+                      value = `https://${value}`;
+                    } else if (value.startsWith("http://")) {
+                      value = value.replace("http://", "https://");
+                    }
+
+                    // Step 2: Validate before setting
+                    try {
+                      const url = new URL(value);
+
+                      if (!url.hostname.includes(".")) return;
+
+                      setValue("websiteUrl", value, { shouldValidate: true });
+                    } catch {
+                      // Don't update if invalid
+                    }
+                  }
+                })}
               />
             </div>
             {errors.websiteUrl && (
