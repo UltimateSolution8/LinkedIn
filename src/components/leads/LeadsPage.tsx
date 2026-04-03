@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import {
   CalendarClock,
   ExternalLink,
@@ -65,7 +65,13 @@ function buildHowToHelpFallback(lead: Lead) {
 
 export default function LeadsPage({ projectId, mode, onCountsRefresh }: LeadsPageProps) {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const scan = useScanStatus(projectId);
+  const querySort = searchParams.get("sort");
+  const queryPeriod = searchParams.get("period");
+  const createdAfter = searchParams.get("createdAfter") || undefined;
+  const createdBefore = searchParams.get("createdBefore") || undefined;
+  const initialSort: LeadSort = querySort === "date" || querySort === "subreddit" || querySort === "score" ? querySort : "score";
 
   const [leads, setLeads] = useState<Lead[]>([]);
   const [counts, setCounts] = useState({ hot: 0, opportunity: 0, total: 0 });
@@ -73,7 +79,7 @@ export default function LeadsPage({ projectId, mode, onCountsRefresh }: LeadsPag
   const [selectedPainTags, setSelectedPainTags] = useState<string[]>([]);
   const [starredOnly, setStarredOnly] = useState(false);
   const [followUpOnly, setFollowUpOnly] = useState(false);
-  const [sort, setSort] = useState<LeadSort>("score");
+  const [sort, setSort] = useState<LeadSort>(initialSort);
   const [page, setPage] = useState(1);
   const [totalLeads, setTotalLeads] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
@@ -87,6 +93,11 @@ export default function LeadsPage({ projectId, mode, onCountsRefresh }: LeadsPag
   const [hoverRating, setHoverRating] = useState<number>(0);
 
   const activeFiltersCount = selectedPainTags.length + (starredOnly ? 1 : 0) + (followUpOnly ? 1 : 0);
+  const showActivityFilters = totalLeads > 0 || starredOnly || followUpOnly;
+
+  useEffect(() => {
+    setSort(initialSort);
+  }, [initialSort]);
 
   const showSuccess = useCallback((message: string) => {
     setSuccessMessage(message);
@@ -122,6 +133,8 @@ export default function LeadsPage({ projectId, mode, onCountsRefresh }: LeadsPag
           followUp: followUpOnly || undefined,
           sort,
           source: "all",
+          createdAfter,
+          createdBefore,
         });
 
         setCounts(response.counts ?? response.meta?.counts ?? { hot: 0, opportunity: 0, total: 0 });
@@ -155,7 +168,7 @@ export default function LeadsPage({ projectId, mode, onCountsRefresh }: LeadsPag
         setIsLoadingMore(false);
       }
     },
-    [projectId, mode, selectedPainTags, starredOnly, followUpOnly, sort, onCountsRefresh]
+    [projectId, mode, selectedPainTags, starredOnly, followUpOnly, sort, createdAfter, createdBefore, onCountsRefresh]
   );
 
   useEffect(() => {
@@ -358,6 +371,11 @@ export default function LeadsPage({ projectId, mode, onCountsRefresh }: LeadsPag
       )}
 
       <section className="flex flex-col gap-3">
+        {queryPeriod === "this-week" && (
+          <div className="rounded-md border border-primary/25 bg-primary/10 px-3 py-2 text-xs font-medium text-primary">
+            Showing leads for this week
+          </div>
+        )}
         <div className="flex flex-wrap items-center gap-2">
           {availablePainTags.map((tag) => {
             const active = selectedPainTags.includes(tag);
@@ -375,27 +393,31 @@ export default function LeadsPage({ projectId, mode, onCountsRefresh }: LeadsPag
             );
           })}
 
-          <button
-            className={`px-3 py-1.5 rounded-full text-xs font-semibold border inline-flex items-center gap-1 ${starredOnly
-              ? "bg-teal-100 border-teal-400 text-teal-800 dark:bg-teal-900/30 dark:text-teal-300 dark:border-teal-700"
-              : "bg-white dark:bg-neutral-900 border-neutral-200 dark:border-neutral-700 text-neutral-600 dark:text-neutral-300"
-              }`}
-            onClick={() => setStarredOnly((current) => !current)}
-          >
-            <Star className="w-3.5 h-3.5" />
-            Starred
-          </button>
+          {showActivityFilters && (
+            <button
+              className={`px-3 py-1.5 rounded-full text-xs font-semibold border inline-flex items-center gap-1 ${starredOnly
+                ? "bg-teal-100 border-teal-400 text-teal-800 dark:bg-teal-900/30 dark:text-teal-300 dark:border-teal-700"
+                : "bg-white dark:bg-neutral-900 border-neutral-200 dark:border-neutral-700 text-neutral-600 dark:text-neutral-300"
+                }`}
+              onClick={() => setStarredOnly((current) => !current)}
+            >
+              <Star className="w-3.5 h-3.5" />
+              Starred
+            </button>
+          )}
 
-          <button
-            className={`px-3 py-1.5 rounded-full text-xs font-semibold border inline-flex items-center gap-1 ${followUpOnly
-              ? "bg-teal-100 border-teal-400 text-teal-800 dark:bg-teal-900/30 dark:text-teal-300 dark:border-teal-700"
-              : "bg-white dark:bg-neutral-900 border-neutral-200 dark:border-neutral-700 text-neutral-600 dark:text-neutral-300"
-              }`}
-            onClick={() => setFollowUpOnly((current) => !current)}
-          >
-            <CalendarClock className="w-3.5 h-3.5" />
-            Follow-up
-          </button>
+          {showActivityFilters && (
+            <button
+              className={`px-3 py-1.5 rounded-full text-xs font-semibold border inline-flex items-center gap-1 ${followUpOnly
+                ? "bg-teal-100 border-teal-400 text-teal-800 dark:bg-teal-900/30 dark:text-teal-300 dark:border-teal-700"
+                : "bg-white dark:bg-neutral-900 border-neutral-200 dark:border-neutral-700 text-neutral-600 dark:text-neutral-300"
+                }`}
+              onClick={() => setFollowUpOnly((current) => !current)}
+            >
+              <CalendarClock className="w-3.5 h-3.5" />
+              Follow-up
+            </button>
+          )}
 
           {activeFiltersCount > 0 && (
             <Button variant="ghost" size="sm" onClick={clearAllFilters}>
@@ -443,7 +465,9 @@ export default function LeadsPage({ projectId, mode, onCountsRefresh }: LeadsPag
           <p className="text-sm text-neutral-500 mt-2">
             {activeFiltersCount > 0
               ? "Try clearing filters to view more results."
-              : "Rixly will populate this view as scanning discovers relevant leads."}
+              : mode === "hot"
+                ? "Hot Leads focuses on direct buying intent. We'll surface prospects ready for immediate outreach."
+                : "Opportunities highlights earlier-stage conversations so you can build trust before intent peaks."}
           </p>
           <div className="mt-4">
             {activeFiltersCount > 0 ? (

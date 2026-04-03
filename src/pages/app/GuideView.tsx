@@ -1,4 +1,5 @@
 import { motion } from "framer-motion";
+import { useNavigate, useParams } from "react-router-dom";
 import {
   Flame,
   Target,
@@ -11,8 +12,12 @@ import {
   CheckCircle2,
   Info
 } from "lucide-react";
+import { Button } from "@/components/ui/button";
 
 export default function GuideView() {
+  const navigate = useNavigate();
+  const { projectId } = useParams<{ projectId: string }>();
+
   const container = {
     hidden: { opacity: 0 },
     show: {
@@ -220,12 +225,12 @@ export default function GuideView() {
             Start by checking your Hot Leads. There's almost certainly someone looking for your product right now.
           </p>
           <div className="mt-10 flex flex-col sm:flex-row justify-center gap-4">
-            <button
-              onClick={() => window.history.back()}
-              className="px-10 py-4 bg-white text-neutral-900 rounded-full font-bold hover:bg-neutral-200 transition-all shadow-lg hover:shadow-white/10 btn-press"
+            <Button
+              onClick={() => navigate(`/app/${projectId}/dashboard`)}
+              className="px-10 py-4 rounded-full font-bold bg-primary hover:bg-primary/90 text-white shadow-lg"
             >
               Back to Dashboard
-            </button>
+            </Button>
           </div>
         </div>
       </motion.div>

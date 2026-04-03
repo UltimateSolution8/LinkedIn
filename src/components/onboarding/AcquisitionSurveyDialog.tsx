@@ -8,7 +8,6 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 export type AcquisitionSurveyValues = {
   source: string;
   sourceOther?: string;
-  region: string;
 };
 
 type AcquisitionSurveyDialogProps = {
@@ -29,16 +28,6 @@ const SOURCE_OPTIONS = [
   { value: "other", label: "Other" },
 ];
 
-const REGION_OPTIONS = [
-  { value: "india", label: "India" },
-  { value: "north_america", label: "North America" },
-  { value: "europe", label: "Europe" },
-  { value: "apac", label: "APAC" },
-  { value: "middle_east_africa", label: "Middle East & Africa" },
-  { value: "latin_america", label: "Latin America" },
-  { value: "other", label: "Other" },
-];
-
 export default function AcquisitionSurveyDialog({
   open,
   onOpenChange,
@@ -48,14 +37,13 @@ export default function AcquisitionSurveyDialog({
 }: AcquisitionSurveyDialogProps) {
   const [source, setSource] = useState("");
   const [sourceOther, setSourceOther] = useState("");
-  const [region, setRegion] = useState("");
   const [error, setError] = useState("");
 
   const requiresOtherSource = useMemo(() => source === "other", [source]);
 
   const handleSubmit = async () => {
-    if (!source || !region) {
-      setError("Please select source and region.");
+    if (!source) {
+      setError("Please select how you heard about Rixly.");
       return;
     }
 
@@ -68,7 +56,6 @@ export default function AcquisitionSurveyDialog({
     await onSubmit({
       source,
       sourceOther: requiresOtherSource ? sourceOther.trim() : undefined,
-      region,
     });
   };
 
@@ -110,22 +97,6 @@ export default function AcquisitionSurveyDialog({
               />
             </div>
           )}
-
-          <div className="space-y-2">
-            <Label htmlFor="acq-region">Your region</Label>
-            <Select value={region} onValueChange={setRegion}>
-              <SelectTrigger id="acq-region">
-                <SelectValue placeholder="Select region" />
-              </SelectTrigger>
-              <SelectContent>
-                {REGION_OPTIONS.map((item) => (
-                  <SelectItem key={item.value} value={item.value}>
-                    {item.label}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
 
           {error && <p className="text-sm text-red-500">{error}</p>}
         </div>

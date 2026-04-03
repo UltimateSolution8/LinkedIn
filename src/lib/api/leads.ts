@@ -123,6 +123,8 @@ export interface GetLeadsOptions {
   followUp?: boolean;
   sort?: LeadSort;
   source?: "post" | "comment" | "all";
+  createdAfter?: string;
+  createdBefore?: string;
 }
 
 export interface LeadDetailsResponse {
@@ -209,6 +211,8 @@ function buildLegacyOptions(
       followUp: pageOrOptions.followUp,
       sort: pageOrOptions.sort,
       source: pageOrOptions.source ?? "all",
+      createdAfter: pageOrOptions.createdAfter,
+      createdBefore: pageOrOptions.createdBefore,
     };
   }
 
@@ -264,6 +268,12 @@ export async function getLeads(
   }
   if (typeof options.followUp === "boolean") {
     params.set("followUp", String(options.followUp));
+  }
+  if (options.createdAfter) {
+    params.set("createdAfter", options.createdAfter);
+  }
+  if (options.createdBefore) {
+    params.set("createdBefore", options.createdBefore);
   }
 
   const response = await fetch(
