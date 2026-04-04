@@ -32,10 +32,11 @@ export function useDashboardSiteTour() {
     [userId]
   );
 
-  const [promptSeen, setPromptSeen] = useState(false);
-  const [dismissed, setDismissed] = useState(false);
-  const [completed, setCompleted] = useState(false);
+  const [promptSeen, setPromptSeen] = useState(() => readBooleanStorage(keys.promptSeen));
+  const [dismissed, setDismissed] = useState(() => readBooleanStorage(keys.dismissed));
+  const [completed, setCompleted] = useState(() => readBooleanStorage(keys.completed));
 
+  // Re-sync if the user identity (and therefore keys) changes
   useEffect(() => {
     setPromptSeen(readBooleanStorage(keys.promptSeen));
     setDismissed(readBooleanStorage(keys.dismissed));
