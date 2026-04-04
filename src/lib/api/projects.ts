@@ -10,6 +10,7 @@ export interface Project {
   targetAudience?: string[];
   valuePropositions?: string[];
   emailNotifyEnabled?: boolean;
+  updatedAt?: string;
 }
 
 export interface GetProjectsResponse {
@@ -133,6 +134,7 @@ export async function getProjects(): Promise<Project[]> {
     targetAudience: project.targetAudience || [],
     valuePropositions: project.valuePropositions || [],
     emailNotifyEnabled: project.emailNotifyEnabled ?? false,
+    updatedAt: project.updatedAt,
   }));
 }
 

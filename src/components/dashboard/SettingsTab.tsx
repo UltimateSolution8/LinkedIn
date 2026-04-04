@@ -13,6 +13,7 @@ export default function SettingsTab({ projectId }: SettingsTabProps) {
   const { getProjectById, refreshProjects } = useProject();
   const project = getProjectById(projectId);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [saveSuccess, setSaveSuccess] = useState(false);
 
   if (!project) {
     return (
@@ -28,22 +29,65 @@ export default function SettingsTab({ projectId }: SettingsTabProps) {
   const { keywords = [], targetAudience = [], valuePropositions = [] } = project;
 
   const handleEditSuccess = () => {
-    refreshProjects();
+    setIsEditModalOpen(false);
+    setSaveSuccess(true);
+    
+    // Defer the background refresh until AFTER the success message disappears
+    // This prevents the page 'reload' flicker from interrupting the UI feedback
+    setTimeout(() => {
+      setSaveSuccess(false);
+      refreshProjects();
+    }, 3000); // Wait 3 seconds, then hide and refresh
+  };
+
+  const formatLastUpdated = (dateString?: string) => {
+    if (!dateString) return "No updates yet";
+    return new Intl.DateTimeFormat("en-US", {
+      month: "short",
+      day: "numeric",
+      year: "numeric",
+      hour: "numeric",
+      minute: "2-digit",
+      hour12: true,
+    }).format(new Date(dateString));
   };
 
   return (
     <div className="flex flex-col pt-6 gap-8 pb-12">
+      {saveSuccess && (
+        <div className="bg-emerald-50 dark:bg-emerald-900/20 text-emerald-700 dark:text-emerald-400 p-4 rounded-lg flex items-center justify-between border border-emerald-200 dark:border-emerald-800">
+          <div className="flex items-center gap-3">
+            <div className="w-6 h-6 rounded-full bg-emerald-100 dark:bg-emerald-800/50 flex items-center justify-center">
+              <svg className="w-4 h-4 text-emerald-600 dark:text-emerald-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+              </svg>
+            </div>
+            <div>
+              <p className="font-semibold text-sm">Settings saved successfully</p>
+              <p className="text-xs opacity-90">Your changes are now live and active.</p>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Header with Edit Button */}
-      <div className="flex justify-between items-center">
+      <div className="flex justify-between items-end">
         <div>
           <h2 className="text-xl font-bold text-neutral-950 dark:text-white">Configure Project</h2>
           <p className="text-sm text-neutral-500 dark:text-neutral-400 mt-1">
             General settings and descriptions
           </p>
+          <p className="text-xs text-neutral-400 dark:text-neutral-500 mt-2 flex items-center gap-1.5">
+            <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+            Last saved: <span className="font-medium text-neutral-600 dark:text-neutral-300">{formatLastUpdated(project.updatedAt)}</span>
+          </p>
         </div>
         <Button
+          type="button"
           onClick={() => setIsEditModalOpen(true)}
-          className="bg-primary hover:bg-primary/90 text-white"
+          className="bg-primary hover:bg-primary/90 text-white z-10"
         >
           <Pencil className="w-4 h-4 mr-2" />
           Edit Settings
@@ -153,12 +197,14 @@ export default function SettingsTab({ projectId }: SettingsTabProps) {
       </div>
 
       {/* Edit Settings Modal */}
-      <EditProjectSettingsModal
-        isOpen={isEditModalOpen}
-        onOpenChange={setIsEditModalOpen}
-        project={project}
-        onSuccess={handleEditSuccess}
-      />
+      {isEditModalOpen && (
+        <EditProjectSettingsModal
+          isOpen={isEditModalOpen}
+          onOpenChange={setIsEditModalOpen}
+          project={project}
+          onSuccess={handleEditSuccess}
+        />
+      )}
     </div>
   );
 }

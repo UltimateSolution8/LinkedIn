@@ -85,9 +85,13 @@ export default function DashboardSiteTour({ isOpen, onClose }: DashboardSiteTour
   const handleSetIsOpen: Dispatch<SetStateAction<boolean>> = (value) => {
     const nextValue = typeof value === "function" ? value(isOpen) : value;
     if (!nextValue) {
-      safeClose(completedRef.current);
+      onClose(completedRef.current);
     }
   };
+
+  if (!isOpen || steps.length === 0) {
+    return null;
+  }
 
   return (
     <Tour
@@ -118,21 +122,24 @@ export default function DashboardSiteTour({ isOpen, onClose }: DashboardSiteTour
           color: "var(--foreground, #0f172a)",
           maxWidth: 320,
         }),
-        button: (base, state) => ({
+        button: (base) => ({
           ...base,
           borderRadius: 10,
-          backgroundColor: state?.disabled ? "#94a3b8" : "#0f766e",
+          backgroundColor: "#0f766e", // Always teal
           color: "#ffffff",
           border: "none",
           padding: "8px 14px",
           fontSize: "13px",
           fontWeight: 600,
+          opacity: 1, // Ensure visibility
+          cursor: "pointer",
         }),
         close: (base) => ({
           ...base,
           right: 10,
           top: 10,
           color: "#475569",
+          cursor: "pointer",
         }),
         badge: (base) => ({
           ...base,
@@ -141,37 +148,41 @@ export default function DashboardSiteTour({ isOpen, onClose }: DashboardSiteTour
           fontWeight: 700,
         }),
       }}
-      prevButton={({ Button, currentStep, setCurrentStep }) =>
+      prevButton={({ currentStep, setCurrentStep }) =>
         currentStep > 0 ? (
-          <Button onClick={() => setCurrentStep((prev) => Math.max(prev - 1, 0))}>Back</Button>
+          <button 
+            type="button"
+            className="px-6 py-2 bg-teal-600 text-white rounded-full text-xs font-bold hover:bg-teal-700 transition-colors uppercase tracking-wider shadow-sm"
+            onClick={() => setCurrentStep((prev) => Math.max(prev - 1, 0))}
+          >
+            Back
+          </button>
         ) : null
       }
-      nextButton={({ Button, currentStep, stepsLength, setCurrentStep }) => {
+      nextButton={({ currentStep, stepsLength, setCurrentStep }) => {
         const isLast = currentStep === stepsLength - 1;
         return (
-          <Button
+          <button
+            type="button"
+            className="px-6 py-2 bg-teal-600 text-white rounded-full text-xs font-bold hover:bg-teal-700 transition-colors uppercase tracking-wider shadow-sm"
             onClick={() => {
               if (isLast) {
                 completedRef.current = true;
-                safeClose(true);
+                handleSetIsOpen(false);
                 return;
               }
               setCurrentStep((prev) => Math.min(prev + 1, stepsLength - 1));
             }}
           >
             {isLast ? "Finish" : "Next"}
-          </Button>
+          </button>
         );
       }}
-      onClickClose={({ setIsOpen }) => {
-        if (!completedRef.current) {
-          setIsOpen(false);
-        }
+      onClickClose={() => {
+        handleSetIsOpen(false);
       }}
-      onClickMask={({ setIsOpen }) => {
-        if (!completedRef.current) {
-          setIsOpen(false);
-        }
+      onClickMask={() => {
+        handleSetIsOpen(false);
       }}
     />
   );
