@@ -2,14 +2,14 @@
 
 Rixly finds warm leads across platforms and turns them into sales.
 
-Primary URL: https://userixly.com/
-Blog: https://userixly.com/blogs
-Request Demo: https://userixly.com/request-demo
+Primary URL: https://www.userixly.com/
+Blog: https://www.userixly.com/blogs
+Request Demo: https://www.userixly.com/request-demo
 
 Policies:
-- https://userixly.com/policies/privacy
-- https://userixly.com/policies/terms
-- https://userixly.com/policies/cancelandrefund
+- https://www.userixly.com/policies/privacy
+- https://www.userixly.com/policies/terms
+- https://www.userixly.com/policies/cancelandrefund
 
 Detailed product guidance for language models:
-- https://userixly.com/llms-full.txt
+- https://www.userixly.com/llms-full.txt

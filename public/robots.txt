@@ -9,4 +9,4 @@ Disallow: /app/
 Disallow: /admin/
 Disallow: /api/
 
-Sitemap: https://userixly.com/sitemap.xml
+Sitemap: https://www.userixly.com/sitemap.xml
