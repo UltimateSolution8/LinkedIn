@@ -3,52 +3,53 @@ import { lazy, Suspense, useEffect } from 'react'
 
 // Layouts
 import HomeLayout from '@/layouts/HomeLayout'
-import AuthLayout from '@/layouts/AuthLayout'
-import ProfileLayout from '@/layouts/ProfileLayout'
-import CreateProjectLayout from '@/layouts/CreateProjectLayout'
-import NotificationsLayout from '@/layouts/NotificationsLayout'
-import AdminLayout from '@/layouts/AdminLayout'
-import AppLayout from '@/layouts/AppLayout'
+const AuthLayout = lazy(() => import('@/layouts/AuthLayout'))
+const ProfileLayout = lazy(() => import('@/layouts/ProfileLayout'))
+const CreateProjectLayout = lazy(() => import('@/layouts/CreateProjectLayout'))
+const NotificationsLayout = lazy(() => import('@/layouts/NotificationsLayout'))
+const AdminLayout = lazy(() => import('@/layouts/AdminLayout'))
+const AppLayout = lazy(() => import('@/layouts/AppLayout'))
 
 // Pages
 import HomePage from '@/pages/HomePage'
-import ContactUsPage from '@/pages/ContactUsPage'
-import RequestDemoPage from '@/pages/RequestDemoPage'
-import PrivacyPolicyPage from '@/pages/policies/PrivacyPolicyPage'
-import TermsPage from '@/pages/policies/TermsPage'
-import CancelAndRefundPage from '@/pages/policies/CancelAndRefundPage'
-import LoginPage from '@/pages/LoginPage'
-import ProfilePage from '@/pages/ProfilePage'
-import CreateProjectPage from '@/pages/CreateProjectPage'
-import NotificationsPage from '@/pages/NotificationsPage'
-import AdminDashboardPage from '@/pages/AdminDashboardPage'
-import AdminUsersListPage from '@/pages/AdminUsersListPage'
-import AdminUserDetailPage from '@/pages/AdminUserDetailPage'
-import AdminJobHistoryPage from '@/pages/AdminJobHistoryPage'
-import AdminProjectDetailPage from '@/pages/AdminProjectDetailPage'
-import ProjectsBreakdownPage from '@/pages/ProjectsBreakdownPage'
-import AdminLLMCostsPage from '@/pages/AdminLLMCostsPage'
-import AdminCreateJobRunPage from '@/pages/AdminCreateJobRunPage'
-import VerifyEmailPage from '@/pages/verify-email/VerifyEmailPage'
-import VerifyEmailPromptPage from '@/pages/verify-email-prompt/VerifyEmailPromptPage'
-import ForgotPasswordPage from '@/pages/forgot-password/ForgotPasswordPage'
-import ResetPasswordPage from '@/pages/reset-password/ResetPasswordPage'
-import AuthPricingPage from '@/pages/AuthPricingPage'
+const ContactUsPage = lazy(() => import('@/pages/ContactUsPage'))
+const RequestDemoPage = lazy(() => import('@/pages/RequestDemoPage'))
+const PrivacyPolicyPage = lazy(() => import('@/pages/policies/PrivacyPolicyPage'))
+const TermsPage = lazy(() => import('@/pages/policies/TermsPage'))
+const CancelAndRefundPage = lazy(() => import('@/pages/policies/CancelAndRefundPage'))
+const LoginPage = lazy(() => import('@/pages/LoginPage'))
+const ProfilePage = lazy(() => import('@/pages/ProfilePage'))
+const CreateProjectPage = lazy(() => import('@/pages/CreateProjectPage'))
+const NotificationsPage = lazy(() => import('@/pages/NotificationsPage'))
+const AdminDashboardPage = lazy(() => import('@/pages/AdminDashboardPage'))
+const AdminUsersListPage = lazy(() => import('@/pages/AdminUsersListPage'))
+const AdminUserDetailPage = lazy(() => import('@/pages/AdminUserDetailPage'))
+const AdminJobHistoryPage = lazy(() => import('@/pages/AdminJobHistoryPage'))
+const AdminProjectDetailPage = lazy(() => import('@/pages/AdminProjectDetailPage'))
+const ProjectsBreakdownPage = lazy(() => import('@/pages/ProjectsBreakdownPage'))
+const AdminLLMCostsPage = lazy(() => import('@/pages/AdminLLMCostsPage'))
+const AdminCreateJobRunPage = lazy(() => import('@/pages/AdminCreateJobRunPage'))
+const VerifyEmailPage = lazy(() => import('@/pages/verify-email/VerifyEmailPage'))
+const VerifyEmailPromptPage = lazy(() => import('@/pages/verify-email-prompt/VerifyEmailPromptPage'))
+const ForgotPasswordPage = lazy(() => import('@/pages/forgot-password/ForgotPasswordPage'))
+const ResetPasswordPage = lazy(() => import('@/pages/reset-password/ResetPasswordPage'))
+const AuthPricingPage = lazy(() => import('@/pages/AuthPricingPage'))
 const BlogPage = lazy(() => import('@/pages/BlogPage'))
 
 // App Views (New Route-Based Navigation)
-import DashboardView from '@/pages/app/DashboardView'
-import LeadsView from '@/pages/app/LeadsView'
-import OpportunitiesView from '@/pages/app/OpportunitiesView'
-import SettingsView from '@/pages/app/SettingsView'
-import GuideView from '@/pages/app/GuideView'
+const DashboardView = lazy(() => import('@/pages/app/DashboardView'))
+const LeadsView = lazy(() => import('@/pages/app/LeadsView'))
+const OpportunitiesView = lazy(() => import('@/pages/app/OpportunitiesView'))
+const SettingsView = lazy(() => import('@/pages/app/SettingsView'))
+const GuideView = lazy(() => import('@/pages/app/GuideView'))
 import ProjectRouteGuard from '@/components/app/ProjectRouteGuard'
 import DashboardRedirect from '@/components/DashboardRedirect'
-import OnboardingPage from '@/pages/OnboardingPage'
+const OnboardingPage = lazy(() => import('@/pages/OnboardingPage'))
 import ProjectProviderWrapper from '@/components/ProjectProviderWrapper'
 
 export default function AppRouter() {
   const location = useLocation()
+  const canonicalRoot = 'https://www.userixly.com'
 
   const setRobotsMeta = (value: string) => {
     let robotsMeta = document.querySelector('meta[name="robots"]')
@@ -60,17 +61,54 @@ export default function AppRouter() {
     robotsMeta.setAttribute("content", value)
   }
 
+  const setCanonicalLink = (href: string) => {
+    let canonical = document.querySelector('link[rel="canonical"]')
+    if (!canonical) {
+      canonical = document.createElement('link')
+      canonical.setAttribute('rel', 'canonical')
+      document.head.appendChild(canonical)
+    }
+    canonical.setAttribute('href', href)
+  }
+
+  const setMetaByName = (name: string, value: string) => {
+    let meta = document.querySelector(`meta[name="${name}"]`)
+    if (!meta) {
+      meta = document.createElement('meta')
+      meta.setAttribute('name', name)
+      document.head.appendChild(meta)
+    }
+    meta.setAttribute('content', value)
+  }
+
+  const setMetaByProperty = (property: string, value: string) => {
+    let meta = document.querySelector(`meta[property="${property}"]`)
+    if (!meta) {
+      meta = document.createElement('meta')
+      meta.setAttribute('property', property)
+      document.head.appendChild(meta)
+    }
+    meta.setAttribute('content', value)
+  }
+
   // Set default page title and route-level indexing hints
   useEffect(() => {
     document.title = 'Rixly finds warm leads across platforms and turns them into sales.'
 
     const noIndexPrefixes = ["/login", "/forgot-password", "/reset-password", "/verify-email", "/verify-email-prompt", "/app", "/admin"]
     const shouldNoIndex = noIndexPrefixes.some((prefix) => location.pathname === prefix || location.pathname.startsWith(`${prefix}/`))
+    const publicCanonical = `${canonicalRoot}${location.pathname === '/' ? '/' : location.pathname}`
+    const canonical = shouldNoIndex ? `${canonicalRoot}/` : publicCanonical
+
     setRobotsMeta(shouldNoIndex ? "noindex, nofollow" : "index, follow")
+    setCanonicalLink(canonical)
+    setMetaByProperty('og:url', canonical)
+    setMetaByName('twitter:url', canonical)
   }, [location.pathname])
 
   return (
-    <Routes>
+    <Suspense fallback={null}>
+      <Routes>
         {/* New Landing Route (exact RixlyNew landing implementation) */}
         <Route path="/" element={<HomePage />} />
 
@@ -92,8 +130,8 @@ export default function AppRouter() {
         <Route path="/terms" element={<Navigate to="/policies/terms" replace />} />
         <Route path="/cancelandrefund" element={<Navigate to="/policies/cancelandrefund" replace />} />
         <Route path="/signup" element={<Navigate to="/login" replace />} />
-        <Route path="/blogs" element={<Suspense fallback={null}><BlogPage /></Suspense>} />
-        <Route path="/blog/:slug" element={<Suspense fallback={null}><BlogPage /></Suspense>} />
+        <Route path="/blogs" element={<BlogPage />} />
+        <Route path="/blog/:slug" element={<BlogPage />} />
 
         {/* Auth Routes */}
         <Route element={<AuthLayout />}>
@@ -173,5 +211,6 @@ export default function AppRouter() {
           }
         />
       </Routes>
+    </Suspense>
   )
 }
