@@ -11,7 +11,6 @@ const AdminLayout = lazy(() => import('@/layouts/AdminLayout'))
 const AppLayout = lazy(() => import('@/layouts/AppLayout'))
 
 // Pages
-import HomePage from '@/pages/HomePage'
 const ContactUsPage = lazy(() => import('@/pages/ContactUsPage'))
 const RequestDemoPage = lazy(() => import('@/pages/RequestDemoPage'))
 const PrivacyPolicyPage = lazy(() => import('@/pages/policies/PrivacyPolicyPage'))
