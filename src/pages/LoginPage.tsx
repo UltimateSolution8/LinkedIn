@@ -1,6 +1,5 @@
 
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
 import { X } from "lucide-react";
 import { motion } from "framer-motion";
 import AuthBrandingSection from "@/components/auth/AuthBrandingSection";
@@ -9,12 +8,13 @@ import LoginForm from "@/components/auth/LoginForm";
 import SignupForm from "@/components/auth/SignupForm";
 import { Button } from "@/components/ui/button";
 
+const LANDING_URL = import.meta.env.VITE_LANDING_URL ?? "https://userixly.com";
+
 export default function LoginPage() {
   const [activeTab, setActiveTab] = useState<"login" | "signup">("login");
-  const navigate = useNavigate();
 
   const handleBack = () => {
-    navigate("/");
+    window.location.href = LANDING_URL;
   };
 
   return (
