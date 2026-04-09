@@ -41,12 +41,17 @@ export default function DashboardSiteTour({ isOpen, onClose }: DashboardSiteTour
       },
       {
         selector: '[data-tour="leads"]',
-        content: "Track and manage leads here.",
+        content: "Hot Leads are authors directly asking for solutions. They are high-intent potential clients—best to DM them directly!",
         position: "bottom",
       },
       {
         selector: '[data-tour="opportunities"]',
-        content: "Move deals through opportunities.",
+        content: "Opportunities are broader discussions or industry questions. Perfect for building authority by replying publicly.",
+        position: "bottom",
+      },
+      {
+        selector: '[data-tour="playbook"]',
+        content: "Visit the Playbook to learn the best strategies for turning both Hot Leads and Opportunities into customers.",
         position: "bottom",
       },
       {
