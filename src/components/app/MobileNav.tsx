@@ -1,7 +1,7 @@
 
 import { useState } from "react";
 import { NavLink, useParams } from "react-router-dom";
-import { Menu, LayoutDashboard, Flame, Target, Settings } from "lucide-react";
+import { Menu, LayoutDashboard, Flame, Target, Settings, BookOpen } from "lucide-react";
 import { cn } from "@/lib/utils";
 import ProjectSwitcher from "./ProjectSwitcher";
 import { Badge } from "@/components/ui/badge";
@@ -46,6 +46,11 @@ export default function MobileNav({ leadsCount = 0, opportunitiesCount = 0 }: Mo
       icon: Target,
       path: `/app/${projectId}/opportunities`,
       badge: opportunitiesCount,
+    },
+    {
+      label: "Playbook",
+      icon: BookOpen,
+      path: `/app/${projectId}/playbook`,
     },
     {
       label: "Settings",

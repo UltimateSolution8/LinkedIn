@@ -221,7 +221,7 @@ export default function ProjectDetailsStep({
   const handleRemoveTargetAudience = (index: number) => {
     setValue(
       "targetAudience",
-      targetAudience.filter((_, i) => i !== index),
+      targetAudience.filter((_: string, i: number) => i !== index),
       { shouldValidate: true }
     );
   };
@@ -239,7 +239,7 @@ export default function ProjectDetailsStep({
   const handleRemoveValueProposition = (index: number) => {
     setValue(
       "valuePropositions",
-      valuePropositions.filter((_, i) => i !== index),
+      valuePropositions.filter((_: string, i: number) => i !== index),
       { shouldValidate: true }
     );
   };
@@ -403,7 +403,7 @@ export default function ProjectDetailsStep({
               {/* Display added segments */}
               {targetAudience.length > 0 && (
                 <div className="flex flex-wrap gap-2">
-                  {targetAudience.map((segment, index) => (
+                  {targetAudience.map((segment: string, index: number) => (
                     <span
                       key={index}
                       className="inline-flex items-center gap-1 px-2.5 py-1 rounded-md bg-neutral-100 dark:bg-neutral-800 text-neutral-700 dark:text-neutral-300 text-xs font-medium border border-neutral-200 dark:border-neutral-700"
@@ -446,7 +446,7 @@ export default function ProjectDetailsStep({
               {/* Display added value propositions */}
               {valuePropositions.length > 0 ? (
                 <div className="flex flex-wrap gap-2">
-                  {valuePropositions.map((valueProposition, index) => (
+                  {valuePropositions.map((valueProposition: string, index: number) => (
                     <span
                       key={index}
                       className="inline-flex items-center gap-1 px-2.5 py-1 rounded-md bg-neutral-100 dark:bg-neutral-800 text-neutral-700 dark:text-neutral-300 text-xs font-medium border border-neutral-200 dark:border-neutral-700"

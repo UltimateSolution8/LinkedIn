@@ -347,6 +347,9 @@ export default function DashboardView() {
             <Button asChild variant="outline" className="rounded-lg" data-tour="opportunities">
               <Link to={`/app/${projectId}/opportunities`}>Opportunities</Link>
             </Button>
+            <Button asChild variant="outline" className="rounded-lg" data-tour="playbook">
+              <Link to={`/app/${projectId}/playbook`}>Playbook</Link>
+            </Button>
             <Button asChild variant="outline" className="rounded-lg" data-tour="settings">
               <Link to={`/app/${projectId}/settings`}>Settings</Link>
             </Button>
