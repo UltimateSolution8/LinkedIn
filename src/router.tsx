@@ -34,6 +34,7 @@ const ForgotPasswordPage = lazy(() => import('@/pages/forgot-password/ForgotPass
 const ResetPasswordPage = lazy(() => import('@/pages/reset-password/ResetPasswordPage'))
 const AuthPricingPage = lazy(() => import('@/pages/AuthPricingPage'))
 const BlogPage = lazy(() => import('@/pages/BlogPage'))
+const HomePage = lazy(() => import('@/pages/HomePage'))
 
 // App Views (New Route-Based Navigation)
 const DashboardView = lazy(() => import('@/pages/app/DashboardView'))
@@ -132,6 +133,8 @@ export default function AppRouter() {
         <Route path="/signup" element={<Navigate to="/login" replace />} />
         <Route path="/blogs" element={<BlogPage />} />
         <Route path="/blog/:slug" element={<BlogPage />} />
+        {/* TODO: Temporary route for landing page preview — remove when done */}
+        <Route path="/landing" element={<HomePage />} />
 
         {/* Auth Routes */}
         <Route element={<AuthLayout />}>

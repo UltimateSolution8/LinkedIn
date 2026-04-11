@@ -18,16 +18,9 @@ import { detectUserCurrency } from "@/lib/utils/geolocation";
 import { getSubscriptionStatusCached } from "@/lib/utils/subscription";
 import { saveOnboardingAcquisition } from "@/lib/api/auth";
 import { Button } from "@/components/ui/button";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
-import { useDashboardSiteTour } from "@/hooks/useDashboardSiteTour";
+import { useDashboardTourPrompt } from "@/hooks/useDashboardTourPrompt";
 import DashboardSiteTour from "@/components/tour/DashboardSiteTour";
+import DashboardTourPromptDialog from "@/components/tour/DashboardTourPromptDialog";
 import { useAuth } from "@/contexts/AuthContext";
 import AcquisitionSurveyDialog from "@/components/onboarding/AcquisitionSurveyDialog";
 
@@ -48,13 +41,11 @@ export default function DashboardView() {
   const { projects, isLoading: projectsLoading } = useProject();
   const { user, setUser } = useAuth();
   const {
-    shouldAutoPrompt,
-    markPromptSeen,
-    markNotNow,
-    markDontShowAgain,
-    markTourDismissed,
-    markTourCompleted,
-  } = useDashboardSiteTour();
+    shouldShowPrompt,
+    handleNotNow,
+    handleDontShowAgain,
+    handleTakeTour,
+  } = useDashboardTourPrompt();
 
   // Fetch dashboard data with auto-polling
   const { data: dashboardData, isLoading: dashboardLoading, error } = useDashboardData({
@@ -75,7 +66,6 @@ export default function DashboardView() {
   const [pricingPlans, setPricingPlans] = useState<PricingPlan[]>([]);
   const [processingTrial, setProcessingTrial] = useState(false);
   const [processingPayment, setProcessingPayment] = useState(false);
-  const [isTourPromptOpen, setIsTourPromptOpen] = useState(false);
   const [isTourOpen, setIsTourOpen] = useState(false);
   const [isAcquisitionDialogOpen, setIsAcquisitionDialogOpen] = useState(false);
   const [isAcquisitionSaving, setIsAcquisitionSaving] = useState(false);
@@ -109,11 +99,6 @@ export default function DashboardView() {
     fetchPlans();
   }, [hasSubscriptionAccess]);
 
-  useEffect(() => {
-    if (shouldAutoPrompt && !isAcquisitionDialogOpen) {
-      setIsTourPromptOpen(true);
-    }
-  }, [isAcquisitionDialogOpen, shouldAutoPrompt]);
 
   useEffect(() => {
     if (!user) return;
@@ -198,19 +183,15 @@ export default function DashboardView() {
     document.body.appendChild(script);
   };
 
-  const startTour = () => {
-    markPromptSeen();
-    setIsTourPromptOpen(false);
+  const startTour = async () => {
+    await handleTakeTour();
     setIsTourOpen(true);
   };
 
-  const handleTourClose = (completed: boolean) => {
+  const handleTourClose = () => {
     setIsTourOpen(false);
-    if (completed) {
-      markTourCompleted();
-    } else {
-      markTourDismissed();
-    }
+    // Tour completion is already handled by handleTakeTour
+    // No need to update flags here since "completed" was already set
   };
 
   const handleSaveAcquisition = async ({
@@ -445,39 +426,17 @@ export default function DashboardView() {
         </div>
       )}
 
-      <Dialog open={isTourPromptOpen} onOpenChange={setIsTourPromptOpen}>
-        <DialogContent className="sm:max-w-md">
-          <DialogHeader>
-            <DialogTitle>Quick dashboard tour</DialogTitle>
-            <DialogDescription>
-              See a short walkthrough of Dashboard, Leads, Opportunities, and Settings.
-            </DialogDescription>
-          </DialogHeader>
-          <DialogFooter className="flex-col gap-2 sm:flex-row sm:justify-end">
-            <Button
-              variant="outline"
-              onClick={() => {
-                markDontShowAgain();
-                setIsTourPromptOpen(false);
-              }}
-            >
-              Don&apos;t show again
-            </Button>
-            <Button
-              variant="ghost"
-              onClick={() => {
-                markNotNow();
-                setIsTourPromptOpen(false);
-              }}
-            >
-              Not now
-            </Button>
-            <Button onClick={startTour} className="bg-primary hover:bg-primary/90 text-white">
-              Take a site tour
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+      <DashboardTourPromptDialog
+        open={shouldShowPrompt && !isAcquisitionDialogOpen}
+        onOpenChange={(open) => {
+          if (!open) {
+            handleNotNow();
+          }
+        }}
+        onTakeTour={startTour}
+        onNotNow={handleNotNow}
+        onDontShowAgain={handleDontShowAgain}
+      />
 
       <DashboardSiteTour isOpen={isTourOpen} onClose={handleTourClose} />
 
