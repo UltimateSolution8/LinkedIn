@@ -45,12 +45,13 @@ export default function KPICards({ kpis, isScanning, onCardClick }: KPICardsProp
       key: "posts_scanned" as const,
       label: "Posts Scanned",
       value: kpis.postsScanned,
-      subtitle: kpis.postsScanned > 0 ? "And counting..." : null,
+      subtitle: kpis.postsScanned > 0 ? "AI analyzed posts" : "Starting scan...",
       icon: Radar,
       iconBg: "bg-primary/10",
       iconColor: "text-primary",
       valueColor: "text-primary",
-      showBadge: true
+      showBadge: true,
+      tooltip: "Total Reddit posts evaluated by the AI for this project. This count updates as the scan progresses."
     }
   ];
 
@@ -69,6 +70,7 @@ export default function KPICards({ kpis, isScanning, onCardClick }: KPICardsProp
                 type="button"
                 key={index}
                 onClick={() => onCardClick?.(card.key)}
+                title={card.tooltip}
                 className="min-w-[160px] flex-1 text-left bg-white dark:bg-neutral-900 p-4 rounded-2xl border border-teal-200/20 dark:border-neutral-800 shadow-sm hover:border-teal-300 dark:hover:border-teal-700 hover:shadow-md transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50"
               >
                 {/* Icon */}
@@ -116,6 +118,7 @@ export default function KPICards({ kpis, isScanning, onCardClick }: KPICardsProp
               type="button"
               key={index}
               onClick={() => onCardClick?.(card.key)}
+              title={card.tooltip}
               className="text-left bg-white dark:bg-neutral-900 p-6 rounded-xl border border-neutral-200 dark:border-neutral-800 shadow-sm hover:border-teal-300 dark:hover:border-teal-700 hover:shadow-md transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50"
             >
               {/* Icon */}
