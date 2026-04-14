@@ -28,6 +28,7 @@ export default function EditProjectSettingsModal({
   project,
   onSuccess,
 }: EditProjectSettingsModalProps) {
+  const [description, setDescription] = useState<string>(project.description || "");
   const [keywords, setKeywords] = useState<string[]>(project.keywords || []);
   const [targetAudience, setTargetAudience] = useState<string[]>(project.targetAudience || []);
   const [valuePropositions, setValuePropositions] = useState<string[]>(project.valuePropositions || []);
@@ -91,6 +92,7 @@ export default function EditProjectSettingsModal({
 
     try {
       await updateProjectSettings(project._id, {
+        description,
         keywords,
         targetAudience,
         valuePropositions,
@@ -108,7 +110,7 @@ export default function EditProjectSettingsModal({
 
   return (
     <Dialog open={isOpen} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
+      <DialogContent className="sm:max-w-3xl max-h-[90vh] overflow-y-auto overflow-x-hidden">
         <DialogHeader>
           <DialogTitle className="text-xl font-semibold">
             Edit Project Settings
@@ -119,6 +121,23 @@ export default function EditProjectSettingsModal({
         </DialogHeader>
 
         <div className="space-y-6 py-4">
+          {/* Description */}
+          <div>
+            <Label htmlFor="description" className="text-sm font-semibold text-neutral-700 dark:text-neutral-300">
+              Description
+            </Label>
+            <p className="text-xs text-neutral-500 dark:text-neutral-400 mt-1 mb-2">
+              What your product does and who it's for
+            </p>
+            <textarea
+              id="description"
+              value={description}
+              onChange={(e) => setDescription(e.target.value)}
+              placeholder="Describe your product or service, its key features, and unique value proposition..."
+              className="w-full resize-y rounded-lg text-neutral-900 dark:text-white focus:outline-0 focus:ring-2 focus:ring-teal-600/50 border border-neutral-300 dark:border-neutral-700 bg-white dark:bg-neutral-900 focus:border-teal-600/80 min-h-[120px] placeholder:text-neutral-400 dark:placeholder:text-neutral-600 p-4 text-sm font-normal leading-normal"
+            />
+          </div>
+
           {/* Keywords */}
           <div>
             <Label className="text-sm font-semibold text-neutral-700 dark:text-neutral-300">

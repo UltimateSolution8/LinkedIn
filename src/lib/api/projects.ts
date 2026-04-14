@@ -42,6 +42,7 @@ export interface CreateProjectResponse {
 }
 
 export interface UpdateProjectSettingsPayload {
+  description?: string;
   keywords?: string[];
   targetAudience?: string[];
   valuePropositions?: string[];
