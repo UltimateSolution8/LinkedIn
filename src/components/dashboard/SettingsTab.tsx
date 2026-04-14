@@ -94,6 +94,29 @@ export default function SettingsTab({ projectId }: SettingsTabProps) {
         </Button>
       </div>
 
+      {/* Description Section */}
+      <div className="space-y-4">
+        <div>
+          <h2 className="text-xl font-bold text-neutral-950 dark:text-white">Description</h2>
+          <p className="text-sm text-neutral-500 dark:text-neutral-400 mt-1">
+            What your product does and who it's for
+          </p>
+        </div>
+        {project.description ? (
+          <div className="bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-xl p-6 shadow-sm">
+            <p className="text-sm text-neutral-700 dark:text-neutral-300 leading-relaxed">
+              {project.description}
+            </p>
+          </div>
+        ) : (
+          <div className="bg-neutral-50 dark:bg-neutral-800/50 border border-neutral-200 dark:border-neutral-700 rounded-lg p-6">
+            <p className="text-sm text-neutral-500 dark:text-neutral-400 italic">
+              No description provided
+            </p>
+          </div>
+        )}
+      </div>
+
       {/* Target Audience Section */}
       <div className="space-y-4">
         <div>
