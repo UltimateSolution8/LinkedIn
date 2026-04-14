@@ -1,6 +1,6 @@
 
 import { Bell } from "lucide-react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import {
@@ -12,10 +12,16 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { useAuth } from "@/contexts/AuthContext";
 import ProjectSwitcher from "./ProjectSwitcher";
+import { useState } from "react";
+import { getFeedbackStatus } from "@/lib/api/feedback";
+import LogoutFeedbackPromptDialog from "./LogoutFeedbackPromptDialog";
 
 export default function AppHeader() {
   const navigate = useNavigate();
+  const { projectId } = useParams<{ projectId: string }>();
   const { user: currentUser, logout: authLogout } = useAuth();
+  const [showFeedbackPrompt, setShowFeedbackPrompt] = useState(false);
+  const [processingLogout, setProcessingLogout] = useState(false);
 
   const getUserInitials = (firstName: string, lastName: string) => {
     return `${firstName[0] || ''}${lastName[0] || ''}`.toUpperCase();
@@ -26,9 +32,40 @@ export default function AppHeader() {
     return `${currentUser.firstName} ${currentUser.lastName}`.trim();
   };
 
-  const handleLogout = async () => {
+  const performLogout = async () => {
+    setProcessingLogout(true);
     await authLogout();
-    navigate("/login");
+    navigate("/login", { replace: true });
+  };
+
+  const handleLogout = async () => {
+    try {
+      const status = await getFeedbackStatus();
+      if (status.submitted) {
+        await performLogout();
+        return;
+      }
+      setShowFeedbackPrompt(true);
+    } catch (error) {
+      console.warn("[AppHeader] Failed to fetch feedback status, showing prompt by default.", error);
+      setShowFeedbackPrompt(true);
+    } finally {
+      setProcessingLogout(false);
+    }
+  };
+
+  const handleShareFeedback = () => {
+    setShowFeedbackPrompt(false);
+    if (projectId) {
+      navigate(`/app/${projectId}/feedback`);
+      return;
+    }
+    navigate("/profile");
+  };
+
+  const handleLogoutDirectly = async () => {
+    setShowFeedbackPrompt(false);
+    await performLogout();
   };
 
   const handleProfile = () => {
@@ -98,6 +135,14 @@ export default function AppHeader() {
           </DropdownMenu>
         )}
       </div>
+
+      <LogoutFeedbackPromptDialog
+        open={showFeedbackPrompt}
+        onOpenChange={setShowFeedbackPrompt}
+        onShareFeedback={handleShareFeedback}
+        onLogoutDirectly={handleLogoutDirectly}
+        isProcessing={processingLogout}
+      />
     </header>
   );
 }

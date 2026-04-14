@@ -268,6 +268,7 @@ export default function DashboardView() {
 
   const isScanning = dashboardData?.scanState === "scanning_empty" || dashboardData?.scanState === "scanning_partial";
   const scanProgress = dashboardData?.scanProgress || 0;
+  const noLeadsYet = Boolean(dashboardData && dashboardData.kpis.totalLeads === 0);
   const isNewUserNoLeads = Boolean(dashboardData && dashboardData.kpis.totalLeads === 0 && !isScanning);
 
   const getWeekRange = () => {
@@ -309,6 +310,37 @@ export default function DashboardView() {
   // Determine if we should show scanning progress steps (initial state)
   const showScanningProgress = scanningStatus &&
     (scanningStatus.stage == 'idle' || scanningStatus.stage === 'validating_subreddits' || scanningStatus.stage === 'scoring_leads');
+
+  const estimatedLeadWindow = (() => {
+    const subredditCount = scanningStatus?.subredditCount || 0;
+    const minMinutes = Math.max(8, Math.min(35, 8 + subredditCount * 2));
+    const maxMinutes = minMinutes + 15;
+    return `${minMinutes}-${maxMinutes} mins`;
+  })();
+
+  const firstLeadStatusMessage = (() => {
+    if (!scanningStatus) {
+      return "We’re preparing your first scan. Leads usually appear within 10-30 mins.";
+    }
+
+    if (scanningStatus.stage === "validating_subreddits") {
+      return "We are validating subreddits for your project. Scanning starts right after this step.";
+    }
+
+    if (scanningStatus.stage === "scoring_leads") {
+      return "Scanning is active and we are scoring conversations for buying intent.";
+    }
+
+    if (scanningStatus.stage === "completed") {
+      return "Your latest scan finished. We continue monitoring and will surface new leads as they appear.";
+    }
+
+    if (scanningStatus.stage === "failed") {
+      return "A recent scan had an issue. Please check project settings and try refreshing.";
+    }
+
+    return "Your setup is complete. The first scan starts shortly.";
+  })();
 
   return (
     <div className="p-4 lg:p-8">
@@ -353,6 +385,19 @@ export default function DashboardView() {
           isScanning={isScanning}
           onCardClick={handleMetricCardClick}
         />
+      )}
+
+      {noLeadsYet && (
+        <section className="my-6 rounded-xl border border-neutral-200 dark:border-neutral-800 bg-white dark:bg-neutral-900 p-5 lg:p-6">
+          <h2 className="text-lg font-semibold text-neutral-900 dark:text-white">When will first leads appear?</h2>
+          <p className="mt-2 text-sm text-neutral-700 dark:text-neutral-300">{firstLeadStatusMessage}</p>
+          <p className="mt-2 text-sm text-neutral-600 dark:text-neutral-400">
+            Typical first-lead ETA: <span className="font-medium text-neutral-900 dark:text-neutral-100">{estimatedLeadWindow}</span>
+          </p>
+          <p className="mt-1 text-sm text-neutral-600 dark:text-neutral-400">
+            We’ll notify you in-app when new leads are found. You can also enable email alerts from settings.
+          </p>
+        </section>
       )}
 
       {isNewUserNoLeads && (

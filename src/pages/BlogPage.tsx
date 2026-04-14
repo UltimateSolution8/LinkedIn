@@ -202,15 +202,6 @@ const samplePosts = [
 ];
 
 const defaultCategories = ["All", "Lead Generation", "AI & Automation", "Sales", "Marketing", "Strategy"];
-const fallbackCoverImages = [
-  "https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=1200&auto=format&fit=crop&q=70",
-  "https://images.unsplash.com/photo-1553877522-43269d4ea984?w=1200&auto=format&fit=crop&q=70",
-  "https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?w=1200&auto=format&fit=crop&q=70",
-  "https://images.unsplash.com/photo-1552664730-d307ca884978?w=1200&auto=format&fit=crop&q=70",
-  "https://images.unsplash.com/photo-1551434678-e076c223a692?w=1200&auto=format&fit=crop&q=70",
-  "https://images.unsplash.com/photo-1559136555-9303baea8ebd?w=1200&auto=format&fit=crop&q=70",
-];
-
 function resolveSanityImageUrl(imageCandidate) {
   if (!imageCandidate) return "";
   if (typeof imageCandidate === "string") return imageCandidate;
@@ -311,7 +302,7 @@ export default function BlogPage() {
           const coverImage =
             resolveSanityImageUrl(post.coverImageUrl) ||
             resolveSanityImageUrl(post.coverImage) ||
-            fallbackCoverImages[index % fallbackCoverImages.length];
+            "";
 
           const body = post.body ?? null;
           const excerpt =
@@ -499,11 +490,15 @@ export default function BlogPage() {
     return (
       <div className="min-h-screen bg-slate-50 dark:bg-slate-900">
         <div className="relative h-96">
-          <img
-            src={expandedPost.coverImage}
-            alt={expandedPost.title}
-            className="w-full h-full object-cover"
-          />
+          {expandedPost.coverImage ? (
+            <img
+              src={expandedPost.coverImage}
+              alt={expandedPost.title}
+              className="w-full h-full object-cover"
+            />
+          ) : (
+            <div className="w-full h-full bg-gradient-to-r from-slate-700 to-slate-800" />
+          )}
           <div className="absolute inset-0 bg-gradient-to-t from-slate-900 via-slate-900/70 to-transparent" />
           <div className="absolute top-4 left-4">
             <Link
@@ -650,11 +645,15 @@ export default function BlogPage() {
             <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-lg overflow-hidden trace-beam border border-border/50">
               <div className="grid md:grid-cols-2 gap-0">
                 <div className="relative h-64 md:h-auto">
-                  <img
-                    src={featuredPost.coverImage}
-                    alt={featuredPost.title}
-                    className="absolute inset-0 w-full h-full object-cover"
-                  />
+                  {featuredPost.coverImage ? (
+                    <img
+                      src={featuredPost.coverImage}
+                      alt={featuredPost.title}
+                      className="absolute inset-0 w-full h-full object-cover"
+                    />
+                  ) : (
+                    <div className="absolute inset-0 bg-gradient-to-r from-slate-200 to-slate-300 dark:from-slate-700 dark:to-slate-800" />
+                  )}
                 </div>
                 <div className="p-8 md:p-12 flex flex-col justify-center">
                   <Badge className="w-fit bg-primary/10 text-primary dark:bg-primary/20 dark:text-primary-foreground mb-4">
@@ -726,6 +725,9 @@ export default function BlogPage() {
                         alt={post.title}
                         className="w-full h-full object-cover"
                       />
+                    )}
+                    {!post.coverImage && (
+                      <div className="w-full h-full bg-gradient-to-r from-slate-200 to-slate-300 dark:from-slate-700 dark:to-slate-800" />
                     )}
                     <div className="absolute top-4 left-4">
                       <Badge className="bg-primary/10 text-primary backdrop-blur-sm border border-primary/20">

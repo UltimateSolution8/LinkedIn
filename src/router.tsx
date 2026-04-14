@@ -42,6 +42,7 @@ const LeadsView = lazy(() => import('@/pages/app/LeadsView'))
 const OpportunitiesView = lazy(() => import('@/pages/app/OpportunitiesView'))
 const SettingsView = lazy(() => import('@/pages/app/SettingsView'))
 const GuideView = lazy(() => import('@/pages/app/GuideView'))
+const FeedbackView = lazy(() => import('@/pages/app/FeedbackView'))
 import ProjectRouteGuard from '@/components/app/ProjectRouteGuard'
 import DashboardRedirect from '@/components/DashboardRedirect'
 import AppEntryRedirect from '@/components/AppEntryRedirect'
@@ -170,6 +171,7 @@ export default function AppRouter() {
           <Route path="/app/:projectId/opportunities" element={<OpportunitiesView />} />
           <Route path="/app/:projectId/settings" element={<SettingsView />} />
           <Route path="/app/:projectId/playbook" element={<GuideView />} />
+          <Route path="/app/:projectId/feedback" element={<FeedbackView />} />
           {/* Redirect /app/:projectId to /app/:projectId/dashboard */}
           <Route path="/app/:projectId" element={<Navigate to="dashboard" replace />} />
         </Route>
