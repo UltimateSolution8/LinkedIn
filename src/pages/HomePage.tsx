@@ -33,7 +33,7 @@ export default function HomePage() {
   const [isDark, setIsDark] = useState(() => {
     const saved = localStorage.getItem("theme");
     if (saved) return saved === "dark";
-    return true;
+    return false;
   });
   const [showExitIntent, setShowExitIntent] = useState(false);
   const isAnonymousVisitor = !getCurrentUser();

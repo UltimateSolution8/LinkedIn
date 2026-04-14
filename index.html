@@ -37,10 +37,10 @@
       (() => {
         try {
           const savedTheme = localStorage.getItem("theme");
-          const shouldUseDark = savedTheme ? savedTheme === "dark" : true;
+          const shouldUseDark = savedTheme ? savedTheme === "dark" : false;
           document.documentElement.classList.toggle("dark", shouldUseDark);
         } catch {
-          document.documentElement.classList.add("dark");
+          document.documentElement.classList.remove("dark");
         }
       })();
     </script>

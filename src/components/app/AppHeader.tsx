@@ -1,6 +1,6 @@
 
 import { Bell } from "lucide-react";
-import { useNavigate, useParams } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import {
@@ -13,12 +13,34 @@ import {
 import { useAuth } from "@/contexts/AuthContext";
 import ProjectSwitcher from "./ProjectSwitcher";
 import { useState } from "react";
-import { getFeedbackStatus } from "@/lib/api/feedback";
+import { getFeatureFlag, updateFeatureFlag } from "@/lib/api/featureFlags";
 import LogoutFeedbackPromptDialog from "./LogoutFeedbackPromptDialog";
+
+const FEEDBACK_URL = "https://fider.userixly.com/";
+const FEEDBACK_COMPLETED_FLAG = "dashboard_feedback_v1";
+
+function hasCompletedFeedback(flagValue: string | null): boolean {
+  if (!flagValue) return false;
+  const normalizedValue = flagValue.trim().toLowerCase();
+
+  if (normalizedValue === "true" || normalizedValue === "1") {
+    return true;
+  }
+
+  if (normalizedValue === "false" || normalizedValue === "0" || normalizedValue === "null") {
+    return false;
+  }
+
+  try {
+    const parsed = JSON.parse(flagValue);
+    return Boolean(parsed && typeof parsed === "object");
+  } catch {
+    return normalizedValue.length > 0;
+  }
+}
 
 export default function AppHeader() {
   const navigate = useNavigate();
-  const { projectId } = useParams<{ projectId: string }>();
   const { user: currentUser, logout: authLogout } = useAuth();
   const [showFeedbackPrompt, setShowFeedbackPrompt] = useState(false);
   const [processingLogout, setProcessingLogout] = useState(false);
@@ -32,16 +54,18 @@ export default function AppHeader() {
     return `${currentUser.firstName} ${currentUser.lastName}`.trim();
   };
 
-  const performLogout = async () => {
+  const performLogout = async (redirectToLogin = true) => {
     setProcessingLogout(true);
     await authLogout();
-    navigate("/login", { replace: true });
+    if (redirectToLogin) {
+      navigate("/login", { replace: true });
+    }
   };
 
   const handleLogout = async () => {
     try {
-      const status = await getFeedbackStatus();
-      if (status.submitted) {
+      const feedbackCompletedFlag = await getFeatureFlag(FEEDBACK_COMPLETED_FLAG);
+      if (hasCompletedFeedback(feedbackCompletedFlag)) {
         await performLogout();
         return;
       }
@@ -54,13 +78,16 @@ export default function AppHeader() {
     }
   };
 
-  const handleShareFeedback = () => {
-    setShowFeedbackPrompt(false);
-    if (projectId) {
-      navigate(`/app/${projectId}/feedback`);
-      return;
+  const handleShareFeedback = async () => {
+    try {
+      await updateFeatureFlag(FEEDBACK_COMPLETED_FLAG, "true");
+    } catch (error) {
+      console.warn("[AppHeader] Failed to persist feedback-completed flag:", error);
     }
-    navigate("/profile");
+
+    setShowFeedbackPrompt(false);
+    await performLogout(false);
+    window.location.assign(FEEDBACK_URL);
   };
 
   const handleLogoutDirectly = async () => {

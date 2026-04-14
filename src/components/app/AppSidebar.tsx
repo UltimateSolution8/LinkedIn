@@ -11,12 +11,14 @@ import { getSubscriptionStatusCached } from "@/lib/utils/subscription";
 import { getUserStatusLabel } from "@/lib/utils/subscriptionLabels";
 import { SubscriptionStatus } from "@/lib/api/subscription";
 import { useProject } from "@/contexts/ProjectContext";
+import { updateFeatureFlag } from "@/lib/api/featureFlags";
 
 interface NavItem {
   label: string;
   icon: React.ComponentType<{ className?: string }>;
   path: string;
   badge?: number;
+  external?: boolean;
 }
 
 interface AppSidebarProps {
@@ -30,6 +32,8 @@ export default function AppSidebar({ leadsCount = 0, opportunitiesCount = 0 }: A
   const { user: currentUser } = useAuth();
   const { projects } = useProject();
   const [subscriptionStatus, setSubscriptionStatus] = useState<SubscriptionStatus | null>(null);
+  const FEEDBACK_URL = "https://fider.userixly.com/";
+  const FEEDBACK_COMPLETED_FLAG = "dashboard_feedback_v1";
 
   // Fetch subscription status on mount
   useEffect(() => {
@@ -76,7 +80,8 @@ export default function AppSidebar({ leadsCount = 0, opportunitiesCount = 0 }: A
     {
       label: "Feedback",
       icon: MessageSquare,
-      path: `/app/${projectId}/feedback`,
+      path: FEEDBACK_URL,
+      external: true,
     },
   ];
 
@@ -97,6 +102,15 @@ export default function AppSidebar({ leadsCount = 0, opportunitiesCount = 0 }: A
   const getUserFullName = () => {
     if (!currentUser) return '';
     return `${currentUser.firstName} ${currentUser.lastName}`.trim();
+  };
+
+  const handleFeedbackClick = async () => {
+    try {
+      await updateFeatureFlag(FEEDBACK_COMPLETED_FLAG, "true");
+    } catch (error) {
+      console.warn("[AppSidebar] Failed to persist feedback-completed flag:", error);
+    }
+    window.location.assign(FEEDBACK_URL);
   };
 
   return (
@@ -132,6 +146,20 @@ export default function AppSidebar({ leadsCount = 0, opportunitiesCount = 0 }: A
       <nav className="flex-1 px-4 space-y-1">
         {navItems.map((item) => {
           const Icon = item.icon;
+          if (item.external) {
+            return (
+              <button
+                key={item.path}
+                type="button"
+                onClick={handleFeedbackClick}
+                className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-colors relative text-neutral-600 dark:text-neutral-400 hover:bg-neutral-50 dark:hover:bg-neutral-900"
+              >
+                <Icon className="h-5 w-5" />
+                <span className="flex-1 text-left">{item.label}</span>
+              </button>
+            );
+          }
+
           return (
             <NavLink
               key={item.path}
