@@ -18,7 +18,7 @@ export default function FindLeadsTab({ projectId, onCountChange }: FindLeadsTabP
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
-  const [sortBy, setSortBy] = useState<"date" | "relevance">("date");
+  const [sortBy, setSortBy] = useState<"date" | "score" | "subreddit">("date");
   const [sortOrder, setSortOrder] = useState<"asc" | "desc">("desc");
   const [pagination, setPagination] = useState({
     totalPages: 1,
@@ -36,7 +36,11 @@ export default function FindLeadsTab({ projectId, onCountChange }: FindLeadsTabP
         setIsLoading(true);
       }
       setError(null);
-      const response = await getLeads(projectId, currentPage, 10, sortBy, sortOrder);
+      
+      // Map frontend sortBy to API sortBy if needed
+      const apiSortBy = sortBy;
+      
+      const response = await getLeads(projectId, currentPage, 10, apiSortBy as any, sortOrder);
       setLeads(response.data);
       setPagination({
         totalPages: response.pagination.totalPages,
@@ -79,8 +83,14 @@ export default function FindLeadsTab({ projectId, onCountChange }: FindLeadsTabP
     setCurrentPage(page);
   };
 
-  const handleSortByChange = (value: "date" | "relevance") => {
+  const handleSortByChange = (value: "date" | "score" | "subreddit") => {
     setSortBy(value);
+    // Auto-set order based on sort type
+    if (value === "subreddit") {
+      setSortOrder("asc");
+    } else {
+      setSortOrder("desc");
+    }
     setCurrentPage(1); // Reset to first page when sorting changes
   };
 
@@ -129,12 +139,13 @@ export default function FindLeadsTab({ projectId, onCountChange }: FindLeadsTabP
         </div>
 
         <Select value={sortBy} onValueChange={handleSortByChange}>
-          <SelectTrigger className="w-32">
+          <SelectTrigger className="w-40">
             <SelectValue />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="date">Date</SelectItem>
-            <SelectItem value="relevance">Relevance</SelectItem>
+            <SelectItem value="date">Most Recent</SelectItem>
+            <SelectItem value="score">High Score</SelectItem>
+            <SelectItem value="subreddit">Subreddit</SelectItem>
           </SelectContent>
         </Select>
 

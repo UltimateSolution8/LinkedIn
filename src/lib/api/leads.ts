@@ -3,6 +3,7 @@ const RIXLY_API_BASE_URL = import.meta.env.VITE_RIXLY_API_BASE_URL;
 export type LeadSource = "comment" | "post";
 export type LeadListType = "hot" | "opportunity";
 export type LeadSort = "score" | "date" | "subreddit";
+export type LeadSortOrder = "asc" | "desc";
 export type ReplyTone = "friendly" | "professional" | "casual";
 
 export interface Lead {
@@ -122,6 +123,7 @@ export interface GetLeadsOptions {
   starred?: boolean;
   followUp?: boolean;
   sort?: LeadSort;
+  sortOrder?: LeadSortOrder;
   source?: "post" | "comment" | "all";
   createdAfter?: string;
   createdBefore?: string;
@@ -198,8 +200,8 @@ export interface ScanStatusResponse {
 function buildLegacyOptions(
   pageOrOptions: number | GetLeadsOptions,
   limit: number,
-  sortBy?: "date" | "relevance",
-  sortOrder?: "asc" | "desc"
+  sortBy?: LeadSort | "relevance",
+  sortOrder?: LeadSortOrder
 ): GetLeadsOptions {
   if (typeof pageOrOptions === "object") {
     return {
@@ -210,6 +212,7 @@ function buildLegacyOptions(
       starred: pageOrOptions.starred,
       followUp: pageOrOptions.followUp,
       sort: pageOrOptions.sort,
+      sortOrder: pageOrOptions.sortOrder,
       source: pageOrOptions.source ?? "all",
       createdAfter: pageOrOptions.createdAfter,
       createdBefore: pageOrOptions.createdBefore,
@@ -222,14 +225,16 @@ function buildLegacyOptions(
     source: "all",
   };
 
-  if (sortBy === "relevance") {
-    options.sort = "score";
-  } else if (sortBy === "date") {
-    options.sort = "date";
+  if (sortBy) {
+    if (sortBy === "relevance") {
+      options.sort = "score";
+    } else {
+      options.sort = sortBy as LeadSort;
+    }
   }
 
-  if (sortOrder === "asc" && options.sort === "date") {
-    options.sort = "date";
+  if (sortOrder) {
+    options.sortOrder = sortOrder;
   }
 
   return options;
@@ -247,8 +252,8 @@ export async function getLeads(
   projectId: string,
   pageOrOptions: number | GetLeadsOptions = 1,
   limit: number = 10,
-  sortBy?: "date" | "relevance",
-  sortOrder?: "asc" | "desc"
+  sortBy?: LeadSort | "relevance",
+  sortOrder?: LeadSortOrder
 ): Promise<GetLeadsResponse> {
   const options = buildLegacyOptions(pageOrOptions, limit, sortBy, sortOrder);
 
@@ -260,6 +265,7 @@ export async function getLeads(
 
   if (options.type) params.set("type", options.type);
   if (options.sort) params.set("sort", options.sort);
+  if (options.sortOrder) params.set("sort_order", options.sortOrder);
   if (options.painTags && options.painTags.length > 0) {
     params.set("painTags", options.painTags.join(","));
   }

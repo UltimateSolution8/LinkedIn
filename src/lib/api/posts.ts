@@ -90,7 +90,7 @@ export async function getPosts(
   projectId: string,
   page: number = 1,
   limit: number = 10,
-  sortBy?: "hotness" | "comments" | "date" | "status",
+  sortBy?: "hotness" | "comments" | "date" | "status" | "subreddit" | "score",
   sortOrder?: "asc" | "desc"
 ): Promise<GetPostsResponse> {
   const params = new URLSearchParams({

@@ -1,6 +1,8 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import {
+  ArrowDownWideNarrow,
+  ArrowUpNarrowWide,
   CalendarClock,
   ExternalLink,
   Flame,
@@ -23,6 +25,7 @@ import {
   type Lead,
   type LeadListType,
   type LeadSort,
+  type LeadSortOrder,
 } from "@/lib/api/leads";
 import { useScanStatus } from "@/hooks/useScanStatus";
 import LeadDetailDrawer from "./LeadDetailDrawer";
@@ -80,6 +83,7 @@ export default function LeadsPage({ projectId, mode, onCountsRefresh }: LeadsPag
   const [starredOnly, setStarredOnly] = useState(false);
   const [followUpOnly, setFollowUpOnly] = useState(false);
   const [sort, setSort] = useState<LeadSort>(initialSort);
+  const [sortOrder, setSortOrder] = useState<LeadSortOrder>(initialSort === "subreddit" ? "asc" : "desc");
   const [page, setPage] = useState(1);
   const [totalLeads, setTotalLeads] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
@@ -132,6 +136,7 @@ export default function LeadsPage({ projectId, mode, onCountsRefresh }: LeadsPag
           starred: starredOnly || undefined,
           followUp: followUpOnly || undefined,
           sort,
+          sortOrder,
           source: "all",
           createdAfter,
           createdBefore,
@@ -168,7 +173,7 @@ export default function LeadsPage({ projectId, mode, onCountsRefresh }: LeadsPag
         setIsLoadingMore(false);
       }
     },
-    [projectId, mode, selectedPainTags, starredOnly, followUpOnly, sort, createdAfter, createdBefore, onCountsRefresh]
+    [projectId, mode, selectedPainTags, starredOnly, followUpOnly, sort, sortOrder, createdAfter, createdBefore, onCountsRefresh]
   );
 
   useEffect(() => {
@@ -432,7 +437,11 @@ export default function LeadsPage({ projectId, mode, onCountsRefresh }: LeadsPag
           </p>
           <div className="flex items-center gap-2">
             <span className="text-xs uppercase font-semibold text-neutral-500">Sort</span>
-            <Select value={sort} onValueChange={(value) => setSort(value as LeadSort)}>
+            <Select value={sort} onValueChange={(value) => {
+              const newSort = value as LeadSort;
+              setSort(newSort);
+              setSortOrder(newSort === "subreddit" ? "asc" : "desc");
+            }}>
               <SelectTrigger className="w-[170px]">
                 <SelectValue />
               </SelectTrigger>
@@ -442,6 +451,17 @@ export default function LeadsPage({ projectId, mode, onCountsRefresh }: LeadsPag
                 <SelectItem value="subreddit">By subreddit</SelectItem>
               </SelectContent>
             </Select>
+            <button
+              type="button"
+              className="p-1.5 rounded-md border border-neutral-200 dark:border-neutral-700 hover:bg-neutral-100 dark:hover:bg-neutral-800 transition-colors"
+              title={sortOrder === "desc" ? "Descending — click for ascending" : "Ascending — click for descending"}
+              onClick={() => setSortOrder((current) => current === "desc" ? "asc" : "desc")}
+            >
+              {sortOrder === "desc"
+                ? <ArrowDownWideNarrow className="w-4 h-4 text-neutral-600 dark:text-neutral-300" />
+                : <ArrowUpNarrowWide className="w-4 h-4 text-neutral-600 dark:text-neutral-300" />
+              }
+            </button>
           </div>
         </div>
       </section>

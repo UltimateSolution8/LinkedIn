@@ -18,7 +18,7 @@ export default function FindPostsTab({ projectId, onCountChange }: FindPostsTabP
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
-  const [sortBy, setSortBy] = useState<"hotness" | "comments" | "date" | "status">("date");
+  const [sortBy, setSortBy] = useState<"hotness" | "comments" | "date" | "status" | "subreddit" | "score">("date");
   const [sortOrder, setSortOrder] = useState<"asc" | "desc">("desc");
   const [pagination, setPagination] = useState({
     totalPages: 1,
@@ -79,8 +79,14 @@ export default function FindPostsTab({ projectId, onCountChange }: FindPostsTabP
     setCurrentPage(page);
   };
 
-  const handleSortByChange = (value: "hotness" | "comments" | "date" | "status") => {
+  const handleSortByChange = (value: "hotness" | "comments" | "date" | "status" | "subreddit" | "score") => {
     setSortBy(value);
+    // Auto-set order based on sort type
+    if (value === "subreddit") {
+      setSortOrder("asc");
+    } else {
+      setSortOrder("desc");
+    }
     setCurrentPage(1); // Reset to first page when sorting changes
   };
 
@@ -140,12 +146,14 @@ export default function FindPostsTab({ projectId, onCountChange }: FindPostsTabP
         </div>
 
         <Select value={sortBy} onValueChange={handleSortByChange}>
-          <SelectTrigger className="w-32">
+          <SelectTrigger className="w-40">
             <SelectValue />
           </SelectTrigger>
           <SelectContent>
             <SelectItem value="date">Date</SelectItem>
-            <SelectItem value="hotness">Hotness</SelectItem>
+            <SelectItem value="score">High Score</SelectItem>
+            <SelectItem value="subreddit">Subreddit</SelectItem>
+            <SelectItem value="hotness">Reddit Score</SelectItem>
             <SelectItem value="comments">Comments</SelectItem>
             <SelectItem value="status">Status</SelectItem>
           </SelectContent>
