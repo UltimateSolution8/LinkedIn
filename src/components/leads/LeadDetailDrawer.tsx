@@ -16,6 +16,7 @@ interface LeadDetailDrawerProps {
   onSetFollowUp: (lead: Lead, followUpAt: string | null) => Promise<void>;
   onMarkContacted: (lead: Lead, replyText: string, tone: "casual" | "professional" | "friendly") => Promise<void>;
   onArchive: (lead: Lead) => Promise<void>;
+  messageType?: "comment" | "dm";
 }
 
 function defaultTomorrowIsoLocal() {
@@ -32,6 +33,7 @@ export default function LeadDetailDrawer({
   onSetFollowUp,
   onMarkContacted,
   onArchive,
+  messageType = "comment",
 }: LeadDetailDrawerProps) {
   const [details, setDetails] = useState<LeadDetailsResponse["data"] | null>(null);
   const [isLoading, setIsLoading] = useState(false);
@@ -288,7 +290,7 @@ export default function LeadDetailDrawer({
                   onClick={() => setIsCommentDialogOpen(true)}
                   disabled={isSubmitting}
                 >
-                  Generate Comment
+                  {messageType === "dm" ? "Generate DM" : "Generate Comment"}
                 </Button>
                 <Button size="sm" onClick={onSubmitContacted} disabled={isSubmitting}>
                   <CheckCircle2 className="w-4 h-4" />
@@ -309,6 +311,7 @@ export default function LeadDetailDrawer({
         onOpenChange={setIsCommentDialogOpen}
         leadId={lead ? String(lead.leadId) : ""}
         postTitle={lead?.title ?? ""}
+        messageType={messageType}
       />
     </Sheet>
   );

@@ -647,7 +647,7 @@ export default function LeadsPage({ projectId, mode, onCountsRefresh }: LeadsPag
                         }}
                       >
 
-                        Generate Comment
+                        {mode === "hot" ? "Generate DM" : "Generate Comment"}
                       </Button>
                       <Button
                         size="sm"
@@ -725,6 +725,7 @@ export default function LeadsPage({ projectId, mode, onCountsRefresh }: LeadsPag
         onSetFollowUp={onSetFollowUp}
         onMarkContacted={onMarkContacted}
         onArchive={onArchive}
+        messageType={mode === "hot" ? "dm" : "comment"}
       />
 
       <GenerateCommentDialog
@@ -734,6 +735,7 @@ export default function LeadsPage({ projectId, mode, onCountsRefresh }: LeadsPag
         }}
         leadId={commentLead ? String(commentLead.leadId) : ""}
         postTitle={commentLead?.title ?? ""}
+        messageType={mode === "hot" ? "dm" : "comment"}
       />
 
       {scan.newLeadsSince > 0 && (

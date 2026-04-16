@@ -23,6 +23,7 @@ interface GenerateCommentDialogProps {
   onOpenChange: (open: boolean) => void;
   leadId: string;
   postTitle: string;
+  messageType?: "comment" | "dm";
 }
 
 export default function GenerateCommentDialog({
@@ -30,6 +31,7 @@ export default function GenerateCommentDialog({
   onOpenChange,
   leadId,
   postTitle,
+  messageType = "comment",
 }: GenerateCommentDialogProps) {
   const [isGeneratingComment, setIsGeneratingComment] = useState(false);
   const [isLoadingComments, setIsLoadingComments] = useState(false);
@@ -94,7 +96,7 @@ export default function GenerateCommentDialog({
     setIsGeneratingComment(true);
     setResponseError("");
     try {
-      const response = await generatePostComment(leadId, tone, length);
+      const response = await generatePostComment(leadId, tone, length, messageType);
       const newComment = response.data.message;
 
       // Add to cache
@@ -153,7 +155,7 @@ export default function GenerateCommentDialog({
     <Dialog open={isOpen} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-4xl max-h-[85vh] flex flex-col">
         <DialogHeader>
-          <DialogTitle>Generate Comment for Post</DialogTitle>
+          <DialogTitle>{messageType === "dm" ? "Generate DM" : "Generate Comment for Post"}</DialogTitle>
           <DialogDescription className="line-clamp-2">
             {postTitle}
           </DialogDescription>
@@ -227,7 +229,7 @@ export default function GenerateCommentDialog({
             ) : (
               <>
                 <Sparkles className="w-3.5 h-3.5 mr-2" />
-                <span className="text-xs">Generate Comment ({remainingAttempts} remaining)</span>
+                <span className="text-xs">{messageType === "dm" ? "Generate DM" : "Generate Comment"} ({remainingAttempts} remaining)</span>
               </>
             )}
           </Button>
@@ -257,7 +259,7 @@ export default function GenerateCommentDialog({
             <div className="flex items-center justify-center p-4">
               <Loader2 className="w-5 h-5 animate-spin text-teal-600 dark:text-teal-400" />
               <span className="ml-2 text-xs text-neutral-500 dark:text-neutral-400">
-                Loading previous comments...
+                {messageType === "dm" ? "Loading previous DMs..." : "Loading previous comments..."}
               </span>
             </div>
           )}
@@ -267,7 +269,7 @@ export default function GenerateCommentDialog({
             <div className="space-y-2">
               <div className="flex items-center justify-between">
                 <Label className="text-xs font-semibold text-neutral-950 dark:text-white">
-                  Generated Comment
+                  {messageType === "dm" ? "Generated DM" : "Generated Comment"}
                 </Label>
                 <div className="flex items-center gap-2">
                   <Button
@@ -308,7 +310,7 @@ export default function GenerateCommentDialog({
               className="w-full py-2 bg-teal-600 hover:bg-teal-700 dark:bg-teal-600 dark:hover:bg-teal-700"
             >
               <MessageSquare className="w-3.5 h-3.5 mr-2" />
-              <span className="text-xs">Copy Comment</span>
+              <span className="text-xs">{messageType === "dm" ? "Copy DM" : "Copy Comment"}</span>
             </Button>
           </DialogFooter>
         )}

@@ -147,7 +147,8 @@ export async function getGeneratedComments(
 export async function generatePostComment(
   leadId: string,
   tone: "friendly" | "professional" | "casual" = "friendly",
-  length: "short" | "medium" = "medium"
+  length: "short" | "medium" = "medium",
+  messageType: "comment" | "dm" = "comment"
 ): Promise<GenerateCommentResponse> {
   const response = await fetch(
     `${RIXLY_API_BASE_URL}/api/ai/generate-invite-message`,
@@ -159,7 +160,7 @@ export async function generatePostComment(
       credentials: "include",
       body: JSON.stringify({
         leadId,
-        messageType: "comment",
+        messageType,
         tone,
         length,
       }),
