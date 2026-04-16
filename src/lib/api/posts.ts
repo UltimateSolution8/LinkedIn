@@ -72,6 +72,19 @@ export interface GenerateCommentResponse {
   };
 }
 
+export interface CommentStrategiesResponse {
+  message: string;
+  data: {
+    leadId: number;
+    applicable: string[];
+    recommended: string;
+    leadInfo: {
+      postTitle: string;
+      subreddit: string;
+    };
+  };
+}
+
 export interface UpdateLeadStatusRequest {
   status: "NEW" | "IN_PROGRESS" | "FOLLOW_UP_SCHEDULED" | "CONVERTED" | "NOT_INTERESTED" | "DUPLICATE" | "DONE";
   followUpAt?: string;
@@ -144,11 +157,35 @@ export async function getGeneratedComments(
   return responseData;
 }
 
+export async function getCommentStrategies(
+  leadId: string
+): Promise<CommentStrategiesResponse> {
+  const response = await fetch(
+    `${RIXLY_API_BASE_URL}/api/ai/comment-strategies/${leadId}`,
+    {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      credentials: "include",
+    }
+  );
+
+  const responseData = await response.json();
+
+  if (!response.ok) {
+    throw new Error(responseData.message || "Failed to fetch comment strategies");
+  }
+
+  return responseData;
+}
+
 export async function generatePostComment(
   leadId: string,
   tone: "friendly" | "professional" | "casual" = "friendly",
   length: "short" | "medium" = "medium",
-  messageType: "comment" | "dm" = "comment"
+  messageType: "comment" | "dm" = "comment",
+  strategy?: string
 ): Promise<GenerateCommentResponse> {
   const response = await fetch(
     `${RIXLY_API_BASE_URL}/api/ai/generate-invite-message`,
@@ -163,6 +200,7 @@ export async function generatePostComment(
         messageType,
         tone,
         length,
+        ...(strategy ? { commentStrategy: strategy } : {}),
       }),
     }
   );

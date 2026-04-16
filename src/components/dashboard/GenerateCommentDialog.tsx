@@ -11,12 +11,19 @@ import {
   DialogFooter,
 } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
-import { getGeneratedComments, generatePostComment } from "@/lib/api/posts";
+import { getGeneratedComments, generatePostComment, getCommentStrategies } from "@/lib/api/posts";
 import { trackEvent } from "@/lib/analytics";
 
 
 type Tone = "friendly" | "professional" | "casual";
 type Length = "short" | "medium";
+
+function formatApproach(value: string): string {
+  return value
+    .split("_")
+    .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+    .join(" ");
+}
 
 interface GenerateCommentDialogProps {
   isOpen: boolean;
@@ -44,6 +51,12 @@ export default function GenerateCommentDialog({
   const [monthlyUsed, setMonthlyUsed] = useState(0);
   const [monthlyLimit, setMonthlyLimit] = useState<number | null>(null);
 
+  // Comment Approach (strategy) state — only used when messageType === "comment"
+  const [approaches, setApproaches] = useState<string[]>([]);
+  const [selectedApproach, setSelectedApproach] = useState<string | null>(null);
+  const [recommendedApproach, setRecommendedApproach] = useState<string | null>(null);
+  const [isLoadingApproaches, setIsLoadingApproaches] = useState(false);
+
   // Tone and Length options
   const toneOptions: { value: Tone; label: string }[] = [
     { value: "friendly", label: "Friendly" },
@@ -56,12 +69,33 @@ export default function GenerateCommentDialog({
     { value: "medium", label: "Medium" },
   ];
 
-  // Load previous comments when dialog opens
+  // Load previous comments and strategies when dialog opens
   useEffect(() => {
     if (isOpen) {
       loadPreviousComments();
+      if (messageType === "comment") {
+        loadApproaches();
+      }
     }
   }, [isOpen, leadId]);
+
+  const loadApproaches = async () => {
+    setIsLoadingApproaches(true);
+    try {
+      const response = await getCommentStrategies(leadId);
+      const { applicable, recommended } = response.data;
+      setApproaches(applicable);
+      setRecommendedApproach(recommended);
+      setSelectedApproach(recommended);
+    } catch {
+      // Silently fail — strategy section simply won't show
+      setApproaches([]);
+      setRecommendedApproach(null);
+      setSelectedApproach(null);
+    } finally {
+      setIsLoadingApproaches(false);
+    }
+  };
 
   const loadPreviousComments = async () => {
     setResponseError("");
@@ -96,7 +130,8 @@ export default function GenerateCommentDialog({
     setIsGeneratingComment(true);
     setResponseError("");
     try {
-      const response = await generatePostComment(leadId, tone, length, messageType);
+      const strategyToUse = messageType === "comment" ? (selectedApproach ?? undefined) : undefined;
+      const response = await generatePostComment(leadId, tone, length, messageType, strategyToUse);
       const newComment = response.data.message;
 
       // Add to cache
@@ -161,7 +196,7 @@ export default function GenerateCommentDialog({
           </DialogDescription>
         </DialogHeader>
 
-        <div className="space-y-3 flex-1 min-h-0">
+        <div className="space-y-3 flex-1 min-h-0 overflow-y-auto">
           {/* Customization Options */}
           <div className="space-y-3">
             {/* Tone Selection */}
@@ -211,6 +246,56 @@ export default function GenerateCommentDialog({
                 ))}
               </div>
             </div>
+
+            {/* Comment Approach — only for opportunity (comment) mode */}
+            {messageType === "comment" && (
+              <div className="space-y-1.5">
+                <div className="flex items-center gap-2">
+                  <Label className="text-xs font-semibold text-neutral-950 dark:text-white">
+                    Comment Approach
+                  </Label>
+                  <span className="text-xs text-neutral-400 dark:text-neutral-500">
+                    AI-recommended based on post &amp; subreddit
+                  </span>
+                </div>
+
+                {isLoadingApproaches ? (
+                  <div className="flex items-center gap-2 py-1.5">
+                    <Loader2 className="w-3.5 h-3.5 animate-spin text-teal-600 dark:text-teal-400" />
+                    <span className="text-xs text-neutral-400">Analysing post...</span>
+                  </div>
+                ) : approaches.length > 0 ? (
+                  <div className="flex flex-wrap gap-2">
+                    {approaches.map((approach) => {
+                      const isSelected = selectedApproach === approach;
+                      const isRecommended = recommendedApproach === approach;
+                      return (
+                        <button
+                          key={approach}
+                          onClick={() => setSelectedApproach(approach)}
+                          className={`relative py-1.5 px-3 rounded-md border-2 transition-all text-left ${
+                            isSelected
+                              ? "border-teal-600 bg-teal-50 dark:bg-teal-950 dark:border-teal-400"
+                              : "border-neutral-200 dark:border-neutral-800 hover:border-neutral-300 dark:hover:border-neutral-700"
+                          }`}
+                        >
+                          <div className="flex items-center gap-1.5">
+                            <span className="text-xs font-medium text-neutral-950 dark:text-white">
+                              {formatApproach(approach)}
+                            </span>
+                            {isRecommended && (
+                              <span className="text-[10px] font-semibold px-1.5 py-0.5 rounded-full bg-teal-100 text-teal-700 dark:bg-teal-900 dark:text-teal-300 leading-none">
+                                Best fit
+                              </span>
+                            )}
+                          </div>
+                        </button>
+                      );
+                    })}
+                  </div>
+                ) : null}
+              </div>
+            )}
           </div>
 
           {/* Generate Button */}
