@@ -19,6 +19,38 @@ import { SubscriptionStatus, cancelSubscription } from "@/lib/api/subscription";
 import { getSubscriptionStatusCached } from "@/lib/utils/subscription";
 import { getDetailedStatusLabel } from "@/lib/utils/subscriptionLabels";
 import ChangePasswordDialog from "@/components/profile/ChangePasswordDialog";
+import { useAuth as useRedditAuth, AuthProvider as RedditAuthProvider } from '@/contexts/AuthContext1'
+
+
+
+function RedditIntegrationSection() {
+  const { isRedditConnected, login } = useRedditAuth()
+
+  return (
+    <div className="border-t border-neutral-200 dark:border-neutral-800 pt-6 mt-2">
+      <h3 className="text-neutral-950 dark:text-white text-lg font-bold">Reddit Integration</h3>
+      <p className="text-neutral-500 dark:text-neutral-400 text-sm mt-1">
+        Connect your Reddit account to enable posting and messaging features.
+      </p>
+      {!isRedditConnected ? (
+        <Button
+          type="button"
+          variant="outline"
+          onClick={login}
+          className="mt-4 border-orange-600/30 text-orange-600 dark:text-orange-400 hover:bg-orange-600/10"
+        >
+          Connect Reddit
+        </Button>
+      ) : (
+        <p className="text-green-600 dark:text-green-400 text-sm mt-2">
+          Reddit account connected
+        </p>
+      )}
+    </div>
+  )
+}
+
+
 
 export default function ProfilePage() {
   const navigate = useNavigate();
@@ -33,6 +65,8 @@ export default function ProfilePage() {
   const [isCancelling, setIsCancelling] = useState(false);
   const [showCancelDialog, setShowCancelDialog] = useState(false);
   const [showChangePasswordDialog, setShowChangePasswordDialog] = useState(false);
+  //onst { isRedditConnected, login } = useRedditAuth()
+
 
   // Load user data and subscription details
   useEffect(() => {
@@ -368,6 +402,13 @@ export default function ProfilePage() {
                   <p className="text-neutral-500 dark:text-neutral-400 text-sm">Unable to load subscription details.</p>
                 )}
               </div>
+
+              {(subscriptionDetails?.subscription || subscriptionDetails?.canBypass || subscriptionDetails?.isTrial) && (
+                <RedditAuthProvider>
+                  <RedditIntegrationSection />
+                </RedditAuthProvider>
+              )}
+
 
               {/* Security Section */}
               <div className="border-t border-neutral-200 dark:border-neutral-800 pt-6 mt-2">
