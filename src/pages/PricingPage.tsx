@@ -467,6 +467,7 @@ export default function PricingPage() {
                   plan={plan}
                   onChoosePlan={(isTrial) => handleChoosePlan(plan, isTrial)}
                   processing={processing}
+                  user={user}
                 />
               ))}
             </div>
@@ -509,9 +510,10 @@ interface PricingCardProps {
   plan: PricingPlan;
   onChoosePlan: (isTrial: boolean) => void;
   processing?: boolean;
+  user?: { email: string; firstName: string; lastName: string } | null;
 }
 
-function PricingCard({ plan, onChoosePlan, processing = false }: PricingCardProps) {
+function PricingCard({ plan, onChoosePlan, processing = false, user }: PricingCardProps) {
   // Hardcoded features that override plan.features
   const hardcodedFeatures = [
     "UNLIMITED *100* Posts to view",

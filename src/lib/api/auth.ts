@@ -29,6 +29,8 @@ export interface SignupResponse {
     role?: string;
     createdAt: string;
     updatedAt: string;
+    redditConnected: boolean;
+    redditMaskedUsername: string | null;
   };
   accessToken: string;
 }
