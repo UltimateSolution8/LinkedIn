@@ -9,7 +9,7 @@ import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
 import GoogleIcon from "@/components/auth/GoogleIcon";
-import { signin } from "@/lib/api/auth";
+import { signin, getMe } from "@/lib/api/auth";
 import { getProjects } from "@/lib/api/projects";
 import { useAuth } from "@/contexts/AuthContext";
 
@@ -52,8 +52,13 @@ export default function LoginForm({ onSuccess }: LoginFormProps = {}) {
       localStorage.clear();
       sessionStorage.clear();
 
-      // Update auth context with user data (also stores in localStorage)
-      if (response.user) {
+      // Fetch full user from /me to get complete profile (including redditConnected etc.)
+      // The signin response only contains basic fields; /me is the single source of truth.
+      const fullUser = await getMe();
+      if (fullUser) {
+        setUser(fullUser);
+      } else if (response.user) {
+        // Fallback: use signin response if /me fails for some reason
         setUser(response.user);
       }
 

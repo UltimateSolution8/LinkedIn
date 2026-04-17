@@ -6,12 +6,11 @@ import { Menu, X, Sun, Moon } from "lucide-react";
 import { Button } from "../ui/button";
 import { useAuth } from "@/contexts/AuthContext";
 import { PopupButton } from "react-calendly";
-import { getCurrentUser } from "@/lib/api/auth";
 
 export const Navbar = ({ isDark, toggleTheme, setView }) => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const { isAuthenticated, isLoading } = useAuth();
+  const { isAuthenticated, isLoading, user } = useAuth();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -115,8 +114,8 @@ export const Navbar = ({ isDark, toggleTheme, setView }) => {
                       className="font-medium text-sm px-4 py-2 rounded-md hover:bg-muted transition-colors"
                       data-testid="nav-book-demo"
                       prefill={{
-                        email: getCurrentUser()?.email || "",
-                        name: getCurrentUser() ? `${getCurrentUser()?.firstName} ${getCurrentUser()?.lastName}` : "",
+                        email: user?.email || "",
+                        name: user ? `${user.firstName} ${user.lastName}` : "",
                       }}
                     />
                     <Link to="/dashboard">
@@ -146,8 +145,8 @@ export const Navbar = ({ isDark, toggleTheme, setView }) => {
                       className="font-medium text-sm px-4 py-2 rounded-md hover:bg-muted transition-colors"
                       data-testid="nav-book-demo"
                       prefill={{
-                        email: getCurrentUser()?.email || "",
-                        name: getCurrentUser() ? `${getCurrentUser()?.firstName} ${getCurrentUser()?.lastName}` : "",
+                        email: user?.email || "",
+                        name: user ? `${user.firstName} ${user.lastName}` : "",
                       }}
                     />
                     <Link to="/login">
@@ -258,8 +257,8 @@ export const Navbar = ({ isDark, toggleTheme, setView }) => {
                           className="w-full font-medium text-sm px-4 py-2.5 rounded-md border border-border hover:bg-muted transition-colors text-center"
                           data-testid="mobile-book-demo"
                           prefill={{
-                            email: getCurrentUser()?.email || "",
-                            name: getCurrentUser() ? `${getCurrentUser()?.firstName} ${getCurrentUser()?.lastName}` : "",
+                            email: user?.email || "",
+                            name: user ? `${user.firstName} ${user.lastName}` : "",
                           }}
                         />
                         <Link to="/dashboard" onClick={() => setIsMobileMenuOpen(false)}>
@@ -289,8 +288,8 @@ export const Navbar = ({ isDark, toggleTheme, setView }) => {
                           className="w-full font-medium text-sm px-4 py-2.5 rounded-md border border-border hover:bg-muted transition-colors text-center"
                           data-testid="mobile-book-demo"
                           prefill={{
-                            email: getCurrentUser()?.email || "",
-                            name: getCurrentUser() ? `${getCurrentUser()?.firstName} ${getCurrentUser()?.lastName}` : "",
+                            email: user?.email || "",
+                            name: user ? `${user.firstName} ${user.lastName}` : "",
                           }}
                         />
                         <Link to="/login" onClick={() => setIsMobileMenuOpen(false)}>

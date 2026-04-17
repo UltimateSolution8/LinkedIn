@@ -59,6 +59,8 @@ export interface User {
   acquisitionCapturedAt?: string | null;
   createdAt: string;
   updatedAt: string;
+  redditConnected: boolean;
+  redditMaskedUsername: string | null;
 }
 
 export interface SigninResponse {

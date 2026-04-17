@@ -9,7 +9,6 @@ import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 // import RequestDemoDialog from "@/components/shared/RequestDemoDialog";
 import { PopupButton } from "react-calendly";
-import { getCurrentUser } from "@/lib/api/auth";
 
 const basePlans = [
   {
@@ -74,7 +73,7 @@ export const PricingSection = () => {
   const [loading, setLoading] = useState(true);
   // const [requestDemoOpen, setRequestDemoOpen] = useState(false);
   const navigate = useNavigate();
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated, user } = useAuth();
 
   useEffect(() => {
     let mounted = true;
@@ -174,8 +173,8 @@ export const PricingSection = () => {
               text="Book a Demo"
               className="rounded-full border border-primary/20 hover:bg-primary/5 px-4 py-2 text-sm font-medium transition-colors"
               prefill={{
-                email: getCurrentUser()?.email || "",
-                name: getCurrentUser() ? `${getCurrentUser()?.firstName} ${getCurrentUser()?.lastName}` : "",
+                email: user?.email || "",
+                name: user ? `${user.firstName} ${user.lastName}` : "",
               }}
             />
           </div>
@@ -287,8 +286,8 @@ export const PricingSection = () => {
                       text="Book Demo"
                       className="w-full rounded-full font-bold border-2 border-primary/20 hover:bg-primary/5 py-2 transition-colors text-primary"
                       prefill={{
-                        email: getCurrentUser()?.email || "",
-                        name: getCurrentUser() ? `${getCurrentUser()?.firstName} ${getCurrentUser()?.lastName}` : "",
+                        email: user?.email || "",
+                        name: user ? `${user.firstName} ${user.lastName}` : "",
                       }}
                     />
                   </div>

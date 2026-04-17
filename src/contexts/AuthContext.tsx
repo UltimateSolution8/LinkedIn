@@ -1,5 +1,5 @@
 import { createContext, useContext, useState, ReactNode, useEffect } from "react";
-import { getCurrentUser, getMe, logout as logoutApi, type User } from "@/lib/api/auth";
+import { getMe, logout as logoutApi, type User } from "@/lib/api/auth";
 import { setUserId } from "@/lib/analytics";
 
 interface AuthContextType {
@@ -17,24 +17,22 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUserState] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
-  // Initialize authentication state on mount
+  // Initialize authentication state on mount by always fetching from the server.
+  // This ensures server-side fields like redditConnected are always fresh and
+  // avoids stale localStorage data from a previous session.
   useEffect(() => {
     const initAuth = async () => {
       try {
-        let currentUser = getCurrentUser();
-
-        // If no user in localStorage, try fetching from server (in case of Google OAuth or cleared storage)
-        if (!currentUser) {
-          currentUser = await getMe();
-          if (currentUser) {
-            // Save to localStorage so it's available for next time
-            localStorage.setItem("user", JSON.stringify(currentUser));
-          }
+        const currentUser = await getMe();
+        if (currentUser) {
+          localStorage.setItem("user", JSON.stringify(currentUser));
+        } else {
+          localStorage.removeItem("user");
         }
-
         setUserState(currentUser);
       } catch (error) {
         console.error("Failed to initialize auth:", error);
+        localStorage.removeItem("user");
         setUserState(null);
       } finally {
         setIsLoading(false);
@@ -52,12 +50,16 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   }, [user]);
 
-  // Listen for storage changes (cross-tab logout)
+  // Listen for storage changes (cross-tab logout/login)
+  // Re-fetch from server to ensure we have fresh data, not stale localStorage.
   useEffect(() => {
     const handleStorageChange = (e: StorageEvent) => {
-      if (e.key === "user") {
-        const currentUser = getCurrentUser();
-        setUserState(currentUser);
+      if (e.key === "user" || e.key === null) {
+        getMe().then((freshUser) => {
+          setUserState(freshUser);
+        }).catch(() => {
+          setUserState(null);
+        });
       }
     };
 

@@ -4,9 +4,10 @@ import { Link } from "react-router-dom";
 import { Button } from "../ui/button";
 import LinkedInEarlyAccessDialog from "./LinkedInEarlyAccessDialog";
 import { PopupButton } from "react-calendly";
-import { getCurrentUser } from "@/lib/api/auth";
+import { useAuth } from "@/contexts/AuthContext";
 
 export const CTASection = () => {
+  const { user } = useAuth();
   return (
     <section
       id="cta"
@@ -86,8 +87,8 @@ export const CTASection = () => {
                 className="rounded-full font-medium text-lg px-8 py-3 btn-press border-2 border-primary/20 hover:bg-primary/5 transition-colors"
                 data-testid="cta-book-demo"
                 prefill={{
-                  email: getCurrentUser()?.email || "",
-                  name: getCurrentUser() ? `${getCurrentUser()?.firstName} ${getCurrentUser()?.lastName}` : "",
+                  email: user?.email || "",
+                  name: user ? `${user.firstName} ${user.lastName}` : "",
                 }}
               />
             </motion.div>

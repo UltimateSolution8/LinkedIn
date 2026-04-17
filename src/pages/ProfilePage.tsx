@@ -1,5 +1,5 @@
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -14,17 +14,47 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { getCurrentUser, type User } from "@/lib/api/auth";
+import { type User, getMe } from "@/lib/api/auth";
 import { SubscriptionStatus, cancelSubscription } from "@/lib/api/subscription";
 import { getSubscriptionStatusCached } from "@/lib/utils/subscription";
 import { getDetailedStatusLabel } from "@/lib/utils/subscriptionLabels";
 import ChangePasswordDialog from "@/components/profile/ChangePasswordDialog";
-import { useAuth as useRedditAuth, AuthProvider as RedditAuthProvider } from '@/contexts/AuthContext1'
+import { useAuth } from "@/contexts/AuthContext";
+import { getLoginUrl } from "@/api/auth";
 
 
 
 function RedditIntegrationSection() {
-  const { isRedditConnected, login } = useRedditAuth()
+  const { user, setUser } = useAuth()
+  const popupRef = useRef<Window | null>(null)
+
+  // Listen for the popup signalling Reddit OAuth completed.
+  useEffect(() => {
+    function handleMessage(event: MessageEvent) {
+      if (event.data?.type !== 'reddit-connected') return
+      // Refresh the user so redditConnected updates.
+      getMe().then((u: User | null) => {
+        if (u) setUser(u)
+      }).catch(() => {})
+      popupRef.current?.close()
+      popupRef.current = null
+    }
+    window.addEventListener('message', handleMessage)
+    return () => window.removeEventListener('message', handleMessage)
+  }, [])
+
+  async function login() {
+    const url = await getLoginUrl('/oauth/reddit/callback')
+    const popup = window.open(url, 'reddit-oauth', 'width=600,height=700,left=200,top=100,resizable=yes,scrollbars=yes')
+    if (popup) {
+      popupRef.current = popup
+    } else {
+      window.location.href = url
+    }
+  }
+
+  const isRedditConnected = !!user?.redditConnected
+  const redditMaskedUsername = user?.redditMaskedUsername ?? null
 
   return (
     <div className="border-t border-neutral-200 dark:border-neutral-800 pt-6 mt-2">
@@ -37,14 +67,22 @@ function RedditIntegrationSection() {
           type="button"
           variant="outline"
           onClick={login}
-          className="mt-4 border-orange-600/30 text-orange-600 dark:text-orange-400 hover:bg-orange-600/10"
+          className="mt-4 border-orange-600/30 text-orange-600 dark:text-orange-400 hover:bg-orange-600/10 cursor-pointer"
         >
           Connect Reddit
         </Button>
       ) : (
-        <p className="text-green-600 dark:text-green-400 text-sm mt-2">
-          Reddit account connected
-        </p>
+        <div className="flex items-center gap-2 mt-2">
+          <span className="inline-block w-2 h-2 rounded-full bg-green-500" />
+          <p className="text-green-600 dark:text-green-400 text-sm">
+            Reddit account connected
+            {redditMaskedUsername && (
+              <span className="ml-1 text-neutral-500 dark:text-neutral-400 font-mono">
+                (u/{redditMaskedUsername})
+              </span>
+            )}
+          </p>
+        </div>
       )}
     </div>
   )
@@ -54,7 +92,7 @@ function RedditIntegrationSection() {
 
 export default function ProfilePage() {
   const navigate = useNavigate();
-  const [user, setUser] = useState<User | null>(null);
+  const { user } = useAuth();
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
   const [email, setEmail] = useState("");
@@ -65,23 +103,20 @@ export default function ProfilePage() {
   const [isCancelling, setIsCancelling] = useState(false);
   const [showCancelDialog, setShowCancelDialog] = useState(false);
   const [showChangePasswordDialog, setShowChangePasswordDialog] = useState(false);
-  //onst { isRedditConnected, login } = useRedditAuth()
 
-
-  // Load user data and subscription details
+  // Sync form fields from AuthContext user (single source of truth)
   useEffect(() => {
-    const loadUserData = () => {
-      const currentUser = getCurrentUser();
-      if (currentUser) {
-        setUser(currentUser);
-        setFirstName(currentUser.firstName || "");
-        setLastName(currentUser.lastName || "");
-        setEmail(currentUser.email || "");
-        setInitialFirstName(currentUser.firstName || "");
-        setInitialLastName(currentUser.lastName || "");
-      }
-    };
+    if (user) {
+      setFirstName(user.firstName || "");
+      setLastName(user.lastName || "");
+      setEmail(user.email || "");
+      setInitialFirstName(user.firstName || "");
+      setInitialLastName(user.lastName || "");
+    }
+  }, [user]);
 
+  // Load subscription details on mount
+  useEffect(() => {
     const loadSubscriptionDetails = async () => {
       setIsLoadingSubscription(true);
       setSubscriptionDetails(null);
@@ -97,25 +132,8 @@ export default function ProfilePage() {
       }
     };
 
-    // Initial load
-    loadUserData();
     loadSubscriptionDetails();
-
-    // Listen for storage changes (cross-tab and same-tab login/logout)
-    const handleStorageChange = (e: StorageEvent) => {
-      if (e.key === "user" || e.key === "accessToken" || e.key === null) {
-        // User changed - reload everything
-        loadUserData();
-        loadSubscriptionDetails();
-      }
-    };
-
-    window.addEventListener("storage", handleStorageChange);
-
-    return () => {
-      window.removeEventListener("storage", handleStorageChange);
-    };
-  }, []); // Only run once on mount, storage listener handles updates
+  }, []);
 
   // Check if form has been modified and is valid
   const isFormModified = () => {
@@ -404,9 +422,7 @@ export default function ProfilePage() {
               </div>
 
               {(subscriptionDetails?.subscription || subscriptionDetails?.canBypass || subscriptionDetails?.isTrial) && (
-                <RedditAuthProvider>
-                  <RedditIntegrationSection />
-                </RedditAuthProvider>
+                <RedditIntegrationSection />
               )}
 
 

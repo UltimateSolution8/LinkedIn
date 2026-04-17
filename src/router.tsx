@@ -35,6 +35,7 @@ const ResetPasswordPage = lazy(() => import('@/pages/reset-password/ResetPasswor
 const AuthPricingPage = lazy(() => import('@/pages/AuthPricingPage'))
 const BlogPage = lazy(() => import('@/pages/BlogPage'))
 const HomePage = lazy(() => import('@/pages/HomePage'))
+const RedditOAuthCallback = lazy(() => import('@/pages/RedditOAuthCallback'))
 
 // App Views (New Route-Based Navigation)
 const DashboardView = lazy(() => import('@/pages/app/DashboardView'))
@@ -151,6 +152,9 @@ export default function AppRouter() {
 
         {/* Auth Pricing Route */}
         <Route path="/auth-pricing" element={<AuthPricingPage />} />
+
+        {/* Reddit OAuth popup callback — no layout, just posts message and closes */}
+        <Route path="/oauth/reddit/callback" element={<RedditOAuthCallback />} />
 
         {/* Dashboard Routes - OLD (Backward Compatibility) */}
         {/* Redirect old /dashboard to new /app/:projectId/dashboard structure */}

@@ -5,16 +5,16 @@ import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { useNavigate } from "react-router-dom";
 import { useProject } from "@/contexts/ProjectContext";
-import { getCurrentUser } from "@/lib/api/auth";
+import { useAuth } from "@/contexts/AuthContext";
 import { getSubscriptionStatusCached } from "@/lib/utils/subscription";
 
 export default function Sidebar() {
   const navigate = useNavigate();
   const { selectedProjectId, setSelectedProjectId, projects, isLoading, error } = useProject();
+  const { user } = useAuth();
 
   // Check if user is admin
-  const currentUser = getCurrentUser();
-  const isAdmin = currentUser?.role === 'admin';
+  const isAdmin = user?.role === 'admin';
 
   // Plan-based project limit (default 2 for backward compatibility)
   const [maxProjects, setMaxProjects] = useState(2);

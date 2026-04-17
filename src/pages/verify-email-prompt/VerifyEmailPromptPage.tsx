@@ -4,12 +4,13 @@ import { useNavigate } from "react-router-dom";
 import { Mail, RefreshCw, LogOut } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { resendVerificationEmail, getCurrentUser, logout, type User } from "@/lib/api/auth";
+import { resendVerificationEmail, logout } from "@/lib/api/auth";
 import Logo from "@/components/common/Logo";
+import { useAuth } from "@/contexts/AuthContext";
 
 export default function VerifyEmailPromptPage() {
   const navigate = useNavigate();
-  const [user, setUser] = useState<User | null>(null);
+  const { user } = useAuth();
   const [isResending, setIsResending] = useState(false);
   const [resendMessage, setResendMessage] = useState<{
     type: "success" | "error";
@@ -18,32 +19,18 @@ export default function VerifyEmailPromptPage() {
   const [cooldown, setCooldown] = useState(0);
 
   useEffect(() => {
-    const currentUser = getCurrentUser();
-
-    // If no user or user is already verified, redirect
-    if (!currentUser) {
+    // If no user, redirect to login
+    if (!user) {
       navigate("/login");
       return;
     }
 
-    if (currentUser.isEmailVerified) {
+    // If user is already verified, redirect to dashboard
+    if (user.isEmailVerified) {
       navigate("/dashboard");
-      return;
     }
-
-    setUser(currentUser);
-
-    // Poll for email verification status every 3 seconds
-    // This handles the case where user verifies email in another tab
-    const pollInterval = setInterval(() => {
-      const updatedUser = getCurrentUser();
-      if (updatedUser?.isEmailVerified) {
-        navigate("/dashboard");
-      }
-    }, 3000);
-
-    return () => clearInterval(pollInterval);
-  }, [navigate]);
+    // AuthContext keeps user state fresh via server — no manual polling needed
+  }, [user, navigate]);
 
   useEffect(() => {
     if (cooldown > 0) {

@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { getScanningStatus, ScanningStatusData } from "@/lib/api/projects";
 import { getSubscriptionStatusCached } from "@/lib/utils/subscription";
 import { SubscriptionStatus } from "@/lib/api/subscription";
-import { getCurrentUser } from "@/lib/api/auth";
+import { useAuth } from "@/contexts/AuthContext";
 
 interface UseScanningStatusOptions {
   projectId: string;
@@ -29,6 +29,7 @@ export function useScanningStatus({
   pollingInterval = 5000, // 5 seconds
   enabled = true
 }: UseScanningStatusOptions): UseScanningStatusReturn {
+  const { user } = useAuth();
   const [data, setData] = useState<ScanningStatusData | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
@@ -60,8 +61,7 @@ export function useScanningStatus({
     const checkSubscription = async () => {
       try {
         // Admin bypass - no need to check subscription
-        const currentUser = getCurrentUser();
-        const isAdmin = currentUser?.role === 'admin';
+        const isAdmin = user?.role === 'admin';
 
         if (isAdmin) {
           setHasSubscriptionAccess(true);

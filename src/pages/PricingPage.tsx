@@ -11,7 +11,7 @@ import AuthDialog from "@/components/pricing/AuthDialog";
 import { detectUserCurrency } from "@/lib/utils/geolocation";
 import { getSubscriptionStatusCached } from "@/lib/utils/subscription";
 import { type SubscriptionStatus } from "@/lib/api/subscription";
-import { getCurrentUser } from "@/lib/api/auth";
+import { useAuth } from "@/contexts/AuthContext";
 import { PopupButton, useCalendlyEventListener } from "react-calendly";
 
 // Declare Razorpay types for TypeScript
@@ -23,6 +23,7 @@ declare global {
 
 export default function PricingPage() {
   const navigate = useNavigate();
+  const { user } = useAuth();
   const [plans, setPlans] = useState<PricingPlan[]>([]);
   const [loading, setLoading] = useState(true);
   const [processing, setProcessing] = useState(false);
@@ -58,12 +59,9 @@ export default function PricingPage() {
     const checkUserAccess = async () => {
       try {
         setCheckingSubscription(true);
-        const accessToken = localStorage.getItem("accessToken");
-
-        if (accessToken) {
+        if (user) {
           // Check if email is verified first
-          const currentUser = getCurrentUser();
-          if (currentUser && !currentUser.isEmailVerified) {
+          if (!user.isEmailVerified) {
             navigate("/verify-email-prompt");
             return;
           }
@@ -80,7 +78,7 @@ export default function PricingPage() {
     };
 
     checkUserAccess();
-  }, [navigate]);
+  }, [navigate, user]);
 
   // Auto-detect currency and fetch pricing plans on mount
   useEffect(() => {
@@ -107,8 +105,7 @@ export default function PricingPage() {
     setSelectedIsTrial(isTrial);
 
     // [PROD-KEEP] Skip auth popup if user is already logged in for a smoother experience
-    const currentUser = getCurrentUser();
-    if (currentUser) {
+    if (user) {
       console.log("[PricingPage] User already logged in, proceeding directly to payment logic...");
       // Wrap in a temporary "selectedPlan" check or similar mechanism
       // or just call handleAuthSuccess directly as if they just logged in
@@ -142,8 +139,7 @@ export default function PricingPage() {
         }
 
         // [PROD-KEEP] Ensure the email is verified after login before allowing payment
-        const currentUser = getCurrentUser();
-        if (currentUser && !currentUser.isEmailVerified) {
+        if (user && !user.isEmailVerified) {
           navigate("/verify-email-prompt");
           return;
         }
@@ -619,8 +615,8 @@ function PricingCard({ plan, onChoosePlan, processing = false }: PricingCardProp
               text="Book Demo"
               className="w-full border-2 border-teal-600 text-teal-600 hover:bg-teal-50 py-4 rounded-xl text-sm sm:text-base font-bold transition-colors"
               prefill={{
-                email: getCurrentUser()?.email || "",
-                name: getCurrentUser() ? `${getCurrentUser()?.firstName} ${getCurrentUser()?.lastName}` : "",
+                email: user?.email || "",
+                name: user ? `${user.firstName} ${user.lastName}` : "",
               }}
             />
 

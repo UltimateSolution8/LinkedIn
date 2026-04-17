@@ -15,8 +15,9 @@ import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { AlertCircle } from "lucide-react";
 //import GoogleIcon from "@/components/auth/GoogleIcon";
-import { signin, signup, verifyOtp } from "@/lib/api/auth";
+import { signin, signup, verifyOtp, getMe } from "@/lib/api/auth";
 import { checkSubscriptionAccess } from "@/lib/utils/subscription";
+import { useAuth } from "@/contexts/AuthContext";
 
 interface AuthDialogProps {
   isOpen: boolean;
@@ -51,6 +52,7 @@ export default function AuthDialog({
   defaultView = "login",
 }: AuthDialogProps) {
   const navigate = useNavigate();
+  const { setUser } = useAuth();
   const [activeView, setActiveView] = useState<"login" | "signup" | "otp">(defaultView);
   const [isLoading, setIsLoading] = useState(false);
   const [apiError, setApiError] = useState<string | null>(null);
@@ -88,9 +90,12 @@ export default function AuthDialog({
       localStorage.clear();
       sessionStorage.clear();
 
-      // Store user data in localStorage (access token is now in HTTP-only cookie)
-      if (response.user) {
-        localStorage.setItem("user", JSON.stringify(response.user));
+      // Fetch full user from /me (includes redditConnected and all server-side fields)
+      const fullUser = await getMe();
+      if (fullUser) {
+        setUser(fullUser);
+      } else if (response.user) {
+        setUser(response.user);
       }
 
       if (!response.user.isEmailVerified) {
@@ -140,9 +145,9 @@ export default function AuthDialog({
 
       localStorage.clear();
 
-      // Store user data in localStorage (access token is now in HTTP-only cookie)
+      // Store basic user from signup response (full data will come after OTP verification)
       if (response.user) {
-        localStorage.setItem("user", JSON.stringify(response.user));
+        setUser(response.user);
       }
 
       // Transition to OTP verification view
@@ -167,9 +172,9 @@ export default function AuthDialog({
     try {
       const response = await verifyOtp({ otp });
 
-      // Update user in localStorage if returned
+      // Update AuthContext with verified user
       if (response.user) {
-        localStorage.setItem("user", JSON.stringify(response.user));
+        setUser(response.user);
       }
 
       // Call onAuthSuccess to proceed to payment flow

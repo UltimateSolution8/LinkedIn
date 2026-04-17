@@ -1,7 +1,7 @@
 import { X, Sparkles, Check } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { type PricingPlan } from "@/lib/api/pricing";
-import { getCurrentUser } from "@/lib/api/auth";
+import { useAuth } from "@/contexts/AuthContext";
 import { PopupButton } from "react-calendly";
 
 interface TrialActivationBannerProps {
@@ -19,6 +19,7 @@ export default function TrialActivationBanner({
   processingTrial = false,
   processingPayment = false
 }: TrialActivationBannerProps) {
+  const { user } = useAuth();
   const plan = plans[0]; // Use first plan
 
   if (!plan) return null;
@@ -108,8 +109,8 @@ export default function TrialActivationBanner({
               text="Book Demo"
               className="w-full h-full bg-teal-600 hover:bg-teal-700 text-white font-semibold px-8 py-4 rounded-xl shadow-lg shadow-teal-600/30 hover:shadow-teal-600/40 transition-all text-base flex items-center justify-center"
               prefill={{
-                email: getCurrentUser()?.email || "",
-                name: getCurrentUser() ? `${getCurrentUser()?.firstName} ${getCurrentUser()?.lastName}` : "",
+                email: user?.email || "",
+                name: user ? `${user.firstName} ${user.lastName}` : "",
               }}
             />
           </div>

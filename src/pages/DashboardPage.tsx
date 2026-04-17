@@ -11,7 +11,7 @@ import SettingsTab from "@/components/dashboard/SettingsTab";
 import EmptyProjectState from "@/components/dashboard/EmptyProjectState";
 import TrialActivationBanner from "@/components/dashboard/TrialActivationBanner";
 import { useProject } from "@/contexts/ProjectContext";
-import { getCurrentUser } from "@/lib/api/auth";
+import { useAuth } from "@/contexts/AuthContext";
 import BlurredLeads from "@/components/dashboard/BlurredLeads";
 import { getPricingPlans, createSubscription, verifySubscriptionPayment, type PricingPlan, RazorpaySubscriptionResponse } from "@/lib/api/pricing";
 import { detectUserCurrency } from "@/lib/utils/geolocation";
@@ -26,6 +26,7 @@ export default function DashboardPage() {
   const [searchParams, setSearchParams] = useSearchParams();
   const [activeTab, setActiveTab] = useState<"posts" | "leads" | "settings">("posts");
   const { selectedProjectId, setSelectedProjectId, getProjectById, projects, isLoading } = useProject();
+  const { user } = useAuth();
   const [postsCount, setPostsCount] = useState(0);
   const [leadsCount, setLeadsCount] = useState(0);
 
@@ -48,8 +49,7 @@ export default function DashboardPage() {
   });
 
   // Check if user is admin
-  const currentUser = getCurrentUser();
-  const isAdmin = currentUser?.role === 'admin';
+  const isAdmin = user?.role === 'admin';
 
   const project = selectedProjectId ? getProjectById(selectedProjectId) : null;
 

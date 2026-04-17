@@ -1,38 +1,18 @@
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Link } from 'react-router-dom'
 import { Button } from './ui/button'
 import Logo from './common/Logo'
 import UserProfileDropdown from './shared/UserProfileDropdown'
-import { getCurrentUser } from '@/lib/api/auth'
-import type { User } from '@/lib/api/auth'
+import { useAuth } from '@/contexts/AuthContext'
 import { Menu, X } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 const Navbar = () => {
-  const [user, setUser] = useState<User | null>(null);
+  const { user } = useAuth();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   const closeMenu = () => setIsMenuOpen(false);
-
-  useEffect(() => {
-    setUser(getCurrentUser());
-    const handleStorageChange = (e: StorageEvent) => {
-      if (e.key === "user" || e.key === "accessToken" || e.key === null) {
-        setUser(getCurrentUser());
-      }
-    };
-
-    window.addEventListener('storage', handleStorageChange);
-    const interval = setInterval(() => {
-      setUser(getCurrentUser());
-    }, 1000);
-
-    return () => {
-      window.removeEventListener('storage', handleStorageChange);
-      clearInterval(interval);
-    };
-  }, []); // Empty dependency array - only run once on mount
 
   return (
     <nav className="fixed top-0 w-full bg-white/80 backdrop-blur-md z-50 border-b border-gray-100">

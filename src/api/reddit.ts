@@ -1,12 +1,10 @@
 import client from './client'
-import type { CommentPayload, CommentResponse, DMPayload, DMResponse } from '../types/gtag'
+import type { CommentPayload, CommentResponse, DMPayload, DMResponse } from '../types/reddit'
 
-export async function postComment(payload: CommentPayload): Promise<CommentResponse> {
-  const { data } = await client.post<CommentResponse>('/reddit/comment', payload)
-  return data
+export async function postComment(payload: CommentPayload): Promise<CommentResponse | null> {
+  return client.post<CommentResponse>('/reddit/comment', payload)
 }
 
-export async function sendDM(payload: DMPayload): Promise<DMResponse> {
-  const { data } = await client.post<DMResponse>('/reddit/dm', payload)
-  return data
+export async function sendDM(payload: DMPayload): Promise<DMResponse | null> {
+  return client.post<DMResponse>('/reddit/dm', payload)
 }

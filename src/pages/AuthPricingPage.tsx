@@ -11,7 +11,8 @@ import AuthDialog from "@/components/pricing/AuthDialog";
 import { detectUserCurrency } from "@/lib/utils/geolocation";
 import { getSubscriptionStatusCached } from "@/lib/utils/subscription";
 import { type SubscriptionStatus } from "@/lib/api/subscription";
-import { getCurrentUser, logout } from "@/lib/api/auth";
+import { logout } from "@/lib/api/auth";
+import { useAuth } from "@/contexts/AuthContext";
 import PricingCard from "@/components/pricing/PricingCard";
 import { useCalendlyEventListener } from "react-calendly";
 
@@ -24,6 +25,7 @@ declare global {
 
 export default function AuthPricingPage() {
   const navigate = useNavigate();
+  const { user } = useAuth();
   const [plans, setPlans] = useState<PricingPlan[]>([]);
   const [loading, setLoading] = useState(true);
   const [processing, setProcessing] = useState(false);
@@ -60,8 +62,7 @@ export default function AuthPricingPage() {
 
         if (accessToken) {
           // Check if email is verified first
-          const currentUser = getCurrentUser();
-          if (currentUser && !currentUser.isEmailVerified) {
+          if (user && !user.isEmailVerified) {
             navigate("/verify-email-prompt");
             return;
           }
@@ -110,8 +111,7 @@ export default function AuthPricingPage() {
       setProcessing(true);
 
       // Check if email is verified
-      const currentUser = getCurrentUser();
-      if (currentUser && !currentUser.isEmailVerified) {
+      if (user && !user.isEmailVerified) {
         navigate("/verify-email-prompt");
         return;
       }
@@ -146,8 +146,7 @@ export default function AuthPricingPage() {
         setProcessing(true);
 
         // Check if email is verified
-        const currentUser = getCurrentUser();
-        if (currentUser && !currentUser.isEmailVerified) {
+        if (user && !user.isEmailVerified) {
           navigate("/verify-email-prompt");
           return;
         }

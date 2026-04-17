@@ -2,7 +2,7 @@ import { AlertCircle, TrendingUp, Users, Clock } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { type PricingPlan } from "@/lib/api/pricing";
 import { useState } from "react";
-import { getCurrentUser } from "@/lib/api/auth";
+import { useAuth } from "@/contexts/AuthContext";
 import { PopupButton } from "react-calendly";
 
 interface SubscriptionRequiredBannerProps {
@@ -18,6 +18,7 @@ export default function SubscriptionRequiredBanner({
   processingTrial = false,
   processingPayment = false
 }: SubscriptionRequiredBannerProps) {
+  const { user } = useAuth();
   const [selectedPlanIndex, setSelectedPlanIndex] = useState(0);
   const plan = plans[selectedPlanIndex] || plans[0];
   // const [showTrialDialog, setShowTrialDialog] = useState(false);
@@ -135,8 +136,8 @@ export default function SubscriptionRequiredBanner({
               text="Book Demo"
               className="w-full h-full bg-gradient-to-r from-orange-600 to-red-600 hover:from-orange-700 hover:to-red-700 text-white font-bold px-8 py-4 rounded-xl shadow-xl shadow-orange-600/40 hover:shadow-orange-600/60 transition-all text-lg flex items-center justify-center"
               prefill={{
-                email: getCurrentUser()?.email || "",
-                name: getCurrentUser() ? `${getCurrentUser()?.firstName} ${getCurrentUser()?.lastName}` : "",
+                email: user?.email || "",
+                name: user ? `${user.firstName} ${user.lastName}` : "",
               }}
             />
           </div>

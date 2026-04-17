@@ -13,14 +13,14 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { ChevronDown, Plus, CheckIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { getCurrentUser } from "@/lib/api/auth";
+import { useAuth } from "@/contexts/AuthContext";
 import { getSubscriptionStatusCached } from "@/lib/utils/subscription";
 
 export default function ProjectSwitcher() {
   const navigate = useNavigate();
   const { selectedProjectId, setSelectedProjectId, getProjectById, projects } = useProject();
-  const currentUser = getCurrentUser();
-  const isAdmin = currentUser?.role === 'admin';
+  const { user } = useAuth();
+  const isAdmin = user?.role === 'admin';
 
   const selectedProject = selectedProjectId ? getProjectById(selectedProjectId) : null;
 

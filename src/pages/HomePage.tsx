@@ -22,13 +22,14 @@ import { Footer } from "@/components/landing-new/Footer";
 import { CompanyLogos } from "@/components/landing-new/CompanyLogos";
 import { ScrollToTop } from "@/components/landing-new/ScrollToTop";
 import ExitIntentPlaybookDialog from "@/components/landing-new/ExitIntentPlaybookDialog";
-import { getCurrentUser } from "@/lib/api/auth";
+import { useAuth } from "@/contexts/AuthContext";
 import { useBackButtonExitIntent } from "@/hooks/useBackButtonExitIntent";
 
 const AnalyticsDashboard = lazy(() => import("@/components/landing-new/AnalyticsDashboard"));
 const ROIPage = lazy(() => import("@/components/landing-new/ROIPage").then((mod) => ({ default: mod.ROIPage })));
 
 export default function HomePage() {
+  const { user } = useAuth();
   const [view, setView] = useState("landing");
   const [isDark, setIsDark] = useState(() => {
     const saved = localStorage.getItem("theme");
@@ -36,7 +37,7 @@ export default function HomePage() {
     return false;
   });
   const [showExitIntent, setShowExitIntent] = useState(false);
-  const isAnonymousVisitor = !getCurrentUser();
+  const isAnonymousVisitor = !user;
 
   useEffect(() => {
     localStorage.setItem("theme", isDark ? "dark" : "light");

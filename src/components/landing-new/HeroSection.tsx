@@ -6,11 +6,10 @@ import { Badge } from "../ui/badge";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { PopupButton } from "react-calendly";
-import { getCurrentUser } from "@/lib/api/auth";
 
 export const HeroSection = () => {
   const navigate = useNavigate();
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated, user } = useAuth();
   const stats = [
     { icon: Users, value: "10K+", label: "Active Users" },
     { icon: TrendingUp, value: "3x", label: "More Leads" },
@@ -111,8 +110,8 @@ export const HeroSection = () => {
                   className="rounded-full font-medium text-lg px-8 py-3 glow-primary glow-primary-hover btn-press bg-primary-gradient border-none text-white shadow-[0_10px_30px_rgba(30,134,141,0.3)]"
                   data-testid="hero-get-started"
                   prefill={{
-                    email: getCurrentUser()?.email || "",
-                    name: getCurrentUser() ? `${getCurrentUser()?.firstName} ${getCurrentUser()?.lastName}` : "",
+                    email: user?.email || "",
+                    name: user ? `${user.firstName} ${user.lastName}` : "",
                   }}
                 />
                 <Button

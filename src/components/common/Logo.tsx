@@ -1,12 +1,12 @@
 
 import { useNavigate } from "react-router-dom";
-import { getCurrentUser } from "@/lib/api/auth";
+import { useAuth } from "@/contexts/AuthContext";
 
 export default function Logo() {
   const navigate = useNavigate();
+  const { user } = useAuth();
 
   const handleClick = () => {
-    const user = getCurrentUser();
     if (user) {
       navigate("/dashboard");
     } else {

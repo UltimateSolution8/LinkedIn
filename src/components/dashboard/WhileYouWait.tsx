@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useProject } from "@/contexts/ProjectContext";
 import { getSubscriptionStatusCached } from "@/lib/utils/subscription";
-import { getCurrentUser } from "@/lib/api/auth";
+import { useAuth } from "@/contexts/AuthContext";
 
 interface WhileYouWaitProps {
   onAddProject?: () => void;
@@ -12,9 +12,9 @@ interface WhileYouWaitProps {
 export default function WhileYouWait({ onAddProject, onEditSettings }: WhileYouWaitProps) {
   const navigate = useNavigate();
   const { projects } = useProject();
+  const { user } = useAuth();
   const [maxProjects, setMaxProjects] = useState(2);
-  const currentUser = getCurrentUser();
-  const isAdmin = currentUser?.role === 'admin';
+  const isAdmin = user?.role === 'admin';
 
   useEffect(() => {
     const fetchLimits = async () => {

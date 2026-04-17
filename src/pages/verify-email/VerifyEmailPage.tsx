@@ -4,11 +4,13 @@ import { useNavigate, useSearchParams } from "react-router-dom";
 import { Loader2, CheckCircle, XCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { verifyEmail, getCurrentUser } from "@/lib/api/auth";
+import { verifyEmail } from "@/lib/api/auth";
+import { useAuth } from "@/contexts/AuthContext";
 
 function VerifyEmailContent() {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
+  const { user, setUser } = useAuth();
   const [status, setStatus] = useState<"loading" | "success" | "error">("loading");
   const [message, setMessage] = useState("");
 
@@ -28,20 +30,15 @@ function VerifyEmailContent() {
         setStatus("success");
         setMessage(response.message || "Your email has been successfully verified!");
 
-        // Update user in localStorage if they're logged in
-        const currentUser = getCurrentUser();
-        if (currentUser && response.user) {
-          // Update the user data with verified status
-          localStorage.setItem("user", JSON.stringify(response.user));
+        // Update AuthContext with verified user so all components see fresh state
+        if (response.user) {
+          setUser(response.user);
         }
 
         // Wait 2 seconds before redirecting
         setTimeout(() => {
-          // Check if user is logged in (auth uses HTTP-only cookies, so just check if user exists in localStorage)
-          const updatedUser = getCurrentUser();
-
-          if (updatedUser) {
-            // User is logged in, redirect to dashboard (Smart onboarding handles routing)
+          if (user || response.user) {
+            // User is logged in, redirect to dashboard
             navigate("/dashboard");
           } else {
             // User is not logged in, redirect to login
@@ -93,8 +90,7 @@ function VerifyEmailContent() {
                 <div className="flex flex-col sm:flex-row gap-3 w-full mt-4">
                   <Button
                     onClick={() => {
-                      const currentUser = getCurrentUser();
-                      if (currentUser) {
+                      if (user) {
                         navigate("/dashboard");
                       } else {
                         navigate("/login");
