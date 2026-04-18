@@ -74,6 +74,7 @@ export default function LeadsPage({ projectId, mode, onCountsRefresh }: LeadsPag
   const queryPeriod = searchParams.get("period");
   const createdAfter = searchParams.get("createdAfter") || undefined;
   const createdBefore = searchParams.get("createdBefore") || undefined;
+  const queryPostDate = searchParams.get("postDate") || "";
   const initialSort: LeadSort = querySort === "date" || querySort === "subreddit" || querySort === "score" ? querySort : "score";
 
   const [leads, setLeads] = useState<Lead[]>([]);
@@ -82,6 +83,7 @@ export default function LeadsPage({ projectId, mode, onCountsRefresh }: LeadsPag
   const [selectedPainTags, setSelectedPainTags] = useState<string[]>([]);
   const [starredOnly, setStarredOnly] = useState(false);
   const [followUpOnly, setFollowUpOnly] = useState(false);
+  const [postDate, setPostDate] = useState(queryPostDate);
   const [sort, setSort] = useState<LeadSort>(initialSort);
   const [sortOrder, setSortOrder] = useState<LeadSortOrder>(initialSort === "subreddit" ? "asc" : "desc");
   const [page, setPage] = useState(1);
@@ -96,12 +98,16 @@ export default function LeadsPage({ projectId, mode, onCountsRefresh }: LeadsPag
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
   const [hoverRating, setHoverRating] = useState<number>(0);
 
-  const activeFiltersCount = selectedPainTags.length + (starredOnly ? 1 : 0) + (followUpOnly ? 1 : 0);
+  const activeFiltersCount = selectedPainTags.length + (starredOnly ? 1 : 0) + (followUpOnly ? 1 : 0) + (postDate ? 1 : 0);
   const showActivityFilters = totalLeads > 0 || starredOnly || followUpOnly;
 
   useEffect(() => {
     setSort(initialSort);
   }, [initialSort]);
+
+  useEffect(() => {
+    setPostDate(queryPostDate);
+  }, [queryPostDate]);
 
   const showSuccess = useCallback((message: string) => {
     setSuccessMessage(message);
@@ -140,6 +146,7 @@ export default function LeadsPage({ projectId, mode, onCountsRefresh }: LeadsPag
           source: "all",
           createdAfter,
           createdBefore,
+          postDate: postDate || undefined,
         });
 
         setCounts(response.counts ?? response.meta?.counts ?? { hot: 0, opportunity: 0, total: 0 });
@@ -173,7 +180,7 @@ export default function LeadsPage({ projectId, mode, onCountsRefresh }: LeadsPag
         setIsLoadingMore(false);
       }
     },
-    [projectId, mode, selectedPainTags, starredOnly, followUpOnly, sort, sortOrder, createdAfter, createdBefore, onCountsRefresh]
+    [projectId, mode, selectedPainTags, starredOnly, followUpOnly, sort, sortOrder, createdAfter, createdBefore, postDate, onCountsRefresh]
   );
 
   useEffect(() => {
@@ -209,6 +216,7 @@ export default function LeadsPage({ projectId, mode, onCountsRefresh }: LeadsPag
     setSelectedPainTags([]);
     setStarredOnly(false);
     setFollowUpOnly(false);
+    setPostDate("");
   };
 
   const onToggleStar = async (lead: Lead) => {
@@ -381,6 +389,11 @@ export default function LeadsPage({ projectId, mode, onCountsRefresh }: LeadsPag
             Showing leads for this week
           </div>
         )}
+        {postDate && (
+          <div className="rounded-md border border-teal-300 bg-teal-50 px-3 py-2 text-xs font-medium text-teal-800 dark:border-teal-800 dark:bg-teal-950/30 dark:text-teal-300">
+            Showing posts from {new Date(`${postDate}T00:00:00`).toLocaleDateString()}
+          </div>
+        )}
         <div className="flex flex-wrap items-center gap-2">
           {availablePainTags.map((tag) => {
             const active = selectedPainTags.includes(tag);
@@ -435,7 +448,15 @@ export default function LeadsPage({ projectId, mode, onCountsRefresh }: LeadsPag
           <p className="text-sm text-neutral-500">
             Showing {leads.length} of {totalLeads} leads
           </p>
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 flex-wrap justify-end">
+            <span className="text-xs uppercase font-semibold text-neutral-500">Date</span>
+            <input
+              type="date"
+              value={postDate}
+              onChange={(event) => setPostDate(event.target.value)}
+              className="h-9 rounded-md border border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-900 px-2 text-sm text-neutral-700 dark:text-neutral-200"
+              aria-label="Filter by post date"
+            />
             <span className="text-xs uppercase font-semibold text-neutral-500">Sort</span>
             <Select value={sort} onValueChange={(value) => {
               const newSort = value as LeadSort;
@@ -462,6 +483,11 @@ export default function LeadsPage({ projectId, mode, onCountsRefresh }: LeadsPag
                 : <ArrowUpNarrowWide className="w-4 h-4 text-neutral-600 dark:text-neutral-300" />
               }
             </button>
+            {postDate && (
+              <Button variant="ghost" size="sm" onClick={() => setPostDate("")}>
+                Clear date
+              </Button>
+            )}
           </div>
         </div>
       </section>

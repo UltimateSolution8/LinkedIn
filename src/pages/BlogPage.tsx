@@ -285,6 +285,7 @@ export default function BlogPage() {
   useEffect(() => {
     async function fetchData() {
       try {
+        setError(null);
         // Fetch posts from Sanity first (required).
         // sanityClient already includes safe project/dataset fallbacks.
         const postsData = await getPosts();
@@ -344,9 +345,10 @@ export default function BlogPage() {
         );
 
         if (transformedPosts.length === 0) {
-          console.warn("Sanity returned no publishable posts. Falling back to sample content.");
-          setPosts(samplePosts);
-          setCategories(defaultCategories);
+          console.warn("Sanity returned no publishable posts.");
+          setPosts([]);
+          setCategories(["All"]);
+          setError("No published blog posts found.");
           return;
         }
 
@@ -354,11 +356,9 @@ export default function BlogPage() {
         setCategories(["All", ...(mergedCategories.length > 0 ? mergedCategories : defaultCategories.slice(1))]);
       } catch (err) {
         console.error("Error fetching from Sanity:", err);
-        setError("Failed to load blog posts from Sanity. Showing fallback content.");
-
-        // Always provide visible content fallback on runtime/API failures.
-        setPosts(samplePosts);
-        setCategories(defaultCategories);
+        setError("Failed to load blog posts from Sanity.");
+        setPosts([]);
+        setCategories(["All"]);
       } finally {
         setLoading(false);
       }

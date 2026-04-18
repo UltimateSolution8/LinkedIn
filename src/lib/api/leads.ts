@@ -127,6 +127,7 @@ export interface GetLeadsOptions {
   source?: "post" | "comment" | "all";
   createdAfter?: string;
   createdBefore?: string;
+  postDate?: string;
 }
 
 export interface LeadDetailsResponse {
@@ -216,6 +217,7 @@ function buildLegacyOptions(
       source: pageOrOptions.source ?? "all",
       createdAfter: pageOrOptions.createdAfter,
       createdBefore: pageOrOptions.createdBefore,
+      postDate: pageOrOptions.postDate,
     };
   }
 
@@ -280,6 +282,9 @@ export async function getLeads(
   }
   if (options.createdBefore) {
     params.set("createdBefore", options.createdBefore);
+  }
+  if (options.postDate) {
+    params.set("postDate", options.postDate);
   }
 
   const response = await fetch(
