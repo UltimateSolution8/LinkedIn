@@ -1,4 +1,4 @@
-import { Routes, Route, Navigate, useLocation } from 'react-router-dom'
+import { Routes, Route, Navigate, useLocation, useParams } from 'react-router-dom'
 import { lazy, Suspense, useEffect } from 'react'
 
 // Layouts
@@ -48,6 +48,12 @@ import DashboardRedirect from '@/components/DashboardRedirect'
 import AppEntryRedirect from '@/components/AppEntryRedirect'
 const OnboardingPage = lazy(() => import('@/pages/OnboardingPage'))
 import ProjectProviderWrapper from '@/components/ProjectProviderWrapper'
+
+// Redirect /projects/:projectId/leads to /app/:projectId/dashboard
+function ProjectLeadsRedirect() {
+  const { projectId } = useParams()
+  return <Navigate to={`/app/${projectId}/dashboard`} replace />
+}
 
 export default function AppRouter() {
   const location = useLocation()
@@ -159,6 +165,9 @@ export default function AppRouter() {
         {/* Dashboard Routes - OLD (Backward Compatibility) */}
         {/* Redirect old /dashboard to new /app/:projectId/dashboard structure */}
         <Route path="/dashboard" element={<ProjectProviderWrapper><DashboardRedirect /></ProjectProviderWrapper>} />
+
+        {/* Legacy /projects path redirect */}
+        <Route path="/projects/:projectId/leads" element={<ProjectLeadsRedirect />} />
 
         {/* App Routes - NEW (Route-Based Navigation) */}
         {/* Redirect /app to appropriate location */}
