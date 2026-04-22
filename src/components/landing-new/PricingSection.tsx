@@ -4,7 +4,9 @@ import { Check, Loader2 } from "lucide-react";
 import { Button } from "../ui/button";
 import { Badge } from "../ui/badge";
 import { detectUserCurrency } from "@/lib/utils/geolocation";
-import { getPricingPlans, type PricingPlan } from "@/lib/api/pricing";
+import { getPricingPlans, type PricingPlan, createSubscription, verifySubscriptionPayment, type RazorpaySubscriptionResponse } from "@/lib/api/pricing";
+import { getSubscriptionStatusCached } from "@/lib/utils/subscription";
+import PaymentStatusModal from "@/components/pricing/PaymentStatusModal";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 // import RequestDemoDialog from "@/components/shared/RequestDemoDialog";
@@ -74,6 +76,16 @@ export const PricingSection = () => {
   // const [requestDemoOpen, setRequestDemoOpen] = useState(false);
   const navigate = useNavigate();
   const { isAuthenticated, user } = useAuth();
+  const [processingPlanId, setProcessingPlanId] = useState<string | null>(null);
+  const [paymentModal, setPaymentModal] = useState<{
+    isOpen: boolean;
+    status: "success" | "error" | "loading";
+    title?: string;
+    message?: string;
+  }>({
+    isOpen: false,
+    status: "loading",
+  });
 
   useEffect(() => {
     let mounted = true;
@@ -117,6 +129,7 @@ export const PricingSection = () => {
       const apiBasedPlans = apiPlans.map((apiPlan, index) => {
         const basePlan = basePlans[index] || basePlans[0]; // fallback to first plan
         return {
+          id: apiPlan.id,
           name: apiPlan.name,
           price: `${apiPlan.currencySymbol}${formatPrice(apiPlan.currentPrice)}`,
           period: `/${apiPlan.interval}`,
@@ -139,9 +152,137 @@ export const PricingSection = () => {
     // Fallback to base plans with currency formatting
     return basePlans.map((plan) => ({
       ...plan,
+      id: plan.name.toLowerCase().replace(/\s+/g, '-'),
       price: currency === "INR" ? plan.inrPrice : plan.usdPrice,
     }));
   }, [apiPlans, currency]);
+
+  const showPaymentModal = (status: "success" | "error" | "loading", title?: string, message?: string) => {
+    setPaymentModal({ isOpen: true, status, title, message });
+  };
+
+  const handleCloseModal = () => {
+    setPaymentModal(prev => ({ ...prev, isOpen: false }));
+    setProcessingPlanId(null);
+  };
+
+  const handleContinueToDashboard = async () => {
+    setPaymentModal(prev => ({ ...prev, isOpen: false }));
+    try {
+      await getSubscriptionStatusCached(true);
+    } catch (error) {
+      console.error("Error refreshing subscription status:", error);
+    }
+    await new Promise(resolve => setTimeout(resolve, 500));
+    navigate("/dashboard");
+  };
+
+  const initializeRazorpayPayment = async (subscriptionData: RazorpaySubscriptionResponse, plan: any) => {
+    const script = document.createElement("script");
+    script.src = "https://checkout.razorpay.com/v1/checkout.js";
+    script.async = true;
+    document.body.appendChild(script);
+
+    script.onload = () => {
+      const options = {
+        key: subscriptionData.keyId,
+        name: "Rixly",
+        description: `Payment for ${plan.name} plan`,
+        subscription_id: subscriptionData.subscription.vendorSubscriptionId,
+        handler: async (response: any) => {
+          try {
+            showPaymentModal("loading", "Verifying Payment", "Please wait while we verify your payment...");
+            const verification = await verifySubscriptionPayment({
+              razorpaySubscriptionId: response.razorpay_subscription_id,
+              razorpayPaymentId: response.razorpay_payment_id,
+              razorpaySignature: response.razorpay_signature,
+            });
+
+            if (verification.success) {
+              showPaymentModal(
+                "success",
+                "Payment Successful!",
+                "Your subscription is now active. Welcome to Rixly!"
+              );
+            } else {
+              showPaymentModal(
+                "error",
+                "Payment Verification Failed",
+                "We couldn't verify your payment. Please contact support if you've been charged."
+              );
+            }
+          } catch (error) {
+            console.error("Payment verification error:", error);
+            showPaymentModal(
+              "error",
+              "Payment Verification Failed",
+              error instanceof Error ? error.message : "Payment verification fail. Please contact support if charged."
+            );
+          } finally {
+            setProcessingPlanId(null);
+          }
+        },
+        theme: {
+          color: "#9333ea",
+        },
+        modal: {
+          ondismiss: () => {
+            setProcessingPlanId(null);
+            showPaymentModal(
+              "error",
+              "Payment Cancelled",
+              "Payment was cancelled. You can try again when you're ready."
+            );
+          },
+        },
+      };
+
+      const razorpay = new (window as any).Razorpay(options);
+      razorpay.open();
+    };
+  };
+
+  const handleBuyNow = async (plan: any) => {
+    if (!isAuthenticated) {
+      navigate("/login");
+      return;
+    }
+    
+    if (!plan.id) {
+      console.error("No plan ID available to process payment.");
+      navigate("/app/onboarding");
+      return;
+    }
+
+    try {
+      setProcessingPlanId(plan.name);
+
+      const status = await getSubscriptionStatusCached(true);
+      if (status.hasActiveSubscription) {
+        showPaymentModal(
+          "error",
+          "Subscription Active",
+          `You already have an active subscription. Redirecting...`
+        );
+        setTimeout(() => {
+          navigate("/dashboard");
+        }, 2000);
+        return;
+      }
+
+      if (user && !user.isEmailVerified) {
+        navigate("/verify-email-prompt");
+        return;
+      }
+
+      const subscriptionData = await createSubscription({ planId: plan.id });
+      await initializeRazorpayPayment(subscriptionData, plan);
+    } catch (error) {
+      console.error("Error initiating payment:", error);
+      showPaymentModal("error", "Payment Error", error instanceof Error ? error.message : "Failed to initiate payment. Please try again.");
+      setProcessingPlanId(null);
+    }
+  };
 
   return (
     <section
@@ -194,8 +335,8 @@ export const PricingSection = () => {
                 viewport={{ once: true }}
                 transition={{ duration: 0.5, delay: index * 0.1 }}
                 className={`relative rounded-2xl border bg-card p-8 ${plan.popular
-                    ? "pricing-popular border-primary/50"
-                    : "border-border/50"
+                  ? "pricing-popular border-primary/50"
+                  : "border-border/50"
                   }`}
                 data-testid={`pricing-card-${plan.name.toLowerCase()}`}
               >
@@ -240,15 +381,17 @@ export const PricingSection = () => {
                         : ""
                         }`}
                       variant={plan.popular ? "default" : "outline"}
-                      onClick={() => {
-                        if (isAuthenticated) {
-                          navigate("/app/onboarding");
-                        } else {
-                          navigate("/login");
-                        }
-                      }}
+                      disabled={processingPlanId === plan.name}
+                      onClick={() => handleBuyNow(plan)}
                     >
-                      {plan.cta}
+                      {processingPlanId === plan.name ? (
+                        <div className="flex items-center justify-center">
+                          <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                          Processing...
+                        </div>
+                      ) : (
+                        plan.cta
+                      )}
                     </Button>
                   ) : (
                     <>
@@ -302,6 +445,19 @@ export const PricingSection = () => {
         isOpen={requestDemoOpen}
         onClose={() => setRequestDemoOpen(false)}
       /> */}
+      
+      <PaymentStatusModal
+        isOpen={paymentModal.isOpen}
+        onClose={handleCloseModal}
+        status={paymentModal.status}
+        title={paymentModal.title}
+        message={paymentModal.message}
+        onContinue={
+          paymentModal.status === "success"
+            ? handleContinueToDashboard
+            : undefined
+        }
+      />
     </section>
   );
 };
