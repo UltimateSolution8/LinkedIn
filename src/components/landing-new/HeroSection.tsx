@@ -1,234 +1,140 @@
 // @ts-nocheck
 import { motion } from "framer-motion";
-import { ArrowRight, Sparkles, TrendingUp, Users } from "lucide-react";
+import { Check, Calendar, TrendingUp, Users, ArrowRight } from "lucide-react";
 import { Button } from "../ui/button";
-import { Badge } from "../ui/badge";
-import { useNavigate } from "react-router-dom";
-import { useAuth } from "@/contexts/AuthContext";
 import { PopupButton } from "react-calendly";
 
-export const HeroSection = () => {
-  const navigate = useNavigate();
-  const { isAuthenticated, user } = useAuth();
-  const stats = [
-    { icon: Users, value: "10K+", label: "Active Users" },
-    { icon: TrendingUp, value: "3x", label: "More Leads" },
-    { icon: Sparkles, value: "95%", label: "Accuracy" },
-  ];
+const CALENDLY_URL = "https://calendly.com/rixlyleads/30min";
 
+const trustFeatures = [
+  "No long-term contracts",
+  "Results-driven approach",
+  "100% done-for-you",
+];
+
+const stats = [
+  { value: "50+", label: "Meetings Booked", sublabel: "Monthly", icon: Calendar },
+  { value: "3X", label: "Pipeline", sublabel: "Growth", icon: TrendingUp },
+  { value: "100+", label: "Clients", sublabel: "Served", icon: Users },
+];
+
+export function HeroSection() {
   return (
-    <section
-      id="hero"
-      className="relative min-h-screen flex items-center pt-16 ribbon-container"
-      data-testid="hero-section"
-    >
-      {/* Background glow and subtle waves */}
-      <div className="absolute inset-0 bg-background" />
-      <div className="absolute inset-0 opacity-[0.25] dark:opacity-[0.12] pointer-events-none overflow-hidden">
-        <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] rounded-full bg-primary/40 blur-[100px]" />
-        <div className="absolute bottom-[20%] right-[-5%] w-[30%] h-[30%] rounded-full bg-primary/30 blur-[80px]" />
-      </div>
+    <section className="relative overflow-hidden bg-background pt-28 pb-16 md:pt-32 md:pb-24">
+      <div className="absolute inset-0 gradient-mesh" />
+      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-primary/5 via-transparent to-transparent" />
+      <div className="absolute inset-0 dot-pattern opacity-50" />
 
-      {/* Animated Ribbons */}
-      <div className="ribbon top-[-10%] left-[-10%]" />
-      <div className="ribbon top-[20%] left-[-20%] [animation-delay:-5s]" />
-      <div className="ribbon top-[50%] left-[-15%] [animation-delay:-10s]" />
-
-      {/* Animated Ripples */}
-      <div className="ripple top-[20%] left-[10%] w-[400px] h-[400px]" />
-      <div className="ripple bottom-[10%] right-[5%] w-[300px] h-[300px] [animation-delay:-4s]" />
-
-      {/* Abstract wave-like overlay (simplified) */}
-      <div className="absolute inset-0 opacity-[0.05] pointer-events-none"
-        style={{ backgroundImage: `radial-gradient(circle at 10% 20%, var(--primary-light), transparent 40%)` }} />
-
-      <div className="container mx-auto px-4 md:px-6 max-w-7xl relative z-10">
-        <div className="grid lg:grid-cols-2 gap-12 lg:gap-20 items-center">
-          {/* Left Content */}
+      <div className="relative mx-auto max-w-7xl px-6 lg:px-8">
+        <div className="grid items-center gap-16 lg:grid-cols-2 lg:gap-20">
+          {/* Left Column */}
           <motion.div
-            initial={{ opacity: 0, x: -50 }}
-            animate={{ opacity: 1, x: 0 }}
+            className="flex flex-col gap-8"
+            initial={{ opacity: 0, y: 24 }}
+            animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, ease: "easeOut" }}
-            className="text-left"
           >
-            <motion.h1
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.3 }}
-              className="font-heading text-4xl md:text-6xl font-bold tracking-tight mb-2 leading-[1.1] text-foreground mt-8"
-              data-testid="hero-title"
-            >
-              Turn Social Conversations Into <span className="text-primary">Qualified Leads</span>
-            </motion.h1>
+            <div className="inline-flex w-fit items-center gap-2.5 rounded-full border border-primary/20 bg-primary/5 px-5 py-2.5 backdrop-blur-sm">
+              <span className="relative flex h-2.5 w-2.5">
+                <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-primary opacity-75" />
+                <span className="relative inline-flex h-2.5 w-2.5 rounded-full bg-primary" />
+              </span>
+              <span className="text-sm font-semibold uppercase tracking-wider text-primary">
+                LinkedIn Lead Generation Experts
+              </span>
+            </div>
 
-            <motion.p
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.35 }}
-              className="font-heading text-xl md:text-2xl font-bold text-foreground mb-6"
-            >
-              Before your competitor does.
-            </motion.p>
+            <h1 className="font-heading text-balance text-[2.75rem] font-extrabold leading-[1.08] tracking-tight text-foreground sm:text-5xl md:text-[56px] lg:text-[64px]">
+              Get 20–50 Qualified{" "}
+              <span className="gradient-text">Meetings</span> Every Month Using{" "}
+              <span className="gradient-text">LinkedIn</span>
+            </h1>
 
-            <motion.p
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.4 }}
-              className="text-lg md:text-xl text-muted-foreground mb-8 max-w-xl leading-relaxed"
-              data-testid="hero-description"
-            >
-              Find high-intent buyers on Reddit with AI-powered monitoring. Rixly surfaces real conversations and helps you convert them into qualified leads.
-            </motion.p>
+            <p className="max-w-xl text-pretty text-lg leading-relaxed text-muted-foreground md:text-xl">
+              We help founders, coaches & B2B businesses generate high-quality leads and book more calls—consistently.
+            </p>
 
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.5 }}
-              className="relative"
-            >
-              <div className="flex flex-wrap gap-4 mb-4 relative z-10">
-                {/* <div className="relative inline-block overflow-hidden rounded-full">
-                  <Button
-                    size="lg"
-                    className="rounded-full font-medium text-lg px-8 glow-primary glow-primary-hover btn-press bg-primary-gradient border-none text-white shadow-[0_10px_30px_rgba(30,134,141,0.3)]"
-                    data-testid="hero-get-started"
-                    onClick={() => {
-                      if (isAuthenticated) {
-                        navigate("/app/onboarding");
-                      } else {
-                        navigate("/login");
-                      }
-                    }}
-                  >
-                    Start Finding Leads
-                  </Button>
-                </div> */}
-                <PopupButton
-                  url="https://calendly.com/rixlyleads/30min"
-                  rootElement={document.getElementById("root")!}
-                  text="Start Finding Leads"
-                  className="rounded-full font-medium text-lg px-8 py-3 glow-primary glow-primary-hover btn-press bg-primary-gradient border-none text-white shadow-[0_10px_30px_rgba(30,134,141,0.3)]"
-                  data-testid="hero-get-started"
-                  prefill={{
-                    email: user?.email || "",
-                    name: user ? `${user.firstName} ${user.lastName}` : "",
-                  }}
-                />
-                <Button
-                  size="lg"
-                  variant="outline"
-                  className="rounded-full font-medium text-lg px-8 btn-press border-primary/20 hover:bg-primary/5 shadow-sm"
-                  data-testid="hero-book-demo"
-                  onClick={() => document.getElementById("video")?.scrollIntoView({ behavior: "smooth" })}
-                >
-                  See How It Works
-                </Button>
-              </div>
-              <p className="text-sm text-muted-foreground/60 mb-8 italic">
-                No spam. No scraping abuse. Built for long-term growth.
-              </p>
-              {/* Light shades below buttons */}
-              <div className="absolute -bottom-8 left-0 right-0 h-16 bg-primary/10 blur-[60px] pointer-events-none opacity-50" />
-            </motion.div>
+            <div className="flex flex-col gap-4 sm:flex-row">
+              <PopupButton
+                url={CALENDLY_URL}
+                rootElement={document.getElementById("root")!}
+                text=""
+                className="inline-flex items-center justify-center gap-2 h-14 rounded-2xl bg-primary px-8 text-base font-semibold text-primary-foreground shadow-lg shadow-primary/25 transition-all hover:opacity-90 hover:shadow-xl hover:-translate-y-0.5 cursor-pointer"
+                data-testid="hero-book-call"
+              >
+                <Calendar className="mr-2 h-5 w-5 inline" />
+                Book a Free Strategy Call
+              </PopupButton>
+
+              <button
+                onClick={() => document.getElementById("process")?.scrollIntoView({ behavior: "smooth" })}
+                className="inline-flex items-center justify-center h-14 rounded-2xl border-2 border-border bg-card px-8 text-base font-semibold text-foreground transition-all hover:border-primary/30 hover:bg-secondary gap-2"
+              >
+                See How It Works
+                <ArrowRight className="h-4 w-4" />
+              </button>
+            </div>
+
+            <div className="flex flex-wrap items-center gap-x-8 gap-y-3">
+              {trustFeatures.map((feature) => (
+                <div key={feature} className="flex items-center gap-2.5">
+                  <div className="flex h-6 w-6 items-center justify-center rounded-full bg-primary/10">
+                    <Check className="h-3.5 w-3.5 text-primary" strokeWidth={3} />
+                  </div>
+                  <span className="text-sm font-medium text-muted-foreground">{feature}</span>
+                </div>
+              ))}
+            </div>
           </motion.div>
 
-          {/* Right Content - Hero Image */}
+          {/* Right Column */}
           <motion.div
-            initial={{ opacity: 0, x: 50 }}
-            animate={{ opacity: 1, x: 0 }}
+            className="relative flex justify-center lg:justify-end"
+            initial={{ opacity: 0, y: 24 }}
+            animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, ease: "easeOut", delay: 0.2 }}
-            className="relative"
           >
-            <div className="relative perspective-1000">
-              <motion.div
-                initial={{ rotateY: 15, rotateX: 5 }}
-                animate={{ rotateY: 0, rotateX: 0 }}
-                transition={{ duration: 0.8, ease: "easeOut", delay: 0.4 }}
-                className="relative rounded-2xl overflow-hidden border border-border/50 shadow-2xl trace-beam"
-                style={{ transformStyle: "preserve-3d" }}
-              >
-                <div className="bg-card p-6 rounded-[20px] shadow-[0_20px_50px_rgba(15,23,42,0.1)] border border-border backdrop-blur-md bg-card/90">
-                  <div className="flex items-center justify-between mb-8">
-                    <div className="flex gap-1.5">
-                      <div className="w-2.5 h-2.5 rounded-full bg-primary/20" />
-                      <div className="w-2.5 h-2.5 rounded-full bg-primary/20" />
-                      <div className="w-2.5 h-2.5 rounded-full bg-primary/20" />
-                    </div>
-                    <Badge variant="success" className="font-medium">
-                      Live Processing
-                    </Badge>
-                  </div>
+            <div className="relative">
+              <div className="absolute -right-4 top-8 h-[380px] w-[320px] rounded-[40px] bg-gradient-to-br from-primary via-primary to-accent opacity-90 md:h-[460px] md:w-[380px] animate-pulse-glow" />
+              <div className="absolute -right-8 top-12 h-[380px] w-[320px] rounded-[40px] bg-gradient-to-br from-accent/30 to-primary/20 blur-xl md:h-[460px] md:w-[380px]" />
 
-                  {/* Mock dashboard content */}
-                  <div className="space-y-6">
-                    <div className="flex items-center justify-between">
-                      <div className="font-heading font-bold text-xl text-foreground">Lead Dashboard</div>
-                      <div className="text-xs text-muted-foreground font-medium">Updated 2m ago</div>
-                    </div>
+              <div className="relative z-10 h-[380px] w-[320px] overflow-hidden rounded-[40px] border-4 border-white/50 shadow-2xl md:h-[460px] md:w-[380px] dark:border-white/20">
+                <img
+                  src="/images/hero-portrait.png"
+                  alt="LinkedIn lead generation expert"
+                  className="h-full w-full object-cover"
+                  loading="eager"
+                />
+              </div>
 
-                    <div className="grid grid-cols-3 gap-4">
-                      {[
-                        { label: "New Leads", value: "247", color: "var(--teal-600)" },
-                        { label: "Qualified", value: "189", color: "var(--teal-500)" },
-                        { label: "Converted", value: "72", color: "var(--teal-400)" },
-                      ].map((item) => (
-                        <div
-                          key={item.label}
-                          className="bg-muted/30 border border-border rounded-xl p-3 text-center"
-                        >
-                          <div className="font-heading font-bold text-xl mb-0.5" style={{ color: item.color }}>
-                            {item.value}
-                          </div>
-                          <div className="text-[10px] uppercase tracking-wider font-semibold text-muted-foreground">
-                            {item.label}
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-
-                    {/* Mock chart */}
-                    <div className="bg-muted/20 border border-border rounded-xl p-4 h-44 flex items-end gap-2 relative overflow-hidden">
-                      <div className="absolute top-3 left-4 text-[10px] font-bold text-[#94A3B8] uppercase">Conversion Velocity</div>
-                      {[40, 65, 45, 80, 55, 90, 70, 85, 60, 95, 75, 100].map(
-                        (height, i) => (
-                          <motion.div
-                            key={i}
-                            initial={{ height: 0 }}
-                            animate={{ height: `${height}%` }}
-                            transition={{ delay: 0.8 + i * 0.05, duration: 0.3 }}
-                            className="flex-1 bg-primary-gradient rounded-t-sm"
-                            style={{ opacity: 0.3 + (i / 12) * 0.7 }}
-                          />
-                        )
-                      )}
-                    </div>
-                  </div>
-                </div>
-
-                {/* Floating notification */}
-                <motion.div
-                  initial={{ opacity: 0, y: 20, x: 20 }}
-                  animate={{ opacity: 1, y: 0, x: 0 }}
-                  transition={{ delay: 1.2 }}
-                  className="absolute bottom-6 left-12 -rotate-3 bg-card border border-border rounded-lg p-3 shadow-lg z-20"
-                >
-                  <div className="flex items-center gap-3">
-                    <div className="w-8 h-8 rounded-full bg-green-500/10 flex items-center justify-center">
-                      <TrendingUp className="w-4 h-4 text-green-500" />
+              {stats.map((stat, idx) => {
+                const Icon = stat.icon;
+                const positions = [
+                  "absolute -right-4 top-4 z-20 md:-right-14 md:top-8 animate-float",
+                  "absolute -right-6 top-[45%] z-20 md:-right-18 animate-float-delayed",
+                  "absolute -bottom-2 -right-2 z-20 md:-right-10 md:bottom-8 animate-float-slow",
+                ];
+                return (
+                  <div
+                    key={stat.label}
+                    className={`${positions[idx]} flex items-center gap-3 rounded-2xl border border-border/50 bg-card/95 px-5 py-3.5 shadow-elevated backdrop-blur-md`}
+                  >
+                    <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br from-primary/15 to-accent/15">
+                      <Icon className="h-6 w-6 text-primary" />
                     </div>
                     <div>
-                      <div className="text-sm font-medium">New Lead!</div>
-                      <div className="text-xs text-muted-foreground">
-                        Score: 92/100
-                      </div>
+                      <p className="text-2xl font-extrabold text-primary">{stat.value}</p>
+                      <p className="text-xs font-semibold leading-tight text-muted-foreground">
+                        {stat.label}<br />{stat.sublabel}
+                      </p>
                     </div>
                   </div>
-                </motion.div>
-              </motion.div>
+                );
+              })}
             </div>
           </motion.div>
         </div>
       </div>
     </section>
   );
-};
+}

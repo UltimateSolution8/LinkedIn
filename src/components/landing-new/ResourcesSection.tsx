@@ -1,199 +1,62 @@
 // @ts-nocheck
-import { motion } from "framer-motion";
-import { BookOpen, Download, PlayCircle, FileText, ArrowRight, CheckCircle } from "lucide-react";
+import { Link } from "react-router-dom";
+import { ArrowRight } from "lucide-react";
 import { Button } from "../ui/button";
 
-const resources = [
-  {
-    id: 1,
-    title: "Reddit Marketing Strategy Guide 2024",
-    description: "A comprehensive guide to building your brand on Reddit. Learn the unwritten rules, best practices, and proven strategies.",
-    type: "Guide",
-    icon: BookOpen,
-    downloadCount: "2.5k+",
-    category: "Strategy",
-  },
-  {
-    id: 2,
-    title: "B2B Lead Generation on Reddit",
-    description: "How to find and convert high-quality B2B leads using Reddit. Includes templates, scripts, and real case studies.",
-    type: "E-Book",
-    icon: FileText,
-    downloadCount: "1.8k+",
-    category: "Lead Gen",
-  },
-  {
-    id: 3,
-    title: "Reddit SEO Masterclass",
-    description: "Master Reddit SEO to get your content seen by the right audience. Video course with step-by-step instructions.",
-    type: "Video Course",
-    icon: PlayCircle,
-    downloadCount: "3.2k+",
-    category: "SEO",
-  },
-  {
-    id: 4,
-    title: "Keyword Research Templates",
-    description: "Ready-to-use spreadsheets for tracking keywords, subreddits, and engagement metrics.",
-    type: "Template",
-    icon: Download,
-    downloadCount: "4.1k+",
-    category: "Tools",
-  },
-  {
-    id: 5,
-    title: "AI Prompts for Reddit Engagement",
-    description: "50+ proven AI prompts to generate engaging comments and responses that convert.",
-    type: "Prompts",
-    icon: BookOpen,
-    downloadCount: "2.9k+",
-    category: "AI",
-  },
-  {
-    id: 6,
-    title: "Community Manager Toolkit",
-    description: "Everything you need to manage Reddit communities effectively. Automations, workflows, and more.",
-    type: "Toolkit",
-    icon: Download,
-    downloadCount: "1.5k+",
-    category: "Management",
-  },
+const articles = [
+  { title: "7 LinkedIn Outreach Tips That Get Replies", category: "Outreach", gradient: "from-blue-500/10 to-indigo-500/10" },
+  { title: "How to Optimize Your LinkedIn Profile for Leads", category: "Profile", gradient: "from-purple-500/10 to-pink-500/10" },
+  { title: "LinkedIn Content Strategy That Works", category: "Content", gradient: "from-emerald-500/10 to-teal-500/10" },
 ];
 
-const features = [
-  "Free forever resources",
-  "Updated regularly",
-  "Proven strategies",
-  "No email required",
-];
-
-export const ResourcesSection = () => {
+export function ResourcesSection() {
   return (
-    <section
-      id="resources"
-      className="py-16 md:py-24 relative overflow-hidden bg-slate-50 dark:bg-slate-900/50"
-      data-testid="resources-section"
-    >
-      {/* Background decoration */}
-      <div className="absolute inset-0 overflow-hidden">
-        <div className="absolute top-0 left-1/4 w-96 h-96 bg-teal-200/20 rounded-full blur-3xl" />
-        <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-teal-200/20 rounded-full blur-3xl" />
-      </div>
-
-      <div className="container mx-auto px-4 md:px-6 max-w-7xl relative z-10">
-        <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.6 }}
-          className="text-center mb-16"
-        >
-          <div className="inline-flex items-center gap-2 bg-teal-100 text-teal-700 px-4 py-2 rounded-full text-sm font-medium mb-6">
-            <BookOpen className="w-4 h-4" />
-            <span>Free Resources</span>
-          </div>
-          <h2
-            className="font-heading text-4xl md:text-5xl font-semibold tracking-tight mb-4 text-slate-900 dark:text-white"
-            data-testid="resources-title"
-          >
-            Level up your Reddit strategy
-          </h2>
-          <p className="text-lg text-slate-600 dark:text-slate-300 max-w-2xl mx-auto">
-            Free guides, templates, and tools to help you succeed on Reddit
-          </p>
-        </motion.div>
-
-        {/* Features list */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.5, delay: 0.2 }}
-          className="flex flex-wrap justify-center gap-4 mb-12"
-        >
-          {features.map((feature, index) => (
-            <div
-              key={index}
-              className="flex items-center gap-2 bg-white dark:bg-slate-800 px-4 py-2 rounded-full shadow-sm"
-            >
-              <CheckCircle className="w-4 h-4 text-teal-500" />
-              <span className="text-sm font-medium text-slate-700 dark:text-slate-300">
-                {feature}
-              </span>
+    <section id="blog" className="relative bg-background py-20 md:py-28">
+      <div className="absolute inset-0 dot-pattern opacity-20" />
+      <div className="relative mx-auto max-w-7xl px-6 lg:px-8">
+        <div className="grid gap-12 lg:grid-cols-2 lg:gap-16">
+          <div>
+            <div className="mb-4 inline-flex items-center gap-2 rounded-full border border-primary/20 bg-primary/5 px-4 py-1.5">
+              <span className="text-xs font-semibold uppercase tracking-wider text-primary">Blog</span>
             </div>
-          ))}
-        </motion.div>
-
-        {/* Resources Grid */}
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {resources.map((resource, index) => (
-            <motion.div
-              key={resource.id}
-              initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.5, delay: index * 0.1 }}
-            >
-              <div className="bg-white dark:bg-slate-800 rounded-2xl p-6 shadow-lg hover:shadow-xl transition-all duration-300 border border-slate-100 dark:border-slate-700 h-full flex flex-col group cursor-pointer">
-                {/* Icon and Type */}
-                <div className="flex items-center justify-between mb-4">
-                  <div className="w-12 h-12 bg-teal-100 dark:bg-teal-900/30 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
-                    <resource.icon className="w-6 h-6 text-teal-600 dark:text-teal-400" />
+            <h2 className="font-heading text-2xl font-bold text-foreground md:text-3xl">Resources & Insights</h2>
+            <p className="mt-3 text-base text-muted-foreground">Tips, strategies, and insights to grow your business with LinkedIn.</p>
+            <div className="mt-8 grid gap-4">
+              {articles.map((article) => (
+                <div key={article.title} className="group flex items-center justify-between rounded-2xl border border-border/50 bg-card p-5 transition-all duration-300 hover:border-primary/20 hover:shadow-card-hover hover:-translate-y-0.5">
+                  <div className="flex items-center gap-4">
+                    <div className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br ${article.gradient}`}>
+                      <span className="text-xs font-bold text-primary">{article.category.charAt(0)}</span>
+                    </div>
+                    <div>
+                      <span className="text-xs font-semibold text-primary">{article.category}</span>
+                      <h3 className="mt-0.5 text-base font-semibold text-foreground">{article.title}</h3>
+                    </div>
                   </div>
-                  <span className="text-xs font-medium text-teal-600 dark:text-teal-400 bg-teal-50 dark:bg-teal-900/30 px-3 py-1 rounded-full">
-                    {resource.type}
-                  </span>
+                  <ArrowRight className="h-5 w-5 shrink-0 text-muted-foreground transition-transform group-hover:translate-x-1 group-hover:text-primary" />
                 </div>
-
-                {/* Category */}
-                <span className="text-xs text-slate-500 dark:text-slate-400 mb-2">
-                  {resource.category}
-                </span>
-
-                {/* Title */}
-                <h3 className="font-heading text-lg font-semibold text-slate-900 dark:text-white mb-3 group-hover:text-teal-600 dark:group-hover:text-teal-400 transition-colors">
-                  {resource.title}
-                </h3>
-
-                {/* Description */}
-                <p className="text-slate-600 dark:text-slate-300 text-sm leading-relaxed mb-4 flex-grow">
-                  {resource.description}
-                </p>
-
-                {/* Download count and CTA */}
-                <div className="flex items-center justify-between pt-4 border-t border-slate-100 dark:border-slate-700">
-                  <span className="text-xs text-slate-500 dark:text-slate-400">
-                    {resource.downloadCount} downloads
-                  </span>
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    className="text-teal-600 dark:text-teal-400 hover:text-teal-700 dark:hover:text-teal-300 hover:bg-teal-50 dark:hover:bg-teal-900/30"
-                  >
-                    Get Free <ArrowRight className="w-4 h-4 ml-1" />
-                  </Button>
-                </div>
-              </div>
-            </motion.div>
-          ))}
+              ))}
+            </div>
+            <Link to="/blogs">
+              <Button variant="outline" className="mt-6 h-11 rounded-xl border-border bg-card px-6 text-sm font-semibold transition-all hover:border-primary/30">
+                View All Articles
+              </Button>
+            </Link>
+          </div>
+          <div className="flex flex-col justify-center">
+            <div className="rounded-3xl border border-border/50 bg-card p-8 shadow-card md:p-10">
+              <h3 className="font-heading text-2xl font-bold text-foreground">Get LinkedIn Growth Tips Straight to Your Inbox</h3>
+              <p className="mt-3 text-base text-muted-foreground">Join 1000+ founders & marketers.</p>
+              <form className="mt-8 flex flex-col gap-3 sm:flex-row" onSubmit={(e) => e.preventDefault()}>
+                <input type="email" placeholder="Enter your email" className="h-12 flex-1 rounded-xl border border-border bg-secondary/50 px-4 text-base focus:outline-none focus:ring-2 focus:ring-primary/30" />
+                <Button type="submit" className="h-12 rounded-xl bg-primary px-6 text-base font-semibold text-primary-foreground shadow-md shadow-primary/20">
+                  Subscribe
+                </Button>
+              </form>
+            </div>
+          </div>
         </div>
-
-        {/* CTA */}
-        <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.5, delay: 0.4 }}
-          className="text-center mt-12"
-        >
-          <Button
-            size="lg"
-            className="bg-teal-600 hover:bg-teal-700 text-white rounded-full px-8"
-          >
-            View All Resources <ArrowRight className="w-5 h-5 ml-2" />
-          </Button>
-        </motion.div>
       </div>
     </section>
   );
-};
+}

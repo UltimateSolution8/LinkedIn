@@ -2,10 +2,12 @@
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
-import { Menu, X, Sun, Moon } from "lucide-react";
+import { Menu, X, Sun, Moon, ExternalLink } from "lucide-react";
 import { Button } from "../ui/button";
 import { useAuth } from "@/contexts/AuthContext";
 import { PopupButton } from "react-calendly";
+
+const CALENDLY_URL = "https://calendly.com/rixlyleads/30min";
 
 export const Navbar = ({ isDark, toggleTheme, setView }) => {
   const [isScrolled, setIsScrolled] = useState(false);
@@ -13,21 +15,18 @@ export const Navbar = ({ isDark, toggleTheme, setView }) => {
   const { isAuthenticated, isLoading, user } = useAuth();
 
   useEffect(() => {
-    const handleScroll = () => {
-      setIsScrolled(window.scrollY > 20);
-    };
+    const handleScroll = () => setIsScrolled(window.scrollY > 20);
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
   const navLinks = [
-    { href: "#features", label: "Features" },
+    { href: "#services", label: "Services" },
+    { href: "#about", label: "About" },
+    { href: "#case-studies", label: "Case Studies" },
     { href: "#testimonials", label: "Testimonials" },
-    { href: "#free-resource", label: "Resources" },
-    { to: "/blogs", label: "Blogs" },
-    { href: "#pricing", label: "Pricing" },
-    { label: "ROI", onClick: () => setView("roi"), hidden: true },
-    { label: "Analytics", onClick: () => setView("dashboard"), hidden: true },
+    { to: "/blogs", label: "Blog" },
+    { href: "#faq", label: "FAQ" },
   ];
 
   return (
@@ -35,280 +34,187 @@ export const Navbar = ({ isDark, toggleTheme, setView }) => {
       initial={{ y: -100 }}
       animate={{ y: 0 }}
       transition={{ duration: 0.5, ease: "easeOut" }}
-      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${isScrolled
-        ? "bg-background/80 backdrop-blur-xl border-b border-border/50"
-        : "bg-transparent"
-        }`}
+      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
+        isScrolled
+          ? "bg-card/80 backdrop-blur-xl border-b border-border/50 shadow-navbar"
+          : "bg-transparent"
+      }`}
       data-testid="navbar"
     >
-      <div className="container mx-auto px-4 md:px-6 max-w-7xl">
-        <div className="flex items-center justify-between h-20">
-          {/* Logo */}
-          <a href="#" className="flex items-center gap-2 group" data-testid="logo">
-            <img
-              src="/logo.png"
-              alt="Rixly Logo"
-              className="w-9 h-9 object-contain logo-shaded group-hover:scale-105 transition-transform duration-300"
-            />
-            <span className="font-heading font-bold text-2xl tracking-tighter text-slate-900 dark:text-white">
-              RIXLY
-            </span>
-          </a>
+      <div className="mx-auto flex h-[68px] max-w-7xl items-center justify-between px-6 lg:h-[76px] lg:px-8">
+        {/* Logo */}
+        <a href="#" className="flex items-center gap-3 group" data-testid="logo">
+          <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-primary to-accent shadow-md transition-transform duration-300 group-hover:scale-105">
+            <span className="text-xl font-bold text-white">U</span>
+          </div>
+          <span className="font-heading text-[26px] font-bold tracking-tight text-foreground">
+            userixly
+          </span>
+        </a>
 
-          {/* Desktop Navigation */}
-          <div className="hidden md:flex items-center gap-8">
-            {navLinks.map((link) => (
+        {/* Desktop Navigation */}
+        <div className="hidden items-center gap-1.5 md:flex">
+          {navLinks.map((link) =>
+            link.to ? (
+              <Link
+                key={link.label}
+                to={link.to}
+                className="px-4 py-2 text-[15px] font-medium text-muted-foreground transition-colors hover:text-foreground"
+                data-testid={`nav-link-${link.label.toLowerCase()}`}
+              >
+                {link.label}
+              </Link>
+            ) : (
+              <button
+                key={link.label}
+                onClick={() =>
+                  document.getElementById(link.href.substring(1))?.scrollIntoView({ behavior: "smooth" })
+                }
+                className="px-4 py-2 text-[15px] font-medium text-muted-foreground transition-colors hover:text-foreground"
+                data-testid={`nav-link-${link.label.toLowerCase()}`}
+              >
+                {link.label}
+              </button>
+            )
+          )}
+        </div>
+
+        {/* Desktop CTAs */}
+        <div className="hidden items-center gap-3 md:flex">
+          <button
+            onClick={toggleTheme}
+            className="rounded-full p-2 hover:bg-secondary transition-colors duration-200"
+            data-testid="theme-toggle"
+            aria-label="Toggle theme"
+          >
+            {isDark ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
+          </button>
+          {!isLoading && (
+            <>
+              {isAuthenticated ? (
+                <>
+                  <PopupButton
+                    url={CALENDLY_URL}
+                    rootElement={document.getElementById("root")!}
+                    text="Book Demo"
+                    className="px-4 py-2 text-[15px] font-medium text-muted-foreground transition-colors hover:text-foreground rounded-md"
+                    data-testid="nav-book-demo"
+                    prefill={{
+                      email: user?.email || "",
+                      name: user ? `${user.firstName} ${user.lastName}` : "",
+                    }}
+                  />
+                  <Link to="/dashboard">
+                    <Button className="h-11 rounded-xl bg-primary px-6 text-[15px] font-semibold text-primary-foreground shadow-md shadow-primary/20 transition-all hover:bg-primary/90 hover:shadow-lg hover:-translate-y-0.5">
+                      Dashboard
+                    </Button>
+                  </Link>
+                </>
+              ) : (
+                <>
+                  <PopupButton
+                    url={CALENDLY_URL}
+                    rootElement={document.getElementById("root")!}
+                    text="Book Demo"
+                    className="px-4 py-2 text-[15px] font-medium text-muted-foreground transition-colors hover:text-foreground rounded-md"
+                    data-testid="nav-book-demo"
+                    prefill={{
+                      email: user?.email || "",
+                      name: user ? `${user.firstName} ${user.lastName}` : "",
+                    }}
+                  />
+                  <Link to="/login">
+                    <Button
+                      variant="ghost"
+                      className="text-[15px] font-medium"
+                      data-testid="nav-login"
+                    >
+                      Log in
+                    </Button>
+                  </Link>
+                  <Link to="/signup">
+                    <Button className="h-11 rounded-xl bg-primary px-6 text-[15px] font-semibold text-primary-foreground shadow-md shadow-primary/20 transition-all hover:bg-primary/90 hover:shadow-lg hover:-translate-y-0.5">
+                      Get Started
+                    </Button>
+                  </Link>
+                </>
+              )}
+            </>
+          )}
+        </div>
+
+        {/* Mobile Menu */}
+        <div className="flex items-center gap-2 md:hidden">
+          <button onClick={toggleTheme} className="rounded-full p-2 hover:bg-secondary" aria-label="Toggle theme">
+            {isDark ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
+          </button>
+          <button onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)} className="p-2" aria-label="Toggle menu">
+            {isMobileMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
+          </button>
+        </div>
+      </div>
+
+      {/* Mobile Dropdown */}
+      {isMobileMenuOpen && (
+        <motion.div
+          initial={{ opacity: 0, height: 0 }}
+          animate={{ opacity: 1, height: "auto" }}
+          exit={{ opacity: 0, height: 0 }}
+          className="md:hidden py-4 border-t border-border/50"
+        >
+          <div className="mx-4 rounded-2xl border border-border/70 bg-card/95 backdrop-blur-xl shadow-lg p-4 flex flex-col gap-2">
+            {navLinks.map((link) =>
               link.to ? (
                 <Link
                   key={link.label}
                   to={link.to}
-                  className="text-muted-foreground hover:text-primary transition-colors duration-200 font-medium"
-                  data-testid={`nav-link-${link.label.toLowerCase()}`}
+                  onClick={() => setIsMobileMenuOpen(false)}
+                  className="rounded-xl px-4 py-3 text-base font-medium text-foreground hover:bg-secondary"
                 >
                   {link.label}
                 </Link>
               ) : (
                 <button
                   key={link.label}
-                  onClick={link.onClick || (() => document.getElementById(link.href.substring(1))?.scrollIntoView({ behavior: "smooth" }))}
-                  className={`text-muted-foreground hover:text-primary transition-colors duration-200 font-medium ${link.hidden ? "hidden" : ""}`}
-                  data-testid={`nav-link-${link.label.toLowerCase()}`}
+                  onClick={() => {
+                    document.getElementById(link.href.substring(1))?.scrollIntoView({ behavior: "smooth" });
+                    setIsMobileMenuOpen(false);
+                  }}
+                  className="text-left rounded-xl px-4 py-3 text-base font-medium text-foreground hover:bg-secondary"
                 >
                   {link.label}
                 </button>
               )
-            ))}
-          </div>
-
-          {/* Desktop CTAs */}
-          <div className="hidden md:flex items-center gap-4">
-            <button
-              onClick={toggleTheme}
-              className="p-2 rounded-full hover:bg-muted transition-colors duration-200"
-              data-testid="theme-toggle"
-              aria-label="Toggle theme"
-            >
-              {isDark ? (
-                <Sun className="w-5 h-5" />
-              ) : (
-                <Moon className="w-5 h-5" />
-              )}
-            </button>
-            {!isLoading && (
-              <>
-                {isAuthenticated ? (
-                  <>
-                    {/* <Link to="/contactus">
-                      <Button
-                        variant="ghost"
-                        className="font-medium"
-                        data-testid="nav-contact"
-                      >
-                        Contact
-                      </Button>
-                    </Link> */}
-                    <PopupButton
-                      url="https://calendly.com/rixlyleads/30min"
-                      rootElement={document.getElementById("root")!}
-                      text="Book Demo"
-                      className="font-medium text-sm px-4 py-2 rounded-md hover:bg-muted transition-colors"
-                      data-testid="nav-book-demo"
-                      prefill={{
-                        email: user?.email || "",
-                        name: user ? `${user.firstName} ${user.lastName}` : "",
-                      }}
-                    />
-                    <Link to="/dashboard">
-                      <Button
-                        className="rounded-full font-medium glow-primary glow-primary-hover btn-press"
-                        data-testid="nav-dashboard"
-                      >
+            )}
+            <div className="flex flex-col gap-2 pt-4 border-t border-border/50">
+              {!isLoading && (
+                <>
+                  <PopupButton
+                    url={CALENDLY_URL}
+                    rootElement={document.getElementById("root")!}
+                    text="Book Demo"
+                    className="w-full text-sm px-4 py-2.5 rounded-md border border-border hover:bg-secondary transition-colors text-center font-medium"
+                    data-testid="mobile-book-demo"
+                  />
+                  {isAuthenticated ? (
+                    <Link to="/dashboard" onClick={() => setIsMobileMenuOpen(false)}>
+                      <Button className="w-full h-12 rounded-xl bg-primary text-base font-semibold text-primary-foreground shadow-md">
                         Dashboard
                       </Button>
                     </Link>
-                  </>
-                ) : (
-                  <>
-                    {/* <Link to="/contactus">
-                      <Button
-                        variant="ghost"
-                        className="font-medium"
-                        data-testid="nav-contact"
-                      >
-                        Contact
-                      </Button>
-                    </Link> */}
-                    <PopupButton
-                      url="https://calendly.com/rixlyleads/30min"
-                      rootElement={document.getElementById("root")!}
-                      text="Book Demo"
-                      className="font-medium text-sm px-4 py-2 rounded-md hover:bg-muted transition-colors"
-                      data-testid="nav-book-demo"
-                      prefill={{
-                        email: user?.email || "",
-                        name: user ? `${user.firstName} ${user.lastName}` : "",
-                      }}
-                    />
-                    <Link to="/login">
-                      <Button
-                        variant="ghost"
-                        className="font-medium"
-                        data-testid="nav-login"
-                      >
+                  ) : (
+                    <Link to="/login" onClick={() => setIsMobileMenuOpen(false)}>
+                      <Button className="w-full h-12 rounded-xl bg-primary text-base font-semibold text-primary-foreground shadow-md">
                         Log in
                       </Button>
                     </Link>
-                    <Link to="/signup">
-                      <Button
-                        className="rounded-full font-medium glow-primary glow-primary-hover btn-press"
-                        data-testid="nav-get-started"
-                      >
-                        Get Started
-                      </Button>
-                    </Link>
-                  </>
-                )}
-              </>
-            )}
-          </div>
-
-          {/* Mobile Menu Button */}
-          <div className="flex md:hidden items-center gap-2">
-            <button
-              onClick={toggleTheme}
-              className="p-2 rounded-full hover:bg-muted transition-colors duration-200"
-              data-testid="mobile-theme-toggle"
-              aria-label="Toggle theme"
-            >
-              {isDark ? (
-                <Sun className="w-5 h-5" />
-              ) : (
-                <Moon className="w-5 h-5" />
+                  )}
+                </>
               )}
-            </button>
-            <button
-              onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-              className="p-2"
-              data-testid="mobile-menu-toggle"
-              aria-label="Toggle menu"
-            >
-              {isMobileMenuOpen ? (
-                <X className="w-6 h-6" />
-              ) : (
-                <Menu className="w-6 h-6" />
-              )}
-            </button>
-          </div>
-        </div>
-
-        {/* Mobile Menu */}
-        {isMobileMenuOpen && (
-          <motion.div
-            initial={{ opacity: 0, height: 0 }}
-            animate={{ opacity: 1, height: "auto" }}
-            exit={{ opacity: 0, height: 0 }}
-            className="md:hidden py-4 border-t border-border/50"
-          >
-            <div className="mx-1 rounded-2xl border border-border/70 bg-background/95 backdrop-blur-xl shadow-lg p-4 flex flex-col gap-3">
-              {navLinks.map((link) => (
-                link.to ? (
-                  <Link
-                    key={link.label}
-                    to={link.to}
-                    onClick={() => setIsMobileMenuOpen(false)}
-                    className="text-left text-slate-900 dark:text-white hover:text-primary transition-colors duration-200 font-semibold py-2.5 text-base"
-                    data-testid={`mobile-nav-link-${link.label.toLowerCase()}`}
-                  >
-                    {link.label}
-                  </Link>
-                ) : (
-                  <button
-                    key={link.label}
-                    onClick={() => {
-                      if (link.onClick) link.onClick();
-                      else document.getElementById(link.href.substring(1))?.scrollIntoView({ behavior: "smooth" });
-                      setIsMobileMenuOpen(false);
-                    }}
-                    className={`text-left text-slate-900 dark:text-white hover:text-primary transition-colors duration-200 font-semibold py-2.5 text-base ${link.hidden ? "hidden" : ""}`}
-                    data-testid={`mobile-nav-link-${link.label.toLowerCase()}`}
-                  >
-                    {link.label}
-                  </button>
-                )
-              ))}
-              <div className="flex flex-col gap-2 pt-4 border-t border-border/50">
-                {!isLoading && (
-                  <>
-                    {isAuthenticated ? (
-                      <>
-                        {/* <Link to="/contactus" onClick={() => setIsMobileMenuOpen(false)}>
-                          <Button
-                            variant="outline"
-                            className="w-full font-medium"
-                            data-testid="mobile-contact"
-                          >
-                            Contact
-                          </Button>
-                        </Link> */}
-                        <PopupButton
-                          url="https://calendly.com/rixlyleads/30min"
-                          rootElement={document.getElementById("root")!}
-                          text="Book Demo"
-                          className="w-full font-medium text-sm px-4 py-2.5 rounded-md border border-border hover:bg-muted transition-colors text-center"
-                          data-testid="mobile-book-demo"
-                          prefill={{
-                            email: user?.email || "",
-                            name: user ? `${user.firstName} ${user.lastName}` : "",
-                          }}
-                        />
-                        <Link to="/dashboard" onClick={() => setIsMobileMenuOpen(false)}>
-                          <Button
-                            className="w-full rounded-full font-medium glow-primary"
-                            data-testid="mobile-dashboard"
-                          >
-                            Dashboard
-                          </Button>
-                        </Link>
-                      </>
-                    ) : (
-                      <>
-                        {/* <Link to="/contactus" onClick={() => setIsMobileMenuOpen(false)}>
-                          <Button
-                            variant="outline"
-                            className="w-full font-medium"
-                            data-testid="mobile-book-demo"
-                          >
-                            Contact
-                          </Button>
-                        </Link> */}
-                        <PopupButton
-                          url="https://calendly.com/rixlyleads/30min"
-                          rootElement={document.getElementById("root")!}
-                          text="Book Demo"
-                          className="w-full font-medium text-sm px-4 py-2.5 rounded-md border border-border hover:bg-muted transition-colors text-center"
-                          data-testid="mobile-book-demo"
-                          prefill={{
-                            email: user?.email || "",
-                            name: user ? `${user.firstName} ${user.lastName}` : "",
-                          }}
-                        />
-                        <Link to="/login" onClick={() => setIsMobileMenuOpen(false)}>
-                          <Button
-                            className="w-full rounded-full font-medium glow-primary"
-                            data-testid="mobile-get-started"
-                          >
-                            Log in
-                          </Button>
-                        </Link>
-                      </>
-                    )}
-                  </>
-                )}
-              </div>
             </div>
-          </motion.div>
-        )}
-      </div>
+          </div>
+        </motion.div>
+      )}
     </motion.nav>
   );
 };

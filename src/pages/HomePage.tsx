@@ -5,21 +5,19 @@ import { motion, AnimatePresence } from "framer-motion";
 
 import { Navbar } from "@/components/landing-new/Navbar";
 import { HeroSection } from "@/components/landing-new/HeroSection";
-import { ProblemSection } from "@/components/landing-new/ProblemSection";
-import { HowRixlyMergedSection } from "@/components/landing-new/HowRixlyMergedSection";
-import { VideoSection } from "@/components/landing-new/VideoSection";
-import { FeaturesSection } from "@/components/landing-new/FeaturesSection";
-import { UseCasesSection } from "@/components/landing-new/UseCasesSection";
-import { ComplianceSection } from "@/components/landing-new/ComplianceSection";
-import { ROIComparisonTable } from "@/components/landing-new/ROIComparisonTable";
-import { FreeResourceSection } from "@/components/landing-new/FreeResourceSection";
-import { TestimonialsSection } from "@/components/landing-new/TestimonialsSection";
-import { PricingSection } from "@/components/landing-new/PricingSection";
-import { LeadSourcesSection } from "@/components/landing-new/LeadSourcesSection";
-import { CTASection } from "@/components/landing-new/CTASection";
-import { FAQSection } from "@/components/landing-new/FAQSection";
-import { Footer } from "@/components/landing-new/Footer";
 import { CompanyLogos } from "@/components/landing-new/CompanyLogos";
+import { ServicesSection } from "@/components/landing-new/ServicesSection";
+import { FeaturesSection } from "@/components/landing-new/FeaturesSection";
+import { MidCTASection } from "@/components/landing-new/MidCTASection";
+import { ResultsSection } from "@/components/landing-new/ResultsSection";
+import { ProcessSection } from "@/components/landing-new/ProcessSection";
+import { WhyChooseSection } from "@/components/landing-new/WhyChooseSection";
+import { CaseStudiesSection } from "@/components/landing-new/CaseStudiesSection";
+import { TestimonialsSection } from "@/components/landing-new/TestimonialsSection";
+import { FAQSection } from "@/components/landing-new/FAQSection";
+import { CTASection } from "@/components/landing-new/CTASection";
+import { ResourcesSection } from "@/components/landing-new/ResourcesSection";
+import { Footer } from "@/components/landing-new/Footer";
 import { ScrollToTop } from "@/components/landing-new/ScrollToTop";
 import ExitIntentPlaybookDialog from "@/components/landing-new/ExitIntentPlaybookDialog";
 import { useAuth } from "@/contexts/AuthContext";
@@ -41,7 +39,6 @@ export default function HomePage() {
 
   useEffect(() => {
     localStorage.setItem("theme", isDark ? "dark" : "light");
-
     if (isDark) {
       document.documentElement.classList.add("dark");
     } else {
@@ -50,16 +47,9 @@ export default function HomePage() {
   }, [isDark]);
 
   useEffect(() => {
-    window.handleBackToLanding = () => {
-      setView("landing");
-    };
-
-    const errorHandler = (e: ErrorEvent) => {
-      console.error("Caught global error:", e);
-    };
-
+    window.handleBackToLanding = () => setView("landing");
+    const errorHandler = (e: ErrorEvent) => console.error("Caught global error:", e);
     window.addEventListener("error", errorHandler);
-
     return () => {
       delete window.handleBackToLanding;
       window.removeEventListener("error", errorHandler);
@@ -90,18 +80,17 @@ export default function HomePage() {
           >
             <Navbar isDark={isDark} toggleTheme={toggleTheme} setView={setView} />
             <HeroSection />
-            <VideoSection />
-            <FreeResourceSection />
-            <HowRixlyMergedSection />
-            <ProblemSection />
+            <CompanyLogos />
+            <ServicesSection />
+            <MidCTASection />
             <FeaturesSection />
-            <UseCasesSection />
-            <ComplianceSection />
-            <ROIComparisonTable />
-            <LeadSourcesSection />
-            <PricingSection />
+            <ResultsSection />
+            <ProcessSection />
+            <WhyChooseSection />
+            <CaseStudiesSection />
             <TestimonialsSection />
             <FAQSection />
+            <ResourcesSection />
             <CTASection />
             <Footer />
             <ScrollToTop />
