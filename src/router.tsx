@@ -45,7 +45,6 @@ const SettingsView = lazy(() => import('@/pages/app/SettingsView'))
 const GuideView = lazy(() => import('@/pages/app/GuideView'))
 import ProjectRouteGuard from '@/components/app/ProjectRouteGuard'
 import DashboardRedirect from '@/components/DashboardRedirect'
-import AppEntryRedirect from '@/components/AppEntryRedirect'
 const OnboardingPage = lazy(() => import('@/pages/OnboardingPage'))
 import ProjectProviderWrapper from '@/components/ProjectProviderWrapper'
 
@@ -117,8 +116,8 @@ export default function AppRouter() {
   return (
     <Suspense fallback={null}>
       <Routes>
-        {/* App entry point — smart redirect based on auth + project state */}
-        <Route path="/" element={<ProjectProviderWrapper><AppEntryRedirect /></ProjectProviderWrapper>} />
+        {/* Root path is now the Landing Page for everyone */}
+        <Route path="/" element={<HomePage />} />
 
         {/* Public Routes with Home Layout */}
         <Route element={<HomeLayout />}>
