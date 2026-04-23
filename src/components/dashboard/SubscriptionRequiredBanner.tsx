@@ -1,5 +1,6 @@
 import { AlertCircle, TrendingUp, Users, Clock } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { type PricingPlan } from "@/lib/api/pricing";
 import { useState } from "react";
 // import { useAuth } from "@/contexts/AuthContext";
 // import { PopupButton } from "react-calendly";
