@@ -5,7 +5,6 @@ import { motion } from "framer-motion";
 import { Menu, X, Sun, Moon, ExternalLink } from "lucide-react";
 import { Button } from "../ui/button";
 import { useAuth } from "@/contexts/AuthContext";
-import { PopupButton } from "react-calendly";
 
 const CALENDLY_URL = "https://calendly.com/rixlyleads/30min";
 
@@ -44,11 +43,9 @@ export const Navbar = ({ isDark, toggleTheme, setView }) => {
       <div className="mx-auto flex h-[68px] max-w-7xl items-center justify-between px-6 lg:h-[76px] lg:px-8">
         {/* Logo */}
         <a href="#" className="flex items-center gap-3 group" data-testid="logo">
-          <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-primary to-accent shadow-md transition-transform duration-300 group-hover:scale-105">
-            <span className="text-xl font-bold text-white">U</span>
-          </div>
+          <img src="/logo.png" alt="Rixly Logo" className="h-10 w-auto max-w-[40px] object-contain transition-transform duration-300 group-hover:scale-105" />
           <span className="font-heading text-[26px] font-bold tracking-tight text-foreground">
-            userixly
+            Rixly
           </span>
         </a>
 
@@ -93,17 +90,15 @@ export const Navbar = ({ isDark, toggleTheme, setView }) => {
             <>
               {isAuthenticated ? (
                 <>
-                  <PopupButton
-                    url={CALENDLY_URL}
-                    rootElement={document.getElementById("root")!}
-                    text="Book Demo"
-                    className="px-4 py-2 text-[15px] font-medium text-muted-foreground transition-colors hover:text-foreground rounded-md"
+                  <a
+                    href={CALENDLY_URL}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="px-4 py-2 text-[15px] font-medium text-muted-foreground transition-colors hover:text-foreground rounded-md decoration-transparent hover:decoration-transparent"
                     data-testid="nav-book-demo"
-                    prefill={{
-                      email: user?.email || "",
-                      name: user ? `${user.firstName} ${user.lastName}` : "",
-                    }}
-                  />
+                  >
+                    Book Demo
+                  </a>
                   <Link to="/dashboard">
                     <Button className="h-11 rounded-xl bg-primary px-6 text-[15px] font-semibold text-primary-foreground shadow-md shadow-primary/20 transition-all hover:bg-primary/90 hover:shadow-lg hover:-translate-y-0.5">
                       Dashboard
@@ -112,17 +107,15 @@ export const Navbar = ({ isDark, toggleTheme, setView }) => {
                 </>
               ) : (
                 <>
-                  <PopupButton
-                    url={CALENDLY_URL}
-                    rootElement={document.getElementById("root")!}
-                    text="Book Demo"
-                    className="px-4 py-2 text-[15px] font-medium text-muted-foreground transition-colors hover:text-foreground rounded-md"
+                  <a
+                    href={CALENDLY_URL}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="px-4 py-2 text-[15px] font-medium text-muted-foreground transition-colors hover:text-foreground rounded-md decoration-transparent hover:decoration-transparent"
                     data-testid="nav-book-demo"
-                    prefill={{
-                      email: user?.email || "",
-                      name: user ? `${user.firstName} ${user.lastName}` : "",
-                    }}
-                  />
+                  >
+                    Book Demo
+                  </a>
                   <Link to="/login">
                     <Button
                       variant="ghost"
@@ -189,13 +182,15 @@ export const Navbar = ({ isDark, toggleTheme, setView }) => {
             <div className="flex flex-col gap-2 pt-4 border-t border-border/50">
               {!isLoading && (
                 <>
-                  <PopupButton
-                    url={CALENDLY_URL}
-                    rootElement={document.getElementById("root")!}
-                    text="Book Demo"
-                    className="w-full text-sm px-4 py-2.5 rounded-md border border-border hover:bg-secondary transition-colors text-center font-medium"
+                  <a
+                    href={CALENDLY_URL}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="block w-full text-sm px-4 py-2.5 rounded-md border border-border hover:bg-secondary transition-colors text-center font-medium decoration-transparent hover:decoration-transparent"
                     data-testid="mobile-book-demo"
-                  />
+                  >
+                    Book Demo
+                  </a>
                   {isAuthenticated ? (
                     <Link to="/dashboard" onClick={() => setIsMobileMenuOpen(false)}>
                       <Button className="w-full h-12 rounded-xl bg-primary text-base font-semibold text-primary-foreground shadow-md">

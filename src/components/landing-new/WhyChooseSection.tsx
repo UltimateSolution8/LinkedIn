@@ -19,7 +19,7 @@ export function WhyChooseSection() {
           <div className="mb-4 inline-flex items-center gap-2 rounded-full border border-primary/20 bg-primary/5 px-4 py-1.5">
             <span className="text-xs font-semibold uppercase tracking-wider text-primary">Why Us</span>
           </div>
-          <h2 className="font-heading text-balance text-3xl font-bold tracking-tight text-foreground sm:text-4xl md:text-[44px]">Why Choose Userixly?</h2>
+          <h2 className="font-heading text-balance text-3xl font-bold tracking-tight text-foreground sm:text-4xl md:text-[44px]">Why Choose Rixly?</h2>
           <p className="mt-5 text-pretty text-lg text-muted-foreground">We deliver results, not excuses. Here's what sets us apart.</p>
         </div>
         <div className="mt-16 grid items-stretch gap-8 lg:grid-cols-2">

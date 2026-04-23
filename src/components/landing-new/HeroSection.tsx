@@ -2,7 +2,6 @@
 import { motion } from "framer-motion";
 import { Check, Calendar, TrendingUp, Users, ArrowRight } from "lucide-react";
 import { Button } from "../ui/button";
-import { PopupButton } from "react-calendly";
 
 const CALENDLY_URL = "https://calendly.com/rixlyleads/30min";
 
@@ -55,16 +54,16 @@ export function HeroSection() {
             </p>
 
             <div className="flex flex-col gap-4 sm:flex-row">
-              <PopupButton
-                url={CALENDLY_URL}
-                rootElement={document.getElementById("root")!}
-                text=""
-                className="inline-flex items-center justify-center gap-2 h-14 rounded-2xl bg-primary px-8 text-base font-semibold text-primary-foreground shadow-lg shadow-primary/25 transition-all hover:opacity-90 hover:shadow-xl hover:-translate-y-0.5 cursor-pointer"
+              <a
+                href={CALENDLY_URL}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center justify-center gap-2 h-14 rounded-2xl bg-primary px-8 text-base font-semibold text-primary-foreground shadow-lg shadow-primary/25 transition-all hover:opacity-90 hover:shadow-xl hover:-translate-y-0.5 cursor-pointer decoration-transparent hover:decoration-transparent"
                 data-testid="hero-book-call"
               >
                 <Calendar className="mr-2 h-5 w-5 inline" />
                 Book a Free Strategy Call
-              </PopupButton>
+              </a>
 
               <button
                 onClick={() => document.getElementById("process")?.scrollIntoView({ behavior: "smooth" })}

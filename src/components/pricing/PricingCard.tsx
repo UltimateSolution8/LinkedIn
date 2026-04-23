@@ -3,8 +3,8 @@ import { Check, Zap, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { type PricingPlan } from "@/lib/api/pricing";
-import { PopupButton } from "react-calendly";
-import { useAuth } from "@/contexts/AuthContext";
+// import { PopupButton } from "react-calendly";
+// import { useAuth } from "@/contexts/AuthContext";
 
 interface PricingCardProps {
     plan: PricingPlan;
@@ -13,7 +13,6 @@ interface PricingCardProps {
 }
 
 export default function PricingCard({ plan, onChoosePlan, processing = false }: PricingCardProps) {
-    const { user } = useAuth();
     const formatAmount = (amount: number) => {
         if (plan.currency === "INR") {
             return new Intl.NumberFormat("en-IN", { maximumFractionDigits: 0 }).format(amount);
@@ -148,16 +147,14 @@ export default function PricingCard({ plan, onChoosePlan, processing = false }: 
 
                 {!processing && (
                     <div className="space-y-3">
-                        <PopupButton
-                            url="https://calendly.com/rixlyleads/30min"
-                            rootElement={document.getElementById("root")!}
-                            text="Book Demo"
-                            className="w-full border-2 border-teal-600 text-teal-600 hover:bg-teal-50 py-4 rounded-xl text-sm sm:text-base font-bold transition-colors"
-                            prefill={{
-                                email: user?.email || "",
-                                name: user ? `${user.firstName} ${user.lastName}` : "",
-                            }}
-                        />
+                        <a
+                            href="https://calendly.com/rixlyleads/30min"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="flex w-full justify-center border-2 border-teal-600 text-teal-600 hover:bg-teal-50 py-4 rounded-xl text-sm sm:text-base font-bold transition-colors decoration-transparent hover:decoration-transparent"
+                        >
+                            Book Demo
+                        </a>
 
                         <Button
                             onClick={() => onChoosePlan(false)}

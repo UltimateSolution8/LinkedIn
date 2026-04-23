@@ -1,8 +1,8 @@
 // @ts-nocheck
 export function CompanyLogos() {
   const logos = [
-    { name: "Airtable" }, { name: "Calendly" }, { name: "ClickUp" },
-    { name: "pipedrive" }, { name: "HubSpot" },
+    { name: "ZenithCorp" }, { name: "NexusTech" }, { name: "VortaSystems" },
+    { name: "ApexInnov" }, { name: "QuantumFlow" },
   ];
   return (
     <section className="border-y border-border/30 bg-card py-8">
