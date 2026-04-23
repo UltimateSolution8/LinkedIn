@@ -1,7 +1,6 @@
 // @ts-nocheck
 import { Calendar, Grid3X3, FileText, Check, Mail, Phone, MessageCircle } from "lucide-react";
 import { Button } from "../ui/button";
-import { PopupButton } from "react-calendly";
 
 const CALENDLY_URL = "https://calendly.com/rixlyleads/30min";
 
@@ -12,7 +11,7 @@ const actions = [
   { icon: FileText, title: "Action Plan", description: "Clear Next Steps" },
 ];
 const contactMethods = [
-  { icon: Mail, title: "Email Us", value: "hello@userixly.com" },
+  { icon: Mail, title: "Email Us", value: "hello@rixly.com" },
   { icon: Phone, title: "Call Us", value: "+1 (800) 555-0197" },
   { icon: MessageCircle, title: "WhatsApp", value: "+1 (800) 555-0197" },
 ];
@@ -39,12 +38,14 @@ export function CTASection() {
               ))}
             </ul>
             <div className="mt-8">
-              <PopupButton
-                url={CALENDLY_URL}
-                rootElement={document.getElementById("root")!}
-                text="Book My Free Strategy Call"
-                className="inline-flex items-center justify-center h-13 w-full rounded-2xl bg-white px-6 text-base font-semibold text-primary transition-all hover:bg-white/90 hover:-translate-y-0.5 cursor-pointer sm:w-auto"
-              />
+              <a
+                href={CALENDLY_URL}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center justify-center h-13 w-full rounded-2xl bg-white px-6 text-base font-semibold text-primary transition-all hover:bg-white/90 hover:-translate-y-0.5 cursor-pointer sm:w-auto decoration-transparent hover:decoration-transparent"
+              >
+                Book My Free Strategy Call
+              </a>
             </div>
             <div className="mt-6 flex items-center gap-3">
               <div className="flex -space-x-2">
@@ -54,7 +55,7 @@ export function CTASection() {
                   </div>
                 ))}
               </div>
-              <p className="text-sm text-white/80">Join 100+ founders growing with Userixly</p>
+              <p className="text-sm text-white/80">Join 100+ founders growing with Rixly</p>
             </div>
           </div>
 
@@ -69,12 +70,14 @@ export function CTASection() {
               </div>
               <p className="mt-4 text-center text-sm font-semibold text-foreground">Pick a Date & Time That Works For You</p>
               <div className="mt-5">
-                <PopupButton
-                  url={CALENDLY_URL}
-                  rootElement={document.getElementById("root")!}
-                  text="Book Your Free Call"
-                  className="flex items-center justify-center h-12 w-full rounded-xl bg-primary px-6 text-base font-semibold text-primary-foreground shadow-md shadow-primary/20 transition-all hover:opacity-90 hover:-translate-y-0.5 cursor-pointer"
-                />
+                <a
+                  href={CALENDLY_URL}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center justify-center h-12 w-full rounded-xl bg-primary px-6 text-base font-semibold text-primary-foreground shadow-md shadow-primary/20 transition-all hover:opacity-90 hover:-translate-y-0.5 cursor-pointer decoration-transparent hover:decoration-transparent"
+                >
+                  Book Your Free Call
+                </a>
               </div>
             </div>
             <div className="grid grid-cols-3 gap-4">

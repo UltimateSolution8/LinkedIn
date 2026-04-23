@@ -1,6 +1,5 @@
 // @ts-nocheck
 import { Button } from "../ui/button";
-import { PopupButton } from "react-calendly";
 
 const CALENDLY_URL = "https://calendly.com/rixlyleads/30min";
 
@@ -18,12 +17,14 @@ export function MidCTASection() {
               Let's build your LinkedIn growth engine and scale your pipeline.
             </p>
             <div className="mt-8">
-              <PopupButton
-                url={CALENDLY_URL}
-                rootElement={document.getElementById("root")!}
-                text="Book Your Free Strategy Call"
-                className="inline-flex items-center justify-center h-13 rounded-2xl bg-primary px-8 text-base font-semibold text-primary-foreground shadow-lg shadow-primary/25 transition-all hover:opacity-90 hover:shadow-xl hover:-translate-y-0.5 cursor-pointer"
-              />
+              <a
+                href={CALENDLY_URL}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center justify-center h-13 rounded-2xl bg-primary px-8 text-base font-semibold text-primary-foreground shadow-lg shadow-primary/25 transition-all hover:opacity-90 hover:shadow-xl hover:-translate-y-0.5 cursor-pointer decoration-transparent hover:decoration-transparent"
+              >
+                Book Your Free Strategy Call
+              </a>
             </div>
             <div className="mt-8 flex items-center justify-center gap-3">
               <div className="flex -space-x-2.5">
@@ -33,7 +34,7 @@ export function MidCTASection() {
                   </div>
                 ))}
               </div>
-              <p className="text-sm font-medium text-muted-foreground">Join 100+ founders growing with Userixly</p>
+              <p className="text-sm font-medium text-muted-foreground">Join 100+ founders growing with Rixly</p>
             </div>
           </div>
         </div>

@@ -4,9 +4,9 @@ import { Quote, ChevronLeft, ChevronRight } from "lucide-react";
 import { Button } from "../ui/button";
 
 const testimonials = [
-  { quote: "Userixly completely changed the game for us. We now get 20-50 qualified meetings every month from LinkedIn. Highly recommend!", author: "James T.", role: "Founder, Leadr", photoPosition: "0% 0%" },
-  { quote: "The team at Userixly is incredibly professional. They understood our needs and delivered results faster than we expected.", author: "Sarah K.", role: "CEO, BrightPath", photoPosition: "100% 0%" },
-  { quote: "We tried doing LinkedIn outreach ourselves but it never worked. Userixly came in and within 60 days we had a full pipeline.", author: "Michael R.", role: "Founder, TechScale", photoPosition: "0% 100%" },
+  { quote: "Rixly completely changed the game for us. We now get 20-50 qualified meetings every month from LinkedIn. Highly recommend!", author: "James T.", role: "Founder, Leadr", photoPosition: "0% 0%" },
+  { quote: "The team at Rixly is incredibly professional. They understood our needs and delivered results faster than we expected.", author: "Sarah K.", role: "CEO, BrightPath", photoPosition: "100% 0%" },
+  { quote: "We tried doing LinkedIn outreach ourselves but it never worked. Rixly came in and within 60 days we had a full pipeline.", author: "Michael R.", role: "Founder, TechScale", photoPosition: "0% 100%" },
 ];
 
 export function TestimonialsSection() {

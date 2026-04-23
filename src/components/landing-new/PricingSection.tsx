@@ -10,7 +10,6 @@ import PaymentStatusModal from "@/components/pricing/PaymentStatusModal";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 // import RequestDemoDialog from "@/components/shared/RequestDemoDialog";
-import { PopupButton } from "react-calendly";
 
 const basePlans = [
   {
@@ -308,16 +307,14 @@ export const PricingSection = () => {
             Choose the plan that fits your needs.
           </p>
           <div className="mt-5">
-            <PopupButton
-              url="https://calendly.com/rixlyleads/30min"
-              rootElement={document.getElementById("root")!}
-              text="Book a Demo"
-              className="rounded-full border border-primary/20 hover:bg-primary/5 px-4 py-2 text-sm font-medium transition-colors"
-              prefill={{
-                email: user?.email || "",
-                name: user ? `${user.firstName} ${user.lastName}` : "",
-              }}
-            />
+            <a
+              href="https://calendly.com/rixlyleads/30min"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center justify-center rounded-full border border-primary/20 hover:bg-primary/5 px-4 py-2 text-sm font-medium transition-colors decoration-transparent hover:decoration-transparent"
+            >
+              Book a Demo
+            </a>
           </div>
         </motion.div>
 
@@ -423,16 +420,14 @@ export const PricingSection = () => {
                   ) */}
 
                   <div className="w-full">
-                    <PopupButton
-                      url="https://calendly.com/rixlyleads/30min"
-                      rootElement={document.getElementById("root")!}
-                      text="Book Demo"
-                      className="w-full rounded-full font-bold border-2 border-primary/20 hover:bg-primary/5 py-2 transition-colors text-primary"
-                      prefill={{
-                        email: user?.email || "",
-                        name: user ? `${user.firstName} ${user.lastName}` : "",
-                      }}
-                    />
+                    <a
+                      href="https://calendly.com/rixlyleads/30min"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="flex w-full items-center justify-center rounded-full font-bold border-2 border-primary/20 hover:bg-primary/5 py-2 transition-colors text-primary decoration-transparent hover:decoration-transparent"
+                    >
+                      Book Demo
+                    </a>
                   </div>
                 </div>
               </motion.div>

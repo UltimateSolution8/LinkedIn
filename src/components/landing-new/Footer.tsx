@@ -35,10 +35,8 @@ export function Footer() {
         <div className="grid gap-10 lg:grid-cols-5">
           <div className="lg:col-span-2">
             <a href="#" className="flex items-center gap-3">
-              <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-primary to-accent shadow-sm">
-                <span className="text-lg font-bold text-white">U</span>
-              </div>
-              <span className="text-xl font-bold tracking-tight text-foreground">userixly</span>
+              <img src="/logo.png" alt="Rixly Logo" className="h-9 w-auto max-w-[36px] object-contain transition-transform duration-300 hover:scale-105" />
+              <span className="text-xl font-bold tracking-tight text-foreground">Rixly</span>
             </a>
             <p className="mt-4 max-w-xs text-sm leading-relaxed text-muted-foreground">
               LinkedIn lead generation that actually works. Get 20-50 qualified meetings every month.
@@ -86,7 +84,7 @@ export function Footer() {
         </div>
         <div className="mt-14 border-t border-border/30 pt-8">
           <p className="text-center text-sm text-muted-foreground">
-            &copy; {new Date().getFullYear()} Userixly. All rights reserved.
+            &copy; {new Date().getFullYear()} Rixly. All rights reserved.
           </p>
         </div>
       </div>

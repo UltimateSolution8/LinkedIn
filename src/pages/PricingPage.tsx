@@ -12,7 +12,7 @@ import { detectUserCurrency } from "@/lib/utils/geolocation";
 import { getSubscriptionStatusCached } from "@/lib/utils/subscription";
 import { type SubscriptionStatus } from "@/lib/api/subscription";
 import { useAuth } from "@/contexts/AuthContext";
-import { PopupButton, useCalendlyEventListener } from "react-calendly";
+import { useCalendlyEventListener } from "react-calendly";
 
 // Declare Razorpay types for TypeScript
 declare global {
@@ -467,7 +467,6 @@ export default function PricingPage() {
                   plan={plan}
                   onChoosePlan={(isTrial) => handleChoosePlan(plan, isTrial)}
                   processing={processing}
-                  user={user}
                 />
               ))}
             </div>
@@ -510,10 +509,9 @@ interface PricingCardProps {
   plan: PricingPlan;
   onChoosePlan: (isTrial: boolean) => void;
   processing?: boolean;
-  user?: { email: string; firstName: string; lastName: string } | null;
 }
 
-function PricingCard({ plan, onChoosePlan, processing = false, user }: PricingCardProps) {
+function PricingCard({ plan, onChoosePlan, processing = false }: PricingCardProps) {
   // Hardcoded features that override plan.features
   const hardcodedFeatures = [
     "UNLIMITED *100* Posts to view",
@@ -611,16 +609,14 @@ function PricingCard({ plan, onChoosePlan, processing = false, user }: PricingCa
 
         {!processing && (
           <div className="space-y-3">
-            <PopupButton
-              url="https://calendly.com/rixlyleads/30min"
-              rootElement={document.getElementById("root")!}
-              text="Book Demo"
-              className="w-full border-2 border-teal-600 text-teal-600 hover:bg-teal-50 py-4 rounded-xl text-sm sm:text-base font-bold transition-colors"
-              prefill={{
-                email: user?.email || "",
-                name: user ? `${user.firstName} ${user.lastName}` : "",
-              }}
-            />
+            <a
+              href="https://calendly.com/rixlyleads/30min"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex w-full justify-center border-2 border-teal-600 text-teal-600 hover:bg-teal-50 py-4 rounded-xl text-sm sm:text-base font-bold transition-colors decoration-transparent hover:decoration-transparent"
+            >
+              Book Demo
+            </a>
 
             <Button
               onClick={() => onChoosePlan(false)}

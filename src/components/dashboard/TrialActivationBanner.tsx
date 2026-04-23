@@ -1,8 +1,8 @@
 import { X, Sparkles, Check } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { type PricingPlan } from "@/lib/api/pricing";
-import { useAuth } from "@/contexts/AuthContext";
-import { PopupButton } from "react-calendly";
+// import { useAuth } from "@/contexts/AuthContext";
+// import { PopupButton } from "react-calendly";
 
 interface TrialActivationBannerProps {
   plans: PricingPlan[];
@@ -19,7 +19,6 @@ export default function TrialActivationBanner({
   processingTrial = false,
   processingPayment = false
 }: TrialActivationBannerProps) {
-  const { user } = useAuth();
   const plan = plans[0]; // Use first plan
 
   if (!plan) return null;
@@ -103,16 +102,14 @@ export default function TrialActivationBanner({
           </Button> */}
 
           <div className="w-full sm:w-auto">
-            <PopupButton
-              url="https://calendly.com/rixlyleads/30min"
-              rootElement={document.getElementById("root")!}
-              text="Book Demo"
-              className="w-full h-full bg-teal-600 hover:bg-teal-700 text-white font-semibold px-8 py-4 rounded-xl shadow-lg shadow-teal-600/30 hover:shadow-teal-600/40 transition-all text-base flex items-center justify-center"
-              prefill={{
-                email: user?.email || "",
-                name: user ? `${user.firstName} ${user.lastName}` : "",
-              }}
-            />
+            <a
+              href="https://calendly.com/rixlyleads/30min"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="w-full h-full bg-teal-600 hover:bg-teal-700 text-white font-semibold px-8 py-4 rounded-xl shadow-lg shadow-teal-600/30 hover:shadow-teal-600/40 transition-all text-base flex items-center justify-center decoration-transparent hover:decoration-transparent"
+            >
+              Book Demo
+            </a>
           </div>
 
           <Button
